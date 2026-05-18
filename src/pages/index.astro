@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
 import TierTable from "../components/TierTable.astro";
 import CtaButton from "../components/CtaButton.astro";
+import BmeFlowCompact from "../components/BmeFlowCompact.astro";
 
 const valueProps = [
   {
@@ -116,25 +117,8 @@ const quotes = [
         }
       </ol>
 
-      <!-- Inline diagram (ASCII-art rendered as <pre>) -->
-      <div class="mt-10 overflow-x-auto rounded-md border border-crust-800 bg-crust-950 p-5">
-<pre class="font-mono text-xs leading-snug text-crust-200">
-  customer USDC ──▶ gateway burns OROG at oracle spot ──▶ CUC minted (USD-pegged, 30d)
-                                                                  │
-                                                                  ▼
-                                                 router picks operator by tier + region
-                                                                  │
-                                                                  ▼
-                                       worker runs vLLM / SGLang / TRT-LLM in TEE
-                                       deterministic kernel, signed response receipt
-                                                                  │
-                                                                  ▼
-                                              validators sample-replay 1–5% on-chain
-                                                                  │
-                                                                  ▼
-                                   CUC burned → fresh OROG mints: 75% operator / 15%
-                                       verification / 5% treasury / 5% governance
-</pre>
+      <div class="mt-10">
+        <BmeFlowCompact />
       </div>
     </div>
   </section>

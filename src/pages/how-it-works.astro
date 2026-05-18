@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import CtaButton from "../components/CtaButton.astro";
+import BmeFlowOracle from "../components/BmeFlowOracle.astro";
 
 const layers = [
   {
@@ -129,45 +130,8 @@ const bmeSteps = [
       }
     </ol>
 
-    <div class="mt-8 overflow-x-auto rounded-md border border-crust-800 bg-crust-950 p-5">
-<pre class="font-mono text-xs leading-snug text-crust-200">
-                            ┌────────────────────────────────┐
-                            │  TWAP oracle (30m, 5m updates) │
-                            │  OROG/USDC, OROG/ETH           │
-                            │  CEX top-2 + AMM + Uni v4 hook │
-                            └────────────────┬───────────────┘
-                                             │ price feed
-       customer  ──USDC──▶  gateway  ──burn──▼──▶  pallet-bme
-                                             │
-                                             ▼
-                                          CUC mint (USD-pegged, 30d)
-                                             │
-                                             ▼
-                                        job submitted
-                                             │
-                                             ▼
-                                     router → operator
-                                             │
-                                             ▼
-                                  inference + signed receipt
-                                             │
-                                             ▼
-                                  validator replay sampling
-                                             │
-                                             ▼
-                                   on_job_finalised fires
-                                             │
-                                             ▼
-                          mint = MIN(  cap_year_N,
-                                       rolling_burn_90d × elasticity,
-                                       ceiling_5pct_supply )
-                          mint = MAX(  mint, floor_0.5pct_supply )
-                                             │
-                                  75% / 15% / 5% / 5%
-                                             │
-                                  ▼   ▼   ▼   ▼
-                              operator  validators  treasury  governance
-</pre>
+    <div class="mt-8">
+      <BmeFlowOracle />
     </div>
   </section>
 

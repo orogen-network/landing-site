@@ -4,6 +4,7 @@ import TierTable from "../components/TierTable.astro";
 import CtaButton from "../components/CtaButton.astro";
 import EmissionSplit from "../components/EmissionSplit.astro";
 import BmeEnvelope from "../components/BmeEnvelope.astro";
+import BmeLoopDetailed from "../components/BmeLoopDetailed.astro";
 
 interface Allocation {
   label: string;
@@ -143,44 +144,8 @@ const subsidyTargets = [
     <p class="heading-eyebrow">Burn-and-mint engine</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">The loop, with $-flows.</h2>
 
-    <div class="mt-8 overflow-x-auto rounded-md border border-crust-800 bg-crust-950 p-5">
-<pre class="font-mono text-xs leading-snug text-crust-200">
-  ┌──────────┐    USDC/USD/ETH    ┌─────────────┐    buy + burn OROG    ┌─────────────┐
-  │ Customer │────────────────────▶│  Gateway   │──────────────────────▶│ pallet-bme  │
-  └──────────┘                     │  (LiteLLM)  │                       │ (burn)      │
-                                   └──────┬──────┘                       └──────┬──────┘
-                                          │ CUC mint (USD-pegged)               │
-                                          ▼                                     │
-                                  ┌────────────────┐                            │
-                                  │  Customer CUC  │                            │
-                                  │  30-day expiry │                            │
-                                  └────────┬───────┘                            │
-                                           │ job submitted                      │
-                                           ▼                                    │
-                                  ┌────────────────────┐                        │
-                                  │ Operator (vLLM /   │                        │
-                                  │  SGLang / TRT-LLM) │                        │
-                                  └────────┬───────────┘                        │
-                                           │ signed receipt                     │
-                                           ▼                                    │
-                                  ┌────────────────────┐                        │
-                                  │ Validators replay  │                        │
-                                  │  1–5% of receipts  │                        │
-                                  └────────┬───────────┘                        │
-                                           │ on_job_finalised                   │
-                                           ▼                                    │
-                                  ┌────────────────────┐    mint OROG          ▼
-                                  │   pallet-bme       │◀──────────────  oracle spot
-                                  │  mint = bounded()  │                       │
-                                  └────────┬───────────┘                       │
-                                           │ 75% / 15% / 5% / 5%                │
-                            ┌──────────────┼────────────────┐                  │
-                            ▼              ▼                ▼                  ▼
-                         operator     validators        treasury           governance
-                            │
-                            ▼ default 70% auto-swap to USDC at protocol AMM
-                         provider wallet (USDC)
-</pre>
+    <div class="mt-8">
+      <BmeLoopDetailed />
     </div>
 
     <p class="mt-6 max-w-3xl text-crust-300">

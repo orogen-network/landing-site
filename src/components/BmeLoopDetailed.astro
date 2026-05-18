@@ -1,0 +1,343 @@
+---
+// BmeLoopDetailed.astro — detailed rendering of the burn-and-mint loop for
+// the tokenomics page. Two-column flow with explicit USD-in / USD-out rails,
+// an oracle-spot feedback into pallet-bme, and the auto-swap branch from
+// operator → USDC wallet. Replaces the ASCII-art block in tokenomics.astro.
+
+interface Node {
+  eyebrow: string;
+  title: string;
+  body?: string;
+  accent: "magma" | "magma-soft" | "crystal" | "crystal-soft" | "crust";
+}
+
+const accent: Record<Node["accent"], string> = {
+  magma: "border-l-magma-500",
+  "magma-soft": "border-l-magma-400",
+  crystal: "border-l-crystal-500",
+  "crystal-soft": "border-l-crystal-400",
+  crust: "border-l-crust-500",
+};
+
+const usdInColumn: Node[] = [
+  {
+    eyebrow: "01 · USD in",
+    title: "Customer",
+    body: "Pays USDC / USD / ETH / BTC into the gateway.",
+    accent: "crystal",
+  },
+  {
+    eyebrow: "02",
+    title: "Gateway (LiteLLM)",
+    body: "Buys OROG from protocol-managed AMM at oracle spot.",
+    accent: "crystal-soft",
+  },
+  {
+    eyebrow: "03 · burn",
+    title: "pallet-bme · burn",
+    body: "OROG retired. CUC minted to the customer account.",
+    accent: "magma",
+  },
+];
+
+const executionColumn: Node[] = [
+  {
+    eyebrow: "04",
+    title: "Customer CUC",
+    body: "Non-transferable, USD-pegged, 30-day expiry.",
+    accent: "crystal-soft",
+  },
+  {
+    eyebrow: "05",
+    title: "Operator (vLLM / SGLang / TRT-LLM)",
+    body: "Deterministic kernel in TEE; signed receipt returned.",
+    accent: "magma-soft",
+  },
+  {
+    eyebrow: "06",
+    title: "Validators replay 1–5 % of receipts",
+    body: "Bit-identical re-execution on attested hardware.",
+    accent: "crystal",
+  },
+  {
+    eyebrow: "07 · finalise",
+    title: "on_job_finalised",
+    body: "CUC consumed; the mint pallet computes the bounded mint.",
+    accent: "crust",
+  },
+];
+
+const splits = [
+  {
+    pct: 75,
+    label: "Operator",
+    detail: "default 70 % auto-swap → USDC at protocol AMM",
+    tone: "bg-magma-500 text-crust-950",
+    chip: "bg-magma-500",
+  },
+  {
+    pct: 15,
+    label: "Validators",
+    detail: "share of replay work × consensus alignment",
+    tone: "bg-crystal-500 text-crust-950",
+    chip: "bg-crystal-500",
+  },
+  {
+    pct: 5,
+    label: "Treasury",
+    detail: "audits, security response, integrations",
+    tone: "bg-magma-400 text-crust-950",
+    chip: "bg-magma-400",
+  },
+  {
+    pct: 5,
+    label: "Governance",
+    detail: "slashing arbitration, parameter review",
+    tone: "bg-crust-400 text-crust-950",
+    chip: "bg-crust-400",
+  },
+];
+---
+
+<figure
+  class="surface-card-strong"
+  aria-label="Detailed burn-and-mint loop with USD-in burn, operator execution, validator replay, bounded mint, 75/15/5/5 split, and AMM auto-swap to USDC."
+>
+  <div class="flex items-baseline justify-between border-b border-crust-800 pb-3">
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+        Burn-and-mint engine · the loop, with $-flows
+      </p>
+      <h3 class="mt-1 text-lg font-semibold tracking-tight text-crust-100">
+        USD in → OROG burned → execute → OROG minted → USD out
+      </h3>
+    </div>
+    <p class="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500 sm:block">
+      oracle-anchored · pallet-enforced
+    </p>
+  </div>
+
+  <!-- Top row: USD-in arm -->
+  <div class="mt-6 grid gap-3 md:grid-cols-3">
+    {
+      usdInColumn.map((n, i) => (
+        <div class="relative">
+          <div
+            class={`h-full rounded-md border border-crust-800 border-l-2 bg-crust-900/60 px-4 py-3 ${accent[n.accent]}`}
+          >
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+              {n.eyebrow}
+            </p>
+            <p class="mt-1 text-sm font-semibold text-crust-100">{n.title}</p>
+            {n.body && (
+              <p class="mt-1 text-xs leading-relaxed text-crust-400">
+                {n.body}
+              </p>
+            )}
+          </div>
+          {i < usdInColumn.length - 1 && (
+            <div
+              class="absolute top-1/2 right-0 hidden -translate-y-1/2 translate-x-1/2 text-crust-600 md:block"
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 24 16"
+                class="h-4 w-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 8h18m0 0l-5-5m5 5l-5 5" />
+              </svg>
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- vertical bridge: pallet-bme burn → CUC -->
+  <div
+    class="mt-2 flex flex-col items-center text-crust-600 md:items-end md:pr-[8.33%]"
+    aria-hidden="true"
+  >
+    <svg
+      viewBox="0 0 16 24"
+      class="h-6 w-4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M8 2v18m0 0l-4-4m4 4l4-4" />
+    </svg>
+    <p
+      class="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500"
+    >
+      CUC mint (USD-pegged)
+    </p>
+  </div>
+
+  <!-- Center column: execution + finalise -->
+  <ol class="mt-2 space-y-0">
+    {
+      executionColumn.map((n, i) => (
+        <li class="relative">
+          <div
+            class={`rounded-md border border-crust-800 border-l-2 bg-crust-900/60 px-4 py-3 ${accent[n.accent]}`}
+          >
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+              {n.eyebrow}
+            </p>
+            <p class="mt-1 text-sm font-semibold text-crust-100">{n.title}</p>
+            {n.body && (
+              <p class="mt-1 text-xs leading-relaxed text-crust-400">
+                {n.body}
+              </p>
+            )}
+          </div>
+          {i < executionColumn.length - 1 && (
+            <div
+              class="flex justify-center py-2 text-crust-600"
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M8 3v9m0 0l-4-4m4 4l4-4" />
+              </svg>
+            </div>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+
+  <!-- pallet-bme mint band with oracle feedback -->
+  <div class="mt-6 grid gap-3 md:grid-cols-[1fr_auto_18rem] md:items-center">
+    <div
+      class="rounded-md border border-crust-700 border-l-2 border-l-magma-500 bg-crust-900/70 px-4 py-3"
+    >
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+        08 · mint
+      </p>
+      <p class="mt-1 text-sm font-semibold text-crust-100">
+        pallet-bme · mint = bounded()
+      </p>
+      <p class="mt-1 text-xs leading-relaxed text-crust-400">
+        mint = MIN(cap_year_N, rolling_burn_90d × elasticity, ceiling_5 %_supply);
+        clamped above floor_0.5 %_supply.
+      </p>
+    </div>
+
+    <div
+      class="hidden text-crust-600 md:block"
+      aria-hidden="true"
+      role="presentation"
+    >
+      <svg
+        viewBox="0 0 48 16"
+        class="h-4 w-12"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="46" y1="8" x2="4" y2="8" stroke-dasharray="4 4" />
+        <path d="M8 3l-5 5 5 5" />
+      </svg>
+    </div>
+
+    <aside
+      class="rounded-md border border-crust-700 bg-crust-900/60 px-4 py-3"
+      aria-label="Oracle spot price feedback"
+    >
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-magma-400">
+        Oracle spot
+      </p>
+      <p class="mt-1 text-sm font-semibold text-crust-100">
+        TWAP — 30 min, 5 min cadence
+      </p>
+      <p class="mt-1 text-xs leading-relaxed text-crust-400">
+        Quotes the mint at finalisation. Burn at step 03 and mint here use
+        different quotes — net burn when OROG appreciates.
+      </p>
+    </aside>
+  </div>
+
+  <!-- 4-way split + auto-swap arm -->
+  <div class="mt-8">
+    <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+      09 · split · 75 / 15 / 5 / 5
+    </p>
+    <div
+      class="mt-3 flex h-10 w-full overflow-hidden rounded-sm ring-1 ring-crust-800"
+      role="img"
+      aria-label="Stacked emission bar"
+    >
+      {
+        splits.map((s, i) => (
+          <div
+            style={`width: ${s.pct}%`}
+            class={`flex items-center justify-center font-mono text-xs font-semibold tabular-nums ${s.tone} ${
+              i > 0 ? "border-l border-crust-950/40" : ""
+            }`}
+          >
+            {s.pct}%
+          </div>
+        ))
+      }
+    </div>
+
+    <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+      {
+        splits.map((s) => (
+          <div class="flex items-start gap-3">
+            <span
+              class={`mt-1.5 inline-block h-2.5 w-2.5 shrink-0 rounded-sm ${s.chip}`}
+              aria-hidden="true"
+            />
+            <div class="min-w-0">
+              <dt class="flex items-baseline gap-2">
+                <span class="text-sm font-medium text-crust-100">{s.label}</span>
+                <span class="font-mono text-xs tabular-nums text-magma-300">
+                  {s.pct}%
+                </span>
+              </dt>
+              <dd class="mt-0.5 text-xs leading-relaxed text-crust-400">
+                {s.detail}
+              </dd>
+            </div>
+          </div>
+        ))
+      }
+    </dl>
+
+    <!-- USD-out tail -->
+    <div
+      class="mt-6 rounded-md border border-crust-800 border-l-2 border-l-crystal-500 bg-crust-900/60 px-4 py-3"
+    >
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+        10 · USD out
+      </p>
+      <p class="mt-1 text-sm font-semibold text-crust-100">
+        Operator wallet · USDC
+      </p>
+      <p class="mt-1 text-xs leading-relaxed text-crust-400">
+        Configurable auto-swap on operator share (default 70 %) routes through
+        the protocol-managed AMM, so operators are paid in USD-equivalent units
+        mechanically — not exposed to OROG price between job and payout.
+      </p>
+    </div>
+  </div>
+</figure>

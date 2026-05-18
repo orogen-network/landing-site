@@ -1,0 +1,231 @@
+---
+// BmeFlowOracle.astro — verification-stack rendering of the burn-and-mint loop,
+// with the TWAP oracle drawn as a side-attached price feed and the mint
+// formula spelled out as code. Replaces the ASCII-art block on
+// /how-it-works.
+
+interface Step {
+  eyebrow: string;
+  title: string;
+  body: string;
+  accent: "magma" | "magma-soft" | "crystal" | "crystal-soft" | "crust";
+}
+
+const steps: Step[] = [
+  {
+    eyebrow: "01",
+    title: "Customer → gateway",
+    body: "Top-up in USDC / USD / ETH / BTC. Oracle-quoted at receipt; payment recorded.",
+    accent: "crystal",
+  },
+  {
+    eyebrow: "02 · burn",
+    title: "Gateway burns OROG",
+    body: "OROG bought from protocol AMM or open market at oracle spot; pallet-bme retires the supply.",
+    accent: "magma",
+  },
+  {
+    eyebrow: "03",
+    title: "CUC mint (USD-pegged, 30d)",
+    body: "Non-transferable compute credit issued to the customer account, routable per job.",
+    accent: "crystal-soft",
+  },
+  {
+    eyebrow: "04 · execute",
+    title: "Router → operator (vLLM / SGLang / TRT-LLM)",
+    body: "Operator runs under TEE attestation with a deterministic kernel; signed receipt returned.",
+    accent: "magma-soft",
+  },
+  {
+    eyebrow: "05 · verify",
+    title: "Validator replay sampling (1–5 %)",
+    body: "Bit-identical re-execution on attested hardware. Mismatch → opML challenge window.",
+    accent: "crystal",
+  },
+  {
+    eyebrow: "06 · finalise",
+    title: "on_job_finalised fires",
+    body: "CUC is consumed (burned). Pallet-bme computes the bounded mint for this epoch.",
+    accent: "crust",
+  },
+  {
+    eyebrow: "07 · mint",
+    title: "Fresh OROG minted at oracle spot",
+    body: "Mint quantity passes the floor / ceiling envelope below, then splits four ways.",
+    accent: "magma",
+  },
+];
+
+const accentClasses: Record<Step["accent"], string> = {
+  magma: "border-l-magma-500",
+  "magma-soft": "border-l-magma-400",
+  crystal: "border-l-crystal-500",
+  "crystal-soft": "border-l-crystal-400",
+  crust: "border-l-crust-500",
+};
+
+const splits = [
+  { pct: 75, label: "Operator", tone: "bg-magma-500 text-crust-950" },
+  { pct: 15, label: "Validators", tone: "bg-crystal-500 text-crust-950" },
+  { pct: 5, label: "Treasury", tone: "bg-magma-400 text-crust-950" },
+  { pct: 5, label: "Governance", tone: "bg-crust-400 text-crust-950" },
+];
+---
+
+<figure
+  class="surface-card-strong"
+  aria-label="Burn-and-mint loop with TWAP oracle feed and pallet-enforced mint formula."
+>
+  <div class="flex items-baseline justify-between border-b border-crust-800 pb-3">
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+        BME loop · price-anchored
+      </p>
+      <h3 class="mt-1 text-lg font-semibold tracking-tight text-crust-100">
+        Oracle feed → burn → execute → verify → bounded mint
+      </h3>
+    </div>
+    <p class="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500 sm:block">
+      pallet-bme · pallet-oracle
+    </p>
+  </div>
+
+  <!-- TWAP oracle band — drawn as a side bar that visually feeds the column -->
+  <div class="mt-6 grid gap-4 lg:grid-cols-[18rem_1fr]">
+    <aside
+      class="relative h-fit rounded-md border border-crust-700 bg-crust-900/70 p-4"
+      aria-label="Price oracle source"
+    >
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-magma-400">
+        Price feed
+      </p>
+      <p class="mt-1 text-sm font-semibold text-crust-100">
+        TWAP oracle (30 min · 5 min updates)
+      </p>
+      <ul class="mt-3 space-y-1 font-mono text-[11px] text-crust-300">
+        <li>OROG / USDC</li>
+        <li>OROG / ETH</li>
+        <li class="text-crust-400">CEX top-2 · AMM · Uni v4 hook</li>
+      </ul>
+      <!-- price-feed dashed arrow into the column (visual only) -->
+      <svg
+        viewBox="0 0 120 24"
+        class="absolute right-0 top-1/2 hidden h-6 w-[6rem] -translate-y-1/2 translate-x-full text-magma-500 lg:block"
+        aria-hidden="true"
+      >
+        <line
+          x1="0"
+          y1="12"
+          x2="108"
+          y2="12"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-dasharray="4 4"
+        />
+        <path
+          d="M104 6l8 6-8 6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <p class="mt-3 text-[11px] leading-relaxed text-crust-400">
+        Drives <span class="text-magma-300">burn</span> at step 02 and
+        <span class="text-magma-300">mint</span> at step 07. Steps execute at
+        different quotes — net burn occurs when OROG appreciates.
+      </p>
+    </aside>
+
+    <ol class="space-y-0">
+      {
+        steps.map((s, i) => (
+          <li class="relative">
+            <div
+              class={`rounded-md border border-crust-800 border-l-2 bg-crust-900/60 px-4 py-3 ${accentClasses[s.accent]}`}
+            >
+              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+                {s.eyebrow}
+              </p>
+              <p class="mt-1 text-sm font-semibold text-crust-100">
+                {s.title}
+              </p>
+              <p class="mt-1 text-xs leading-relaxed text-crust-400">
+                {s.body}
+              </p>
+            </div>
+            {i < steps.length - 1 && (
+              <div
+                class="flex justify-center py-2 text-crust-600"
+                aria-hidden="true"
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M8 3v9m0 0l-4-4m4 4l4-4" />
+                </svg>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <!-- Mint formula -->
+  <div class="mt-8 rounded-md border border-crust-800 bg-crust-950 px-4 py-4">
+    <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+      Pallet rule · epoch (~72 min)
+    </p>
+    <pre class="mt-2 overflow-x-auto font-mono text-xs leading-relaxed text-crust-200"><code>mint = MIN( cap_year_N,
+            rolling_burn_90d &times; elasticity,
+            ceiling_5pct_supply )
+mint = MAX( mint, floor_0_5pct_supply )</code></pre>
+    <p class="mt-2 text-xs leading-relaxed text-crust-400">
+      The chain rejects any mint above the computed bound, including any
+      foundation-side attempt to override. Elasticity is governance-bounded to
+      <code class="rounded bg-crust-800/80 px-1 py-0.5 text-magma-300">[0.8, 1.5]</code>.
+    </p>
+  </div>
+
+  <!-- 4-way split -->
+  <div class="mt-8">
+    <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+      Emission split · 75 / 15 / 5 / 5
+    </p>
+    <div
+      class="mt-3 flex h-10 w-full overflow-hidden rounded-sm ring-1 ring-crust-800"
+      role="img"
+      aria-label="Stacked emission bar"
+    >
+      {
+        splits.map((s, i) => (
+          <div
+            style={`width: ${s.pct}%`}
+            class={`flex items-center justify-center font-mono text-xs font-semibold tabular-nums ${s.tone} ${
+              i > 0 ? "border-l border-crust-950/40" : ""
+            }`}
+          >
+            {s.pct}%
+          </div>
+        ))
+      }
+    </div>
+    <div
+      class="mt-2 grid grid-cols-4 gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-crust-400"
+    >
+      {
+        splits.map((s) => (
+          <p class="truncate">{s.label}</p>
+        ))
+      }
+    </div>
+  </div>
+</figure>
