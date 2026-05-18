@@ -1,0 +1,220 @@
+---
+import Base from "../layouts/Base.astro";
+import CtaButton from "../components/CtaButton.astro";
+
+type Audience = "customers" | "operators" | "validators" | "holders" | "general";
+
+interface QA {
+  q: string;
+  a: string;
+  aud: Audience;
+}
+
+const audienceLabel: Record<Audience, string> = {
+  customers: "Customers",
+  operators: "Operators",
+  validators: "Validators",
+  holders: "Token holders",
+  general: "General",
+};
+
+const audienceClass: Record<Audience, string> = {
+  customers: "border-magma-500/40 bg-magma-500/10 text-magma-300",
+  operators: "border-crystal-500/40 bg-crystal-500/10 text-crystal-400",
+  validators: "border-crystal-600/50 bg-crystal-600/10 text-crystal-500",
+  holders: "border-magma-400/40 bg-magma-400/10 text-magma-300",
+  general: "border-crust-600 bg-crust-800/80 text-crust-300",
+};
+
+const qas: QA[] = [
+  // ---- General / positioning ----
+  {
+    aud: "general",
+    q: "How is Orogen different from Bittensor?",
+    a: "Bittensor is a marketplace of subnets where each subnet defines its own scoring rubric; the work being rewarded is whatever the subnet owner says it is, mediated by validator preferences and dTAO alpha-token AMM dynamics. Orogen is one network, one token, one product (verifiable LLM inference + LoRA + later RL). Rewards are tied to physical replay of inference jobs, not to subnet-defined evaluator scores. We do not have subnet owners; we do not have alpha tokens; emission share is allocated by on-chain revenue measurement, not by stake-AMM pricing.",
+  },
+  {
+    aud: "general",
+    q: "How is Orogen different from io.net, Render, or Akash?",
+    a: "io.net, Render, and Akash are GPU leasing markets. The customer rents a box and operates it; the network coordinates supply and pricing but does not verify what runs. Orogen is a verifiable inference network: the protocol owns the model registry, the verification stack, and the receipt flow. The customer never has to trust the operator — every response carries a chain-anchored receipt. Akash's post-BME loop is the economic pattern we adopt; we add the verification stack Akash deliberately leaves out.",
+  },
+  {
+    aud: "general",
+    q: "How is Orogen different from Aethir or Pearl?",
+    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider rewards are paid from per-job emission and from the BME loop — both gated on real customer demand. On Orogen Forge, testnet OROG is earned by serving real jobs against a real verification stack; mainnet TGE follows only after $1M ARR is sustained on the centralised gateway and the multi-firm audit is clean, so the loop ships with measurable burn from Day 1.",
+  },
+  {
+    aud: "general",
+    q: "What's the relationship to LibertAI / Pearl?",
+    a: "LibertAI and Pearl are the closest neighbours in the design space. Pearl in particular pioneered the vLLM-plugin pattern for TEE-attested inference that Orogen workers reuse. The economic differentiation is the BME loop and the validator replay sampling layer; Pearl currently operates without burn-rate-anchored emission and without replay-anchored verification. The foundation maintains active integration tracks for both projects so customers can route across networks via LiteLLM where their requirements differ.",
+  },
+  {
+    aud: "general",
+    q: "Why a new L1 instead of an L2 on Ethereum?",
+    a: "Two reasons. First, the BME engine requires near-realtime oracle feeds and pallet-level mint enforcement; an Ethereum L2 puts the BME logic in a smart contract with worse latency and worse upgrade ergonomics. Second, the validator replay sampling and opML challenge games benefit from native Substrate weight scheduling and a custom slashing pallet. We bridge to Ethereum via Snowbridge (or equivalent) for token transfer and gateway settlement; the inference work itself stays on the L1.",
+  },
+  {
+    aud: "general",
+    q: "When does mainnet TGE follow Forge?",
+    a: "Forge testnet is live now and carries real customer traffic, real operator registrations, and real validator replay. Mainnet TGE follows the multi-firm chain audit and is conditional on the published phase gates: $1M/yr revenue sustained for 90 days, AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
+  },
+
+  // ---- Customers ----
+  {
+    aud: "customers",
+    q: "Will my data be private?",
+    a: "Customer prompts and responses are processed inside the operator's TEE (NVTrust H100/H200/B200 CC + Intel TDX or AMD SEV-SNP). The plaintext is not accessible to the operator's host OS, the cloud provider, or the foundation. Side-channel attacks on TEEs are a known risk class — fault injection, cache timing, and rowhammer-style attacks are tracked in the public verifiability RFCs. The protocol's posture: multi-vendor TEE, regular re-attestation, and public disclosure of any successful side-channel attack within 30 days. We do not claim 'HIPAA-compliant' or equivalent regulatory certifications; specific compliance tiers are scoped per-customer.",
+  },
+  {
+    aud: "customers",
+    q: "How much does it cost vs OpenAI / Anthropic?",
+    a: "Base posture is ~$0.40 per 1M output tokens for Llama-3.1-70B FP8 at the dc-standard tier (0.6× base multiplier). dc-premium runs at 1.0× base for frontier MoE on B200/H200. Edge and embed-only tiers run 0.10–0.15× base. By comparison, GPT-4o-class output tokens sit around $10–15 per 1M; Claude Sonnet-class similar. Orogen is positioned for the open-model 7B–70B band, not for closed frontier models — your value comes from a lower price floor, a tier you can pick, and a receipt you can verify.",
+  },
+  {
+    aud: "customers",
+    q: "How do I verify a receipt independently?",
+    a: "Every response carries a receipt object containing (model_hash, adapter_hash, prompt_hash, output_hash, operator_hotkey, attestation_quote, timestamp, nonce, signature). The Python and TypeScript SDKs ship a `receipt.verify()` helper that checks (a) the operator signature against the on-chain hotkey, (b) the attestation chain against NVTrust + Intel TA / AMD KDS root certificates, and (c) the (model, adapter) Merkle roots against pallet-model-registry. You can also drop the receipt into the attestation explorer at attestation.orogen.network and verify in the browser.",
+  },
+  {
+    aud: "customers",
+    q: "How does Orogen handle weight updates and adapter propagation?",
+    a: "Base models and LoRA adapters are content-addressed (Merkle root over the tensor files). Roots are pinned on-chain via pallet-model-registry; the bits live on a multi-mirror CDN (S3 + R2 + IPFS + optional Filecoin). Operators subscribe to register_adapter events and auto-pull when an adapter targets a base model they serve. The propagation SLO is: a new adapter dropped at noon must be servable by N operators by 12:05. Adapter authors set a royalty in basis points; royalty flows back to the author from each job that uses the adapter.",
+  },
+  {
+    aud: "customers",
+    q: "What about KV cache sharing across operators?",
+    a: "Cross-operator KV sharing is not solved in v1 (we deliberately punt — see RFC-0011). Within a single operator, KV is hot via vLLM V1 prefix cache + LMCache + PD-disaggregation. Across operators, we use (a) session pinning (session_id → operator_id) for multi-turn conversations and (b) Bloom-filter prefix hints in heartbeats as a soft routing signal. Accepting re-prefill on short prompts (~50–80ms at 4K on H100) is cheaper than the engineering cost of cross-operator KV state sharing. A MoonCake-style shared KV-cache object store is a v2/v3 direction.",
+  },
+
+  // ---- Operators ----
+  {
+    aud: "operators",
+    q: "What happens if my GPU goes offline?",
+    a: "Your operator record stops emitting heartbeats. After ~3 missed heartbeats (~3 minutes), the router stops routing new traffic to you. After 24 hours of continuous downtime, your reputation decays and tier is reviewed. Stake is not slashed for offline events alone — only for fraud (coldkey duplication, fraudulent attestation, signed-receipt forgery) and for sampling mismatches above the soft-fault threshold. Stake unlocks 14 days after deregistration, gated by absence of open challenges.",
+  },
+  {
+    aud: "operators",
+    q: "Can I run on consumer hardware?",
+    a: "Yes, via the edge tier (Mac Studio Ultra, dual 3090, prosumer 4090/5090) and the embed-only tier (CPU AVX-512, Apple M-series). Edge and embed-only are stake-only verification — you accept lower pricing and the customer accepts a weaker verification posture. The prosumer tier (1–2× RTX 5090 / PRO 6000) requires deterministic-kernel mode and L4 replay sampling at 10%+. Apple Silicon TEE is not currently supported (no NVTrust equivalent in 2026).",
+  },
+  {
+    aud: "operators",
+    q: "What does a single H100 SXM earn per day?",
+    a: "Reference numbers from live Forge operators: at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), gross customer revenue is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost. Net margin against a current mid-tier cloud H100 cost of ~$48/day is ~$87/day. Full assumption stack on the operators page. Not a forecast.",
+  },
+  {
+    aud: "operators",
+    q: "How is the operator paid in USD, not in volatile OROG?",
+    a: "The chain mints OROG to the operator at oracle spot when the job finalises. The operator hotkey is configured with an `auto_swap_pct` parameter (default 70%) that immediately routes that fraction to USDC through the protocol-managed AMM. The net effect: the operator receives USD-equivalent units mechanically, and only the configurable residual remains exposed to OROG price. The customer pays in USDC at the gateway; the BME loop is the only conduit between those two USD flows.",
+  },
+
+  // ---- Validators ----
+  {
+    aud: "validators",
+    q: "Is the network secure? What protects against a malicious operator?",
+    a: "Eight layers (L1–L8) of the verification stack, each composable: stake-and-identity (L1), multi-vendor TEE attestation (L2), deterministic kernels (L3), validator replay sampling (L4), opML challenge windows (L5), zkML option (L6), content-addressed model commitment (L7), and signed customer receipts (L8). On the protocol side: multi-firm chain audits before mainnet, multi-vendor TEE substrate (NVTrust + Intel TDX + AMD SEV-SNP) at launch, foundation-and-DAO-run dispute panel for L5 arbitration, on-chain audit trail for every slashing event.",
+  },
+  {
+    aud: "validators",
+    q: "What's the validator-watcher distinction?",
+    a: "Validators are permissionless, stake-bonded, and paid from the verification slice for replays performed. Validator-watchers are a smaller, foundation-and-DAO-operated set that runs the opML bisection game and serves the dispute panel. Watchers bond more (50,000 OROG at-launch) and rotate by governance. The separation prevents validators from being judge-and-jury over each other. The watcher set opens to permissionless entry on the post-mainnet roadmap (see /roadmap), with a 6-month observation period before earning the full reward slice. Full details on /validators.",
+  },
+  {
+    aud: "validators",
+    q: "How is replay bit-exact across machines?",
+    a: "Two prerequisites: (a) the operator runs in deterministic-kernel mode (SGLang determinism mode or Thinking Machines batch-invariant kernels — mandatory for dc-premium, dc-standard, cloud-rented, prosumer), and (b) the validator runs the same base model and adapter at the same numeric precision on equivalent hardware. The kernels fix the reduction order and the tile scheduler. Throughput cost is ~3–8% versus stock FP8 on H100 (Llama-3.1-70B; numbers in docs). On edge / embed-only tiers determinism is not achievable; those tiers fall back to stake-only verification.",
+  },
+  {
+    aud: "validators",
+    q: "What is a 'useful_nonce'? (RFC-0007)",
+    a: "useful_nonce is a per-job random value, generated by the gateway at job assignment, embedded into the operator's signed response receipt, and committed to the chain. It binds the receipt to a specific job + customer + epoch — preventing an operator from re-signing a stale receipt or a different operator from substituting a known-good response from a prior job. The 'useful' prefix is a historical artifact from when the working name for OROG was USEFUL; the field name is preserved across the rename. Full specification in RFC-0007.",
+  },
+
+  // ---- Token holders / governance ----
+  {
+    aud: "holders",
+    q: "Is OROG an investment?",
+    a: "No. OROG is a work token. The four uses are (a) gateway burn at customer top-up, (b) operator stake, (c) validator stake, (d) governance. The protocol does not advertise, encourage, or accommodate purchase of OROG for the purpose of holding it for price appreciation. There is no staker-for-yield class, no foundation buyback program, no halving narrative. We deliberately do not use the words 'APY' or 'earn' or 'yield' on this site. See /legal for the regulatory framing.",
+  },
+  {
+    aud: "holders",
+    q: "Why no marketing of token yield or 'earn rewards'?",
+    a: "Two reasons. Regulatory: marketing a token as a yield-bearing investment is the fastest path to a Howey-test failure in the US. We avoid the language across all surfaces. Substantive: the token is paid for productive work, not for holding. Marketing it as yield would falsely suggest that capital alone earns; it does not. Capital plus replay work earns. Capital plus operator work earns. Capital alone is unproductive on Orogen.",
+  },
+  {
+    aud: "holders",
+    q: "What's the subsidy ratio target?",
+    a: "Less than 2× in Year 1 (post-TGE), less than 1.2× in Year 2, less than 1× in Year 3 and beyond. The subsidy ratio is (USD-equivalent OROG minted) ÷ (USD revenue burned). A ratio < 1 means the network is net deflationary — the burn from customer top-ups exceeds the mint to operators. Year 3+ the pallet enforces mint ≤ rolling-90d burn × elasticity factor, so the ratio is structurally bounded.",
+  },
+  {
+    aud: "holders",
+    q: "What is the genesis allocation?",
+    a: "100% of genesis supply splits eight ways: 40% mining emissions (provider rewards, vested by milestone), 12% investors (36-month vest, 12-month cliff), 12% team (same), 10% treasury (foundation-managed, audit + security + integrations), 8% ecosystem grants (milestone-gated), 8% provider bootstrap (subsidy budget for Year-1 onboarding), 5% public sale (TGE unlock), 5% reserve (governance-gated, 30-day timelock to unlock). See the tokenomics page for the donut and the vesting summary.",
+  },
+
+  // ---- Security & ops ----
+  {
+    aud: "general",
+    q: "Where can I report a security issue?",
+    a: "Email security@orogen.network for coordinated disclosure. The foundation runs a public bug-bounty program for the Forge testnet; critical attestation, slashing-pallet, and gateway-burn issues are eligible for an emergency reward path. Findings reported during Forge are eligible for retroactive uplift at mainnet TGE. Do not file security issues in GitHub Issues.",
+  },
+];
+---
+
+<Base
+  title="FAQ"
+  description="Frequently asked questions about Orogen — how the network differs from Bittensor / io.net / Render / Aethir / Pearl, what happens on operator downtime, how the verification stack works, TGE timing, hardware tiers, privacy posture, and OROG token utility."
+  path="/faq"
+>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">FAQ</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Questions, answered substantively.</h1>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Distilled from red-team reviews and the open-problem catalog tracked in
+      the public RFC repo. Tagged by audience — jump to the one you are.
+    </p>
+
+    <ul class="mt-6 flex flex-wrap gap-2 text-xs">
+      <li><a href="#aud-customers" class="rounded-md border border-magma-500/40 bg-magma-500/10 px-2.5 py-1 font-mono uppercase tracking-wider text-magma-300 no-underline">Customers</a></li>
+      <li><a href="#aud-operators" class="rounded-md border border-crystal-500/40 bg-crystal-500/10 px-2.5 py-1 font-mono uppercase tracking-wider text-crystal-400 no-underline">Operators</a></li>
+      <li><a href="#aud-validators" class="rounded-md border border-crystal-600/50 bg-crystal-600/10 px-2.5 py-1 font-mono uppercase tracking-wider text-crystal-500 no-underline">Validators</a></li>
+      <li><a href="#aud-holders" class="rounded-md border border-magma-400/40 bg-magma-400/10 px-2.5 py-1 font-mono uppercase tracking-wider text-magma-300 no-underline">Token holders</a></li>
+      <li><a href="#aud-general" class="rounded-md border border-crust-600 bg-crust-800/80 px-2.5 py-1 font-mono uppercase tracking-wider text-crust-300 no-underline">General</a></li>
+    </ul>
+  </section>
+
+  <section class="container-page pb-20">
+    <ol class="space-y-4">
+      {
+        qas.map((qa, idx) => (
+          <li id={`aud-${qa.aud}`} class="surface-card scroll-mt-24">
+            <details class="group">
+              <summary class="cursor-pointer list-none">
+                <div class="flex items-start gap-3">
+                  <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-xs text-magma-300">
+                    {idx + 1}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <span class={`mb-1 inline-block rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] ${audienceClass[qa.aud]}`}>
+                      {audienceLabel[qa.aud]}
+                    </span>
+                    <h2 class="text-base font-semibold text-crust-100 group-open:text-magma-300">
+                      {qa.q}
+                    </h2>
+                  </div>
+                </div>
+              </summary>
+              <p class="mt-3 pl-9 text-sm leading-relaxed text-crust-300">{qa.a}</p>
+            </details>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-12 flex flex-wrap gap-3">
+      <CtaButton href="/how-it-works" variant="primary">How it works</CtaButton>
+      <CtaButton href="https://docs.orogen.network" variant="secondary" rel="noopener noreferrer">Full RFC catalogue</CtaButton>
+      <CtaButton href="mailto:hello@orogen.network" variant="ghost">Email the team</CtaButton>
+    </div>
+  </section>
+</Base>

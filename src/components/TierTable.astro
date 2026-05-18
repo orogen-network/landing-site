@@ -1,0 +1,113 @@
+---
+export interface Props {
+  /** Variant changes which columns are shown. */
+  variant?: "full" | "ops" | "customer" | "tokenomics";
+  caption?: string;
+}
+
+const { variant = "full", caption } = Astro.props;
+
+interface Tier {
+  id: string;
+  hardware: string;
+  verification: string;
+  models: string;
+  pricing: string;
+  stake: string;
+  use: string;
+}
+
+const tiers: Tier[] = [
+  {
+    id: "dc-premium",
+    hardware: "8× B200 / 8× H200 / NVL72",
+    verification: "L1+L2+L3+L4 (1–5% sampled)",
+    models: "DeepSeek-V3 671B, Llama-4-MoE, frontier MoE",
+    pricing: "1.0× base",
+    stake: "500 OROG",
+    use: "Enterprise frontier-tier, premium latency SLA",
+  },
+  {
+    id: "dc-standard",
+    hardware: "8× H100 SXM",
+    verification: "L1+L2+L3+L4 (1–5% sampled)",
+    models: "30–70B dense, Mixtral, large MoE",
+    pricing: "0.6× base",
+    stake: "100 OROG",
+    use: "Mainstream production inference",
+  },
+  {
+    id: "cloud-rented",
+    hardware: "1–2× H100 PCIe / H200",
+    verification: "L1+L2+L3+L4 (5–10% sampled)",
+    models: "7–30B dense",
+    pricing: "0.4× base",
+    stake: "50 OROG",
+    use: "Spot capacity, secondary regions",
+  },
+  {
+    id: "prosumer",
+    hardware: "1–2× RTX 5090 / PRO 6000",
+    verification: "L1 stake; L3 best-effort; L4 (10%+ sampled)",
+    models: "7–14B quantized",
+    pricing: "0.25× base",
+    stake: "25 OROG",
+    use: "Lower-tier, hobbyist-friendly",
+  },
+  {
+    id: "edge",
+    hardware: "Mac Studio Ultra, dual 3090",
+    verification: "Stake-only",
+    models: "≤ 32B single-user",
+    pricing: "0.15× base",
+    stake: "0 OROG (deposit only)",
+    use: "Private single-tenant inference",
+  },
+  {
+    id: "embed-only",
+    hardware: "CPU AVX-512, Apple M-series",
+    verification: "Stake-only, optional L6 zkML",
+    models: "Embeddings, re-ranking, classification",
+    pricing: "0.10× base",
+    stake: "0 OROG (deposit only)",
+    use: "Cheap embedding + classification flows",
+  },
+];
+---
+
+<div class="overflow-x-auto rounded-lg border border-crust-800">
+  <table class="prose-table">
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead class="bg-crust-900/70">
+      <tr>
+        <th>Tier</th>
+        <th>Hardware floor</th>
+        {variant !== "customer" && <th>Verification</th>}
+        <th>Typical models</th>
+        {(variant === "customer" || variant === "tokenomics") && <th>Pricing</th>}
+        {(variant === "ops" || variant === "full" || variant === "tokenomics") && <th>Min stake</th>}
+        <th>Use case</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        tiers.map((t) => (
+          <tr>
+            <td class="font-mono text-magma-300">{t.id}</td>
+            <td>{t.hardware}</td>
+            {variant !== "customer" && <td>{t.verification}</td>}
+            <td>{t.models}</td>
+            {(variant === "customer" || variant === "tokenomics") && <td>{t.pricing}</td>}
+            {(variant === "ops" || variant === "full" || variant === "tokenomics") && <td>{t.stake}</td>}
+            <td>{t.use}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+<p class="mt-3 text-xs text-crust-500">
+  Stake floors are at-launch parameters; governance can adjust ±20% per epoch
+  with timelock. Verification layers are described in
+  <a class="underline" href="/how-it-works">How it works</a>.
+</p>

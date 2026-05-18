@@ -1,0 +1,397 @@
+---
+import Base from "../layouts/Base.astro";
+import TierTable from "../components/TierTable.astro";
+import CtaButton from "../components/CtaButton.astro";
+import EmissionSplit from "../components/EmissionSplit.astro";
+import BmeEnvelope from "../components/BmeEnvelope.astro";
+
+interface Allocation {
+  label: string;
+  pct: number;
+  swatch: string; // Tailwind bg-* utility, palette-bound
+  hex: string;    // matches the swatch — only used as the SVG stroke attribute
+}
+
+const allocations: Allocation[] = [
+  { label: "Mining emissions (provider rewards)", pct: 40, swatch: "bg-magma-500", hex: "#f59e0b" },
+  { label: "Investors", pct: 12, swatch: "bg-magma-400", hex: "#fbbf24" },
+  { label: "Team", pct: 12, swatch: "bg-magma-300", hex: "#fcd34d" },
+  { label: "Treasury", pct: 10, swatch: "bg-crystal-500", hex: "#34d399" },
+  { label: "Ecosystem grants", pct: 8, swatch: "bg-crystal-400", hex: "#6ee7b7" },
+  { label: "Provider bootstrap", pct: 8, swatch: "bg-crystal-600", hex: "#10b981" },
+  { label: "Public sale", pct: 5, swatch: "bg-crust-400", hex: "#7c8597" },
+  { label: "Reserve", pct: 5, swatch: "bg-crust-500", hex: "#4f5b6e" },
+];
+
+// Donut chart built from SVG stroke-dasharray segments (no inline conic-gradient).
+const DONUT_R = 80;
+const DONUT_CX = 110;
+const DONUT_CY = 110;
+const DONUT_STROKE = 26;
+const circumference = 2 * Math.PI * DONUT_R;
+let donutOffset = 0;
+const donutSegments = allocations.map((a) => {
+  const length = (a.pct / 100) * circumference;
+  const seg = {
+    ...a,
+    dashArray: `${length} ${circumference - length}`,
+    dashOffset: -donutOffset,
+  };
+  donutOffset += length;
+  return seg;
+});
+
+const emissionPhases = [
+  { phase: "Year 0 → Y1 TGE", rule: "Centralised stack; no token live; bootstrap revenue.", cap: "—" },
+  { phase: "Year 1 (TGE → +12m)", rule: "Hard mint cap 8% of supply / year. Subsidising operator onboarding.", cap: "8% / yr" },
+  { phase: "Year 2", rule: "Hard cap declines linearly to 4% of supply / year.", cap: "4% / yr by Y2-end" },
+  { phase: "Year 3+", rule: "Pallet rule: mint ≤ rolling-90d burn × elasticity (governance ∈ [0.8, 1.5]).", cap: "Hard ceiling 5% / yr; floor 0.5% / yr" },
+];
+
+const subsidyTargets = [
+  { y: "Year 1 (post-TGE)", target: "< 2× subsidy ratio (mint $ / real revenue $)", rationale: "Bootstrap onboarding budget; operators paid above pure revenue share." },
+  { y: "Year 2", target: "< 1.2× subsidy ratio", rationale: "Network approaches self-funded equilibrium." },
+  { y: "Year 3+", target: "< 1.0× subsidy ratio (net deflationary when demand runs hot)", rationale: "Pallet enforces mint ≤ rolling-90d burn × elasticity. Akash post-BME pattern." },
+];
+---
+
+<Base
+  title="Tokenomics"
+  description="OROG is the work token of the Orogen network. Burn-and-mint engine, demand-elastic emission with hard floor and ceiling, 40% emissions / 12% investors / 12% team / 10% treasury / 8% ecosystem / 8% provider bootstrap / 5% public / 5% reserve at TGE."
+  path="/tokenomics"
+>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Tokenomics</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">OROG is a work token, not an investment vehicle.</h1>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Every unit of OROG is minted in response to a finalised inference job and
+      burned in response to a customer top-up. The chain enforces the rule; the
+      foundation has no discretionary mint authority. This page covers
+      utility, the burn-and-mint loop, emission policy, allocation at TGE, and
+      the subsidy targets the protocol commits to.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Utility</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Four uses, all productive.</h2>
+
+      <div class="mt-8 grid gap-5 sm:grid-cols-2">
+        <div class="surface-card">
+          <h3 class="text-lg font-semibold">Gateway burn at top-up</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">
+            Customer pays USDC/USD/ETH/BTC; the gateway buys OROG from the protocol-managed AMM at oracle spot and burns it. The customer receives non-transferable USD-pegged CUC credits (30-day expiry). This is the only legitimate path into the network. No skip-the-token backdoor.
+          </p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-lg font-semibold">Operator stake</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">
+            Operators bond OROG to participate. Tier-dependent: 500 OROG dc-premium → 25 OROG prosumer. Slashable for sampling mismatches, fraudulent attestation, or coldkey duplication. Stake is not yield-bearing on its own.
+          </p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-lg font-semibold">Validator stake</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">
+            Validators bond 10× the operator-min stake for the tier they sample. Earns a share of the 15% verification slice proportional to (replays performed) × (consensus alignment). No yield for passive holding.
+          </p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-lg font-semibold">Governance</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">
+            Parameter changes (elasticity factor, sampling rate, ceiling/floor, slashing schedule) are governed by stake-weighted vote with a 14-day timelock. No one-time discretionary mint is possible — the chain rejects mints above the pallet-computed cap.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Per-job reward split</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">75 / 15 / 5 / 5.</h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      Every per-job emission — sized by the pallet rule below — splits four
+      ways. The slice for governance only flows if governance retains a real
+      security function (slashing arbitration, parameter review). Otherwise it
+      rolls into the verification slice.
+    </p>
+
+    <div class="mt-8">
+      <EmissionSplit />
+    </div>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Emission envelope</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Bounded above and below, pallet-enforced.</h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        The chain rejects any mint above
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">MIN(year_N_cap, rolling_90d_burn × elasticity, 5% supply/yr)</code>
+        and clamps below by a
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-crystal-400">0.5% supply/yr</code> floor.
+        Synthetic envelope below illustrates how the rule binds across a 36-month run from TGE.
+      </p>
+
+      <div class="mt-8">
+        <BmeEnvelope />
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Burn-and-mint engine</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">The loop, with $-flows.</h2>
+
+    <div class="mt-8 overflow-x-auto rounded-md border border-crust-800 bg-crust-950 p-5">
+<pre class="font-mono text-xs leading-snug text-crust-200">
+  ┌──────────┐    USDC/USD/ETH    ┌─────────────┐    buy + burn OROG    ┌─────────────┐
+  │ Customer │────────────────────▶│  Gateway   │──────────────────────▶│ pallet-bme  │
+  └──────────┘                     │  (LiteLLM)  │                       │ (burn)      │
+                                   └──────┬──────┘                       └──────┬──────┘
+                                          │ CUC mint (USD-pegged)               │
+                                          ▼                                     │
+                                  ┌────────────────┐                            │
+                                  │  Customer CUC  │                            │
+                                  │  30-day expiry │                            │
+                                  └────────┬───────┘                            │
+                                           │ job submitted                      │
+                                           ▼                                    │
+                                  ┌────────────────────┐                        │
+                                  │ Operator (vLLM /   │                        │
+                                  │  SGLang / TRT-LLM) │                        │
+                                  └────────┬───────────┘                        │
+                                           │ signed receipt                     │
+                                           ▼                                    │
+                                  ┌────────────────────┐                        │
+                                  │ Validators replay  │                        │
+                                  │  1–5% of receipts  │                        │
+                                  └────────┬───────────┘                        │
+                                           │ on_job_finalised                   │
+                                           ▼                                    │
+                                  ┌────────────────────┐    mint OROG          ▼
+                                  │   pallet-bme       │◀──────────────  oracle spot
+                                  │  mint = bounded()  │                       │
+                                  └────────┬───────────┘                       │
+                                           │ 75% / 15% / 5% / 5%                │
+                            ┌──────────────┼────────────────┐                  │
+                            ▼              ▼                ▼                  ▼
+                         operator     validators        treasury           governance
+                            │
+                            ▼ default 70% auto-swap to USDC at protocol AMM
+                         provider wallet (USDC)
+</pre>
+    </div>
+
+    <p class="mt-6 max-w-3xl text-crust-300">
+      Key invariant. Steps "burn" and "mint" happen at <em>different</em> oracle
+      prices. If OROG appreciates between top-up and consumption, net burn
+      occurs and supply is permanently reduced (the Akash post-BME pattern). If
+      OROG depreciates, the protocol mints enough to honour the customer's
+      USD-quoted payment — still bounded by the emission cap below.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Emission policy</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Demand-elastic, with floor and ceiling.</h2>
+
+      <div class="mt-8 overflow-x-auto rounded-lg border border-crust-800">
+        <table class="prose-table">
+          <thead class="bg-crust-900/70">
+            <tr>
+              <th>Phase</th>
+              <th>Rule</th>
+              <th>Cap / bound</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              emissionPhases.map((e) => (
+                <tr>
+                  <td>{e.phase}</td>
+                  <td>{e.rule}</td>
+                  <td class="font-mono text-magma-300">{e.cap}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-6 max-w-3xl text-crust-300">
+        Per epoch (~72 minutes), the mint is the minimum of (a) the Year-N
+        bootstrap cap, (b) the rolling-90-day burn times the elasticity factor,
+        and (c) the 5%-of-supply hard ceiling — with a 0.5% floor for trough
+        resilience. The rule is pallet-enforced. The chain rejects mints above
+        the rule's output, including any attempted foundation override.
+      </p>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        What we explicitly do not do: no halving (utility-token demand is the
+        work being purchased, not a monetary thesis), no foundation buyback
+        program, no staker-for-yield class, no subnet alpha tokens or pool AMMs.
+        One token, one network.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Allocation at TGE</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">100% of genesis supply.</h2>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[18rem_1fr] lg:items-center">
+      <!-- Donut (SVG arc-segments — palette-locked, no inline conic-gradient) -->
+      <div class="flex justify-center">
+        <figure class="surface-card p-4" aria-label="Genesis allocation donut">
+          <svg
+            viewBox="0 0 220 220"
+            class="block h-56 w-56"
+            role="img"
+            aria-hidden="true"
+          >
+            <!-- track -->
+            <circle
+              cx={DONUT_CX}
+              cy={DONUT_CY}
+              r={DONUT_R}
+              fill="none"
+              stroke="#11141a"
+              stroke-width={DONUT_STROKE}
+            />
+            <!-- segments -->
+            <g transform={`rotate(-90 ${DONUT_CX} ${DONUT_CY})`}>
+              {
+                donutSegments.map((s) => (
+                  <circle
+                    cx={DONUT_CX}
+                    cy={DONUT_CY}
+                    r={DONUT_R}
+                    fill="none"
+                    stroke={s.hex}
+                    stroke-width={DONUT_STROKE}
+                    stroke-dasharray={s.dashArray}
+                    stroke-dashoffset={s.dashOffset}
+                  />
+                ))
+              }
+            </g>
+            <!-- center label -->
+            <text
+              x={DONUT_CX}
+              y={DONUT_CY - 4}
+              text-anchor="middle"
+              font-family="JetBrains Mono, ui-monospace, monospace"
+              font-size="10"
+              fill="#7c8597"
+              letter-spacing="0.15em"
+            >GENESIS</text>
+            <text
+              x={DONUT_CX}
+              y={DONUT_CY + 14}
+              text-anchor="middle"
+              font-family="Inter, ui-sans-serif, system-ui, sans-serif"
+              font-size="18"
+              font-weight="600"
+              fill="#e9ebef"
+            >100%</text>
+          </svg>
+          <figcaption class="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500">
+            8 buckets · sum = 100.0%
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Legend / table -->
+      <div class="overflow-x-auto rounded-lg border border-crust-800">
+        <table class="prose-table">
+          <thead class="bg-crust-900/70">
+            <tr>
+              <th></th>
+              <th>Bucket</th>
+              <th class="text-right">Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              allocations.map((a) => (
+                <tr>
+                  <td class="w-6">
+                    <span class={`inline-block h-3 w-3 rounded-sm ${a.swatch}`}></span>
+                  </td>
+                  <td>{a.label}</td>
+                  <td class="text-right font-mono tabular-nums text-magma-300">{a.pct}%</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="mt-6 max-w-3xl text-crust-300">
+      Vesting summary. Team and investor tranches vest over 36 months with a
+      12-month cliff. Ecosystem grants and provider bootstrap unlock per a
+      milestone-gated schedule managed by foundation governance with on-chain
+      attestations. Public-sale tranche unlocks at TGE. Reserve is a long-tail
+      buffer for adverse events; unlocking requires a supermajority governance
+      vote with a 30-day timelock.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Subsidy targets</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">From subsidised to self-funded.</h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        The subsidy ratio is (USD-equivalent OROG minted) ÷ (USD revenue
+        burned). A ratio &gt; 1 means the network is paying operators above what
+        customers contribute; a ratio &lt; 1 means net burn (deflationary). The
+        roadmap commits to these year-by-year targets:
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-lg border border-crust-800">
+        <table class="prose-table">
+          <thead class="bg-crust-900/70">
+            <tr>
+              <th>Phase</th>
+              <th>Target</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              subsidyTargets.map((s) => (
+                <tr>
+                  <td>{s.y}</td>
+                  <td class="font-mono text-magma-300">{s.target}</td>
+                  <td>{s.rationale}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Pricing tiers (informational)</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Per-tier pricing posture.</h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      Tier pricing as multiples of base ($0.40 / 1M output tokens for
+      Llama-3.1-70B FP8 at dc-standard). The base price is itself a smoothed
+      function of operator cost-of-service + verification overhead and is
+      updated by the gateway on a slow cadence.
+    </p>
+    <div class="mt-8">
+      <TierTable variant="tokenomics" />
+    </div>
+
+    <div class="mt-10 flex flex-wrap gap-3">
+      <CtaButton href="/roadmap" variant="primary">Roadmap and gates</CtaButton>
+      <CtaButton href="/operators" variant="secondary">Operator economics</CtaButton>
+      <CtaButton href="/legal" variant="ghost">Legal disclaimers</CtaButton>
+    </div>
+  </section>
+</Base>

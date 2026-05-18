@@ -1,0 +1,223 @@
+---
+import Base from "../layouts/Base.astro";
+import TierTable from "../components/TierTable.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import CtaButton from "../components/CtaButton.astro";
+
+const pythonExample = `# pip install orogen-sdk
+# Or use the OpenAI client directly — Orogen exposes /v1/chat/completions.
+from orogen import Orogen
+
+client = Orogen(api_key="og_live_...", base_url="https://api.orogen.network/v1")
+
+response = client.chat.completions.create(
+    model="llama-3.1-70b-instruct@my-finetune-v3",   # base@adapter syntax
+    messages=[{"role": "user", "content": "Summarise this contract clause..."}],
+    tier="dc-standard",      # dc-premium | dc-standard | cloud-rented | prosumer | edge | embed-only
+    max_tokens=512,
+)
+
+# Receipt verification (every response carries a chain-anchored receipt)
+ok = response.receipt.verify()
+assert ok, "operator signature or attestation chain failed to verify"
+
+print(response.choices[0].message.content)
+print(response.receipt.model_hash, response.receipt.adapter_hash)`;
+
+const typescriptExample = `// npm install @orogen/sdk
+import { Orogen } from "@orogen/sdk";
+
+const client = new Orogen({
+  apiKey: process.env.OROGEN_API_KEY,
+  baseURL: "https://api.orogen.network/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "llama-3.1-70b-instruct@my-finetune-v3",
+  messages: [{ role: "user", content: "Summarise this contract clause..." }],
+  tier: "dc-standard",
+  maxTokens: 512,
+});
+
+const ok = await response.receipt.verify();
+if (!ok) throw new Error("operator signature or attestation chain failed");
+
+console.log(response.choices[0].message.content);
+console.log(response.receipt.modelHash, response.receipt.adapterHash);`;
+
+const litellmExample = `# pip install 'litellm[orogen]' or 'litellm-orogen-provider'
+import litellm
+
+response = litellm.completion(
+    model="orogen/llama-3.1-70b-instruct@my-finetune-v3",
+    messages=[{"role": "user", "content": "Hello"}],
+    api_key="og_live_...",
+)`;
+
+const openaiCompat = `# Use the OpenAI SDK as-is — Orogen is a drop-in replacement
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="og_live_...",
+    base_url="https://api.orogen.network/v1",
+)
+
+response = client.chat.completions.create(
+    model="llama-3.1-70b-instruct",
+    messages=[{"role": "user", "content": "Hello"}],
+)`;
+
+const verifyReceipt = `# Verifying a receipt independently
+import json, hashlib
+from orogen.verify import verify_receipt
+
+receipt = response.receipt.to_dict()
+# Receipt fields: model_hash, adapter_hash, prompt_hash, output_hash,
+#                 operator_hotkey, attestation_quote, timestamp, nonce, sig
+ok = verify_receipt(
+    receipt,
+    chain_rpc="https://rpc.orogen.network",
+    # Optionally pin a known-good attestation chain
+    nvtrust_root_ca="/etc/orogen/nvtrust-roots.pem",
+)`;
+---
+
+<Base
+  title="Customers"
+  description="Orogen is a drop-in OpenAI-compatible inference network. Per-tier pricing, signed receipts, Python and TypeScript SDKs, LiteLLM provider, and chain-anchored audit trail."
+  path="/customers"
+>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">For customers</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+      Drop-in OpenAI compatibility. Receipt-grade verifiability.
+    </h1>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Point your existing OpenAI client at <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">https://api.orogen.network/v1</code>
+      and your code works unchanged. The difference shows up in two places: you
+      can pick a hardware tier per request, and every response comes back with a
+      receipt that you can verify locally against the chain.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Pricing</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Pay per tier. Pay per 1M tokens.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        Base price posture: <strong class="text-crust-100">~$0.40 per 1M output tokens</strong>
+        for Llama-3.1-70B FP8 at the dc-standard tier (0.6× base). The base price
+        is set by the gateway as a smoothed function of operator costs and
+        verification overhead; per-tier multipliers stack on top.
+      </p>
+
+      <div class="mt-8">
+        <TierTable variant="customer" />
+      </div>
+
+      <div class="mt-6 grid gap-5 lg:grid-cols-3">
+        <div class="surface-card">
+          <h3 class="text-sm font-semibold text-crust-100">Volume discounts</h3>
+          <p class="mt-2 text-sm text-crust-300">
+            Large customers (5B+ tokens/month) negotiate sub-base rates with the
+            foundation directly. The protocol burn is still settled at the
+            gateway; the discount is taken from the gross-price spread.
+          </p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-sm font-semibold text-crust-100">KV-warm continuations</h3>
+          <p class="mt-2 text-sm text-crust-300">
+            Session-pinned multi-turn calls land back on the same operator with
+            warm KV; operator can offer ~10–20% off marginal-turn pricing for
+            in-session continuations.
+          </p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-sm font-semibold text-crust-100">No subscription floor</h3>
+          <p class="mt-2 text-sm text-crust-300">
+            Pay-as-you-go from the first token. CUC credits are USD-pegged and
+            expire 30 days after mint — top up only what you'll use.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Python SDK</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">orogen-sdk</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      The Python SDK wraps the OpenAI client, adds tier selection, and exposes
+      the receipt object. <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">pip install orogen-sdk</code>.
+    </p>
+    <CodeBlock code={pythonExample} lang="python" filename="example.py" />
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">TypeScript SDK</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">@orogen/sdk</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        The TypeScript SDK is a thin layer over <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">fetch</code>
+        with first-class types for tiers and receipts.
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">npm install @orogen/sdk</code>.
+      </p>
+      <CodeBlock code={typescriptExample} lang="typescript" filename="example.ts" />
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">LiteLLM provider</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">litellm-orogen-provider</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      If you're already using LiteLLM for multi-provider routing, the Orogen
+      provider drops in alongside OpenAI, Anthropic, Together, etc.
+    </p>
+    <CodeBlock code={litellmExample} lang="python" filename="litellm-example.py" />
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">OpenAI SDK compatibility</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">No new SDK required.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        The gateway implements <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">/v1/chat/completions</code>,
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">/v1/completions</code>,
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">/v1/embeddings</code>, and SSE streaming. You can use the
+        OpenAI SDK with no changes — you lose tier selection and receipt
+        verification, but every other request type works identically.
+      </p>
+      <CodeBlock code={openaiCompat} lang="python" filename="openai-compat.py" />
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Receipt verification</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Trust, but verify locally.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Every response carries a receipt with the operator signature, the
+      attestation quote chain (NVTrust + Intel TA / AMD KDS), and the content
+      hashes. The customer SDK verifies the signature locally and (optionally)
+      verifies the attestation chain against root certificates of record. The
+      chain stores the receipt commitment for arbitration if you ever need to
+      escalate a dispute.
+    </p>
+    <CodeBlock code={verifyReceipt} lang="python" filename="verify.py" />
+
+    <p class="mt-6 max-w-3xl text-crust-300">
+      Note on verifiability claims. The verification stack is <em>cryptographic
+      at the receipt level</em> (you can prove a given operator returned a given
+      output for a given input) and <em>statistical at the network level</em>
+      (validator replay sampling targets 1–5% of jobs at dc-standard, more at
+      lower tiers). Strong per-query verifiability requires the zkML option
+      (L6), which is currently economical only for very high-stakes workloads.
+      See the FAQ for the trade-offs.
+    </p>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <CtaButton href="/downloads" variant="primary">Download SDKs</CtaButton>
+      <CtaButton href="https://docs.orogen.network" variant="secondary" rel="noopener noreferrer">API reference</CtaButton>
+      <CtaButton href="/faq" variant="ghost">FAQ</CtaButton>
+    </div>
+  </section>
+</Base>

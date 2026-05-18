@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Orogen">
+  <rect width="64" height="64" rx="10" fill="#0b0d10"/>
+  <!-- mountain silhouette (crystalline) -->
+  <path d="M6 50 L22 22 L30 34 L40 14 L58 50 Z" fill="none" stroke="#f59e0b" stroke-width="2.6" stroke-linejoin="miter"/>
+  <!-- horizon hairline -->
+  <line x1="6" y1="50" x2="58" y2="50" stroke="#f59e0b" stroke-width="2.6"/>
+  <!-- inner emerald flicker -->
+  <path d="M22 22 L30 34 L40 14" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linejoin="miter"/>
+</svg>

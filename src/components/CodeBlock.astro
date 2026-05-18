@@ -1,0 +1,69 @@
+---
+export interface Props {
+  /**
+   * SECURITY: `code` MUST be a build-time literal — never pass user-derived
+   * or runtime-fetched strings here. Shiki escapes its lexed input, but
+   * `set:html` is used below to render its HTML output, making this an XSS
+   * sink if `code` ever flows from an untrusted source. If you need to
+   * render dynamic content, use the unhighlighted `<pre><code>{code}</code></pre>`
+   * fallback instead (React-style auto-escaping).
+   */
+  code: string;
+  lang?: string;
+  filename?: string;
+}
+
+const { code, lang = "text", filename } = Astro.props;
+
+// Runtime guard — surfaces any contributor passing a non-string (e.g. an
+// object/Promise/Fetch response) into the build-time-literal-only contract.
+if (typeof code !== "string") {
+  throw new Error(
+    "CodeBlock.code must be a string literal known at build time; " +
+      "user-derived input is not allowed (Shiki HTML is rendered via set:html).",
+  );
+}
+
+let highlighted: string | null = null;
+try {
+  // Astro ships Shiki 1.x; use the createHighlighter API.
+  const shiki = await import("shiki");
+  const highlighter = await shiki.createHighlighter({
+    themes: ["github-dark-dimmed"],
+    langs: [
+      "bash",
+      "json",
+      "python",
+      "typescript",
+      "javascript",
+      "rust",
+      "yaml",
+      "toml",
+      "text",
+    ],
+  });
+  highlighted = highlighter.codeToHtml(code, {
+    lang,
+    theme: "github-dark-dimmed",
+  });
+} catch {
+  highlighted = null;
+}
+---
+
+<figure class="my-4 overflow-hidden rounded-md border border-crust-800 bg-crust-950">
+  {
+    filename && (
+      <figcaption class="border-b border-crust-800 bg-crust-900/80 px-4 py-1.5 font-mono text-xs text-crust-400">
+        {filename}
+      </figcaption>
+    )
+  }
+  {
+    highlighted ? (
+      <div class="overflow-x-auto px-4 py-3 text-sm" set:html={highlighted} />
+    ) : (
+      <pre class="overflow-x-auto px-4 py-3 text-sm text-crust-100"><code>{code}</code></pre>
+    )
+  }
+</figure>

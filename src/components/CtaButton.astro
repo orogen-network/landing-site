@@ -1,0 +1,40 @@
+---
+export interface Props {
+  href: string;
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "md" | "lg";
+  rel?: string;
+  ariaLabel?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  rel,
+  ariaLabel,
+} = Astro.props;
+
+const base =
+  "inline-flex items-center justify-center font-medium no-underline transition-colors rounded-md";
+
+const sizes: Record<string, string> = {
+  md: "px-4 py-2 text-sm",
+  lg: "px-5 py-2.5 text-base",
+};
+
+const variants: Record<string, string> = {
+  primary:
+    "bg-magma-500 text-crust-950 hover:bg-magma-400 border border-magma-500",
+  secondary:
+    "bg-crust-800 text-crust-100 hover:bg-crust-700 border border-crust-700",
+  ghost:
+    "bg-transparent text-crust-200 hover:bg-crust-800/60 border border-crust-700/60",
+};
+
+const cls = `${base} ${sizes[size]} ${variants[variant]}`;
+---
+
+<a href={href} class={cls} rel={rel} aria-label={ariaLabel}>
+  <slot />
+</a>

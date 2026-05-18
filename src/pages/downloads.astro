@@ -1,0 +1,223 @@
+---
+import Base from "../layouts/Base.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import CtaButton from "../components/CtaButton.astro";
+
+interface Artifact {
+  label: string;
+  file: string;
+  kind: string;
+  size: string;
+  description: string;
+}
+
+const artifacts: Artifact[] = [
+  {
+    label: "Whitepaper (PDF)",
+    file: "/downloads/orogen-whitepaper.pdf",
+    kind: "PDF",
+    size: "~1.4 MB",
+    description: "Full protocol description: verification stack, BME engine, emission rule, slashing schedule, and the 24-month roadmap. Snapshot 0.1.",
+  },
+  {
+    label: "Python SDK source bundle",
+    file: "/downloads/orogen-sdk-py-0.1.0.tar.gz",
+    kind: "tar.gz",
+    size: "~120 KB",
+    description: "Source distribution of orogen-sdk 0.1.0 (Python ≥ 3.10). OpenAI-compatible wrapper plus receipt verifier. PyPI recommended for installation.",
+  },
+  {
+    label: "TypeScript SDK source bundle",
+    file: "/downloads/orogen-sdk-ts-0.1.0.tgz",
+    kind: "tgz",
+    size: "~95 KB",
+    description: "Source distribution of @orogen/sdk 0.1.0 (Node ≥ 20, browsers via fetch). Includes types and receipt verifier. npm recommended for installation.",
+  },
+  {
+    label: "LiteLLM provider plugin",
+    file: "/downloads/litellm-orogen-provider-0.1.0.tar.gz",
+    kind: "tar.gz",
+    size: "~30 KB",
+    description: "Drop-in provider plugin for LiteLLM 1.x. Registers the orogen/* model namespace and forwards calls to the Orogen gateway with tier passthrough.",
+  },
+  {
+    label: "Chain node (Linux x86-64)",
+    file: "/downloads/chain-node-linux-x64-0.1.0.tar.gz",
+    kind: "tar.gz",
+    size: "~95 MB",
+    description: "Compiled Substrate-based chain node binary. Includes pallet-bme, pallet-model-registry, pallet-operator-stake, pallet-job-market, pallet-yuma-consensus, pallet-slashing. Forge testnet build.",
+  },
+  {
+    label: "Wallet CLI (Linux x86-64)",
+    file: "/downloads/wallet-cli-linux-x64-0.1.0.tar.gz",
+    kind: "tar.gz",
+    size: "~14 MB",
+    description: "orogen-wallet — coldkey/hotkey ceremony, attestation report generation, operator registration, stake management, treasury queries. Forge testnet build.",
+  },
+];
+
+// Package names verified against the source:
+//   customer-sdk-py/pyproject.toml  →  orogen-sdk      (PyPI)
+//   customer-sdk-ts/package.json    →  @orogen/sdk     (npm)
+//   public/install.sh                →  wallet-cli installer
+
+const installPython = `# Python SDK — Python ≥ 3.10
+pip install orogen-sdk
+# or with uv (recommended for reproducible installs):
+uv pip install orogen-sdk`;
+
+const installTypescript = `# TypeScript / Node ≥ 20 (works in browsers via fetch)
+npm install @orogen/sdk
+# or
+pnpm add @orogen/sdk
+# or
+yarn add @orogen/sdk`;
+
+const installLitellm = `# Drop-in LiteLLM provider — registers the orogen/* namespace
+pip install 'litellm[orogen]'`;
+
+const installNode = `# Wallet CLI + chain-node tooling (Linux x86-64).
+# Inspect the script before piping to sh — it lives at
+#   https://orogen.network/install.sh
+curl -fsSL https://orogen.network/install.sh | sh
+
+# Pinned to a specific version (recommended for CI):
+OROGEN_VERSION=0.1.0 curl -fsSL https://orogen.network/install.sh | sh
+
+# Or download the tarball directly and verify by hand:
+curl -fsSLO https://orogen.network/downloads/wallet-cli-linux-x64-0.1.0.tar.gz
+curl -fsSLO https://orogen.network/downloads/SHA256SUMS
+sha256sum -c SHA256SUMS --ignore-missing`;
+
+const verifyArtifact = `# Every artifact is checksummed. To verify a download:
+curl -fsSLO https://orogen.network/downloads/SHA256SUMS
+sha256sum -c SHA256SUMS --ignore-missing
+
+# Forge testnet builds are signed with the engineering release key listed
+# in the GitHub release notes. Mainnet builds are re-signed with the
+# foundation release key.`;
+---
+
+<Base
+  title="Downloads"
+  description="Download the Orogen Python and TypeScript SDKs, the LiteLLM provider plugin, the chain node binary, and the wallet CLI. Plus one-liner pip and npm install instructions."
+  path="/downloads"
+>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Downloads</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Binaries, SDKs, and the whitepaper.</h1>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Live Forge testnet artifacts. SDKs are published on PyPI and npm; the
+      chain-node and wallet-cli binaries are compiled for Linux x86-64 and
+      ship pointed at <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">forge-rpc.orogen.network</code>.
+      Source for every artifact lives at
+      <a href="https://github.com/orogen-network">github.com/orogen-network</a>.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Quick install</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">One-liners.</h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        Three SDKs and one shell installer. The SDKs are the recommended path
+        for application integration; the shell installer is for operators,
+        validators, and self-hosters who need the chain-node binary on a Linux
+        x86-64 host.
+      </p>
+
+      <div class="mt-8 grid gap-5 lg:grid-cols-2">
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-crust-400">
+            Python SDK · PyPI <code class="ml-1 rounded bg-crust-800 px-1 py-0.5 text-magma-300">orogen-sdk</code>
+          </p>
+          <CodeBlock code={installPython} lang="bash" filename="install-python.sh" />
+        </div>
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-crust-400">
+            TypeScript SDK · npm <code class="ml-1 rounded bg-crust-800 px-1 py-0.5 text-magma-300">@orogen/sdk</code>
+          </p>
+          <CodeBlock code={installTypescript} lang="bash" filename="install-typescript.sh" />
+        </div>
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-crust-400">
+            LiteLLM provider · PyPI <code class="ml-1 rounded bg-crust-800 px-1 py-0.5 text-magma-300">litellm-orogen-provider</code>
+          </p>
+          <CodeBlock code={installLitellm} lang="bash" filename="install-litellm.sh" />
+        </div>
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-crust-400">
+            Node binary · shell installer · <code class="ml-1 rounded bg-crust-800 px-1 py-0.5 text-magma-300">install.sh</code>
+          </p>
+          <CodeBlock code={installNode} lang="bash" filename="install-node.sh" />
+        </div>
+      </div>
+
+      <p class="mt-6 text-xs text-crust-500">
+        Note: PyPI and npm releases are the recommended installation path. The
+        tarballs below are for air-gapped environments or for inspecting the
+        source distribution as published. The shell installer downloads
+        <code class="rounded bg-crust-800 px-1 py-0.5">wallet-cli-linux-x64-${"{VERSION}"}.tar.gz</code>,
+        verifies its SHA-256 against the published <code class="rounded bg-crust-800 px-1 py-0.5">SHA256SUMS</code>,
+        and installs to <code class="rounded bg-crust-800 px-1 py-0.5">~/.local/bin/wallet-cli</code>.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Artifacts</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">All builds, all signed.</h2>
+
+    <div class="mt-8 grid gap-4 lg:grid-cols-2">
+      {
+        artifacts.map((a) => (
+          <div class="surface-card flex flex-col gap-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-base font-semibold text-crust-100">{a.label}</h3>
+                <p class="mt-1 text-xs font-mono text-crust-500">
+                  {a.kind} · {a.size}
+                </p>
+              </div>
+              <a
+                href={a.file}
+                class="shrink-0 rounded-md border border-magma-500/60 bg-magma-500/10 px-3 py-1.5 text-sm font-medium text-magma-300 no-underline hover:bg-magma-500/20"
+                download
+              >
+                Download
+              </a>
+            </div>
+            <p class="text-sm leading-relaxed text-crust-300">{a.description}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-6 text-xs text-crust-500">
+      Files are served from <code class="rounded bg-crust-800 px-1 py-0.5">orogen.network/downloads/</code>.
+      Forge testnet builds are cut on the rolling release cadence published
+      in the GitHub release notes. Mainnet binaries are re-signed with the
+      foundation release key when mainnet ships.
+    </p>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Verifying releases</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Signed checksums and reproducible builds.</h2>
+      <CodeBlock code={verifyArtifact} lang="bash" filename="verify.sh" />
+      <p class="mt-4 max-w-3xl text-crust-300">
+        Reproducible builds are a Year-1 commitment. The chain node and wallet
+        CLI builds publish their Docker base image, toolchain version, and
+        cargo lockfile in the release notes so any third party can rebuild from
+        source and verify the same hash.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Docs</CtaButton>
+        <CtaButton href="https://github.com/orogen-network" variant="secondary" rel="noopener noreferrer">Source</CtaButton>
+        <CtaButton href="/operators" variant="ghost">Operator quickstart</CtaButton>
+      </div>
+    </div>
+  </section>
+</Base>

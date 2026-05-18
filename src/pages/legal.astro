@@ -1,0 +1,241 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Legal"
+  description="Orogen legal disclaimers: OROG is a work token, not a security. USEFUL was a working name (now OROG). Howey defence via Inc./Foundation split. US retail geo-fence at TGE. EU AI Act stance. HIPAA/PCI compliance scope."
+  path="/legal"
+>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Legal</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Disclaimers, scope, and posture.</h1>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      This page reflects the protocol's regulatory posture as of the current
+      snapshot. It is not legal advice. Customers operating in regulated
+      industries should consult counsel on the applicability of Orogen to their
+      use case. The foundation's contact for legal queries is
+      <a href="mailto:legal@orogen.network">legal@orogen.network</a>.
+    </p>
+  </section>
+
+  <section class="container-narrow space-y-10 pb-20">
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">1. Token status</h2>
+      <p class="mt-3 text-crust-300">
+        OROG is the work token of the Orogen network. The four uses are
+        (a) gateway burn on customer top-up, (b) operator stake, (c) validator
+        stake, (d) governance. The protocol does not advertise, encourage, or
+        accommodate purchase of OROG for the purpose of holding it for price
+        appreciation. The site does not use the words "APY", "earn", "yield",
+        or "passive income" anywhere by design.
+      </p>
+      <p class="mt-3 text-crust-300">
+        This is not a securities offering. The token launches via TGE only after
+        the network has sustained $1M annualized revenue on the centralised
+        stack and the Day-1 burn loop is operational. The marketing path is
+        explicitly utility-first: the token is the medium of exchange for
+        compute, not an investment instrument.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">2. USEFUL was the working name</h2>
+      <p class="mt-3 text-crust-300">
+        Earlier internal drafts used "USEFUL" as the token ticker. The
+        production name is OROG (4 chars), and the network is Orogen
+        (<code class="rounded bg-crust-800 px-1 py-0.5">orogen.network</code>). The rename is reflected in
+        all public materials. RFC-0007's
+        <code class="rounded bg-crust-800 px-1 py-0.5">useful_nonce</code>
+        field name is preserved for backwards compatibility with the
+        on-chain commitment schema.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">3. Howey-test posture</h2>
+      <p class="mt-3 text-crust-300">
+        The foundation operates a two-entity structure designed to position
+        OROG as a utility token under US regulatory analysis:
+      </p>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-crust-300">
+        <li>
+          <strong class="text-crust-100">Orogen Inc.</strong> — a for-profit
+          entity (Delaware C-corp) that operates the
+          centralised gateway, employs the core engineering team, and provides
+          commercial support contracts to enterprise customers. Inc. does not
+          hold the foundation's token allocation.
+        </li>
+        <li>
+          <strong class="text-crust-100">Orogen Foundation</strong> — a
+          non-profit Swiss Stiftung (Zug) that holds the treasury, runs governance
+          tooling, funds ecosystem grants, and operates the dispute panel.
+        </li>
+      </ul>
+      <p class="mt-3 text-crust-300">
+        The split is intended to support the Howey factor of "no common
+        enterprise dependent on the efforts of others" by ensuring no single
+        entity's promotional efforts are required for token utility — the BME
+        loop is mechanical and the validator network is permissionless from
+        Q3 2027 onward.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">4. US retail geo-fence at TGE</h2>
+      <p class="mt-3 text-crust-300">
+        At TGE, the gateway and the AMM enforce a geo-fence excluding US
+        natural-person retail participants from primary token acquisition until
+        a regulatory pathway is established. US-based enterprise customers can
+        consume inference services via the gateway (paying USDC/USD) without
+        directly holding OROG — the burn happens at the gateway layer. US-based
+        operators can participate by registering as legal entities and entering
+        into a per-tier compute services agreement.
+      </p>
+      <p class="mt-3 text-crust-300">
+        The geo-fence is reviewed quarterly. Lifting it requires (a) a
+        no-action letter or equivalent regulatory clarity in the US, or
+        (b) a registration path appropriate to the network's posture.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">5. EU AI Act</h2>
+      <p class="mt-3 text-crust-300">
+        The EU AI Act applies to providers of general-purpose AI models and to
+        deployers of high-risk AI systems. Orogen, in its role as a compute
+        substrate, does not train or fine-tune base models; it serves inference
+        of customer-selected models. The foundation publishes a model-card
+        transparency notice per base model registered via pallet-model-registry
+        and supports customer-side disclosure of which (base_model, adapter)
+        served a given request via the response receipt. Customers deploying
+        high-risk AI systems remain responsible for their own AI Act
+        compliance.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">6. HIPAA, PCI, SOC 2 scope</h2>
+      <p class="mt-3 text-crust-300">
+        Orogen does not claim HIPAA compliance, PCI compliance, or SOC 2
+        certification at launch. The TEE-anchored verification stack provides
+        strong technical guarantees against host-OS or cloud-provider access to
+        plaintext prompts and responses, but technical posture is not the
+        same as regulatory certification. Customers requiring formal
+        compliance certifications should contact
+        <a href="mailto:enterprise@orogen.network">enterprise@orogen.network</a>
+        to discuss compliance-tier scoping; these tiers may be subject to
+        operator restrictions, additional contractual terms, and certified
+        third-party audits.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">7. Forward-looking statements</h2>
+      <p class="mt-3 text-crust-300">
+        Numbers, dates, and roadmap milestones on this site are targets
+        derived from the design dossier and the 24-month plan. They are not
+        forecasts and they are not commitments. Decision gates are real; if a
+        gate condition is not met, the next phase moves. The foundation
+        publishes phase-gate reviews quarterly on the public status page.
+      </p>
+    </div>
+
+    <!-- LEGAL-REVIEW-NEEDED — final wording requires counsel sign-off -->
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">8. Cookies and analytics</h2>
+      <p class="mt-3 text-crust-300">
+        orogen.network does not set tracking cookies, does not load third-party
+        analytics scripts (Google Analytics, Segment, Mixpanel, Plausible, or
+        equivalents), and does not fingerprint visitors. The only first-party
+        state is a session cookie used by the gateway dashboard at
+        <code class="rounded bg-crust-800 px-1 py-0.5">gateway.orogen.network</code>
+        for authenticated API-key management. Server access logs are
+        retained for 14 days for abuse mitigation and rate-limit enforcement,
+        then deleted. No browser-side telemetry beacons are emitted from this
+        marketing site.
+      </p>
+    </div>
+
+    <!-- LEGAL-REVIEW-NEEDED — sanctions-screening provider contracts pending -->
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">9. Sanctions screening</h2>
+      <p class="mt-3 text-crust-300">
+        The gateway screens customer accounts and operator registration
+        applications against the U.S. OFAC SDN list, the EU consolidated
+        sanctions list, the UK HMT consolidated list, and the UN consolidated
+        list. Wallet-address screening uses two independent providers
+        (Chainalysis KYT and TRM Labs, with Elliptic as a tertiary check) to
+        avoid single-vendor false positives. Matches are blocked at the
+        gateway; the operator's stake is not seized by the protocol absent a
+        separate slashing-class fault, but the operator cannot earn rewards
+        while blocked. Customers and operators can contest a match by emailing
+        <a href="mailto:compliance@orogen.network">compliance@orogen.network</a>.
+      </p>
+    </div>
+
+    <!-- LEGAL-REVIEW-NEEDED — retention windows depend on foundation jurisdiction -->
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">10. Data retention</h2>
+      <p class="mt-3 text-crust-300">
+        Customer prompts and responses are not stored by the protocol after
+        the receipt commitment is finalised on-chain. The receipt itself
+        contains only content hashes (model_hash, adapter_hash, prompt_hash,
+        output_hash), not plaintext. Operators are contractually required to
+        purge plaintext from their TEEs at the end of each request lifecycle;
+        the TEE attestation chain provides a technical guarantee that plaintext
+        does not exit the enclave. Server-side gateway logs containing request
+        metadata (timestamps, model identifiers, byte counts, response codes)
+        are retained for 30 days for operations and billing reconciliation.
+        Receipts and on-chain commitments are permanent by design — they are
+        the audit trail. Customers requiring shorter operational-log retention
+        for regulatory reasons should contact
+        <a href="mailto:enterprise@orogen.network">enterprise@orogen.network</a>.
+      </p>
+    </div>
+
+    <!-- LEGAL-REVIEW-NEEDED — non-US disclosure wording depends on local regimes (MiCA, FCA, MAS) -->
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">11. Not investment advice (non-US notice)</h2>
+      <p class="mt-3 text-crust-300">
+        Nothing on this site constitutes investment advice, financial advice,
+        trading advice, or any other form of advice. Information about OROG —
+        token mechanics, emission schedule, BME loop dynamics, allocation, and
+        roadmap — is provided for informational purposes describing the
+        protocol's design. OROG is a utility token used to settle compute work
+        on the Orogen network; it is not marketed as a vehicle for capital
+        appreciation. You should not buy, hold, or otherwise transact in OROG
+        on the basis of an expected return on investment. Tax treatment of
+        OROG varies by jurisdiction; consult a qualified professional in your
+        jurisdiction before acting. Residents of jurisdictions that restrict
+        access to non-bank-issued tokens (including, without limitation,
+        certain U.S. retail contexts addressed in §4 above) should not
+        attempt to acquire OROG until the geo-fence is lifted for their
+        category.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">12. Trademarks and attribution</h2>
+      <p class="mt-3 text-crust-300">
+        Orogen and the Orogen mark are unregistered trademarks of the
+        foundation pending registration. NVIDIA, NVTrust, NVL72, H100, H200,
+        and B200 are trademarks of NVIDIA Corporation. AMD, Instinct, and
+        ROCm are trademarks of Advanced Micro Devices, Inc. Intel TDX is a
+        trademark of Intel Corporation. Mentions are nominative and do not
+        imply endorsement.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">13. Contact</h2>
+      <p class="mt-3 text-crust-300">
+        General: <a href="mailto:hello@orogen.network">hello@orogen.network</a> · Legal:
+        <a href="mailto:legal@orogen.network">legal@orogen.network</a> · Security:
+        <a href="mailto:security@orogen.network">security@orogen.network</a> · Enterprise:
+        <a href="mailto:enterprise@orogen.network">enterprise@orogen.network</a> · Compliance:
+        <a href="mailto:compliance@orogen.network">compliance@orogen.network</a>.
+      </p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,330 @@
+---
+// RoadmapArc.astro — survey-plate horizontal timeline for the
+// W0 → W1 → testnet → audit → TGE → permissionless arc.
+//
+// Aesthetic: engineering plate, not pastel marketing strip.
+// Monospace tick labels, geological "strata" baseline, single magma rail
+// with crystal nodes for the verifiable-work milestones.
+
+interface Node {
+  id: string;          // short tick label (e.g. "W0")
+  q: string;           // quarter label (e.g. "Q3 2026")
+  title: string;       // milestone name
+  body: string;        // one-line description
+  kind: "build" | "test" | "audit" | "launch" | "open";
+  status: "done" | "live" | "future";
+}
+
+const nodes: Node[] = [
+  {
+    id: "W0",
+    q: "shipped",
+    title: "Stealth dev",
+    body: "Centralised vLLM + LiteLLM stack stood up with operator partners and paying pilots.",
+    kind: "build",
+    status: "done",
+  },
+  {
+    id: "W1",
+    q: "shipped",
+    title: "Permissioned operators",
+    body: "Paying customers onboarded · L1–L4 verification stack in production.",
+    kind: "build",
+    status: "done",
+  },
+  {
+    id: "T",
+    q: "live now",
+    title: "Forge testnet",
+    body: "OpenAI-compatible traffic routed to attested operators · validators replaying samples · audited pallets.",
+    kind: "test",
+    status: "live",
+  },
+  {
+    id: "A",
+    q: "in progress",
+    title: "Audit gate",
+    body: "Multi-firm chain audit · slashing pallet stress test · CRL drill execution.",
+    kind: "audit",
+    status: "live",
+  },
+  {
+    id: "TGE",
+    q: "after audit",
+    title: "Mainnet TGE",
+    body: "Token live · BME loop active from Day 1 · all customers migrated to on-chain settlement.",
+    kind: "launch",
+    status: "future",
+  },
+  {
+    id: "P",
+    q: "post-TGE",
+    title: "Permissionless",
+    body: "Permissionless operator + adapter publishing · opML L5 deployed · Yuma slashing live.",
+    kind: "open",
+    status: "future",
+  },
+];
+
+// SVG geometry
+const W = 1040;
+const H = 280;
+const PAD_L = 60;
+const PAD_R = 60;
+const railY = 130;
+const trackY = railY;
+const nodeR = 12;
+const step = (W - PAD_L - PAD_R) / (nodes.length - 1);
+
+const positioned = nodes.map((n, i) => ({
+  ...n,
+  x: PAD_L + i * step,
+}));
+
+// alternate label placement above/below the rail so they don't collide
+function side(i: number): "above" | "below" {
+  return i % 2 === 0 ? "above" : "below";
+}
+
+// kind → stroke
+function strokeOf(kind: Node["kind"]): string {
+  switch (kind) {
+    case "audit":
+      return "#34d399"; // crystal — verification gate
+    case "test":
+      return "#6ee7b7";
+    case "launch":
+      return "#fcd34d"; // magma-300 — distinctive
+    case "open":
+      return "#fbbf24";
+    default:
+      return "#f59e0b";
+  }
+}
+// fill: shipped + live nodes are filled; future nodes are hollow
+function fillOf(n: Node): string {
+  if (n.status === "done") return "#f59e0b"; // magma-500 — shipped wave
+  if (n.status === "live") {
+    // distinguish testnet (crystal) from audit (also crystal-stroked but in progress)
+    if (n.kind === "test") return "#34d399";
+    return "#0b0d10"; // audit gate — hollow with crystal stroke, still in progress
+  }
+  // future: hollow with kind-coloured stroke, except TGE which is the launch glyph
+  if (n.kind === "launch") return "#fcd34d";
+  return "#0b0d10";
+}
+---
+
+<figure
+  class="surface-card-strong"
+  aria-label="Orogen roadmap arc from W0 stealth dev to permissionless operator entry"
+>
+  <div class="flex items-baseline justify-between border-b border-crust-800 pb-3">
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-crust-500">
+        Plate 02 · roadmap arc
+      </p>
+      <h3 class="mt-1 text-lg font-semibold tracking-tight text-crust-100">
+        W0 → W1 → Forge testnet → audit → mainnet TGE → permissionless
+      </h3>
+    </div>
+    <p class="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500 sm:block">
+      shipped → live → future · 6 gates
+    </p>
+  </div>
+
+  <div class="mt-4 overflow-x-auto">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      class="block h-auto w-full min-w-[640px]"
+      role="img"
+      aria-hidden="true"
+    >
+      <defs>
+        <marker
+          id="arc-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="8"
+          markerHeight="8"
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 Z" fill="#f59e0b" />
+        </marker>
+        <linearGradient id="arc-rail" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stop-color="#36404f" />
+          <stop offset="10%" stop-color="#f59e0b" />
+          <stop offset="80%" stop-color="#f59e0b" />
+          <stop offset="100%" stop-color="#fbbf24" />
+        </linearGradient>
+      </defs>
+
+      <!-- strata gridlines (above + below rail) -->
+      <g stroke="#11141a" stroke-width="1">
+        <line x1={PAD_L - 10} y1={railY - 70} x2={W - PAD_R + 10} y2={railY - 70} />
+        <line x1={PAD_L - 10} y1={railY - 35} x2={W - PAD_R + 10} y2={railY - 35} />
+        <line x1={PAD_L - 10} y1={railY + 35} x2={W - PAD_R + 10} y2={railY + 35} />
+        <line x1={PAD_L - 10} y1={railY + 70} x2={W - PAD_R + 10} y2={railY + 70} />
+      </g>
+
+      <!-- baseline rail -->
+      <line
+        x1={PAD_L}
+        x2={W - PAD_R + 8}
+        y1={trackY}
+        y2={trackY}
+        stroke="url(#arc-rail)"
+        stroke-width="2.5"
+        marker-end="url(#arc-arrow)"
+      />
+      <!-- baseline shadow (one px below, dim) for "engraved" feel -->
+      <line
+        x1={PAD_L}
+        x2={W - PAD_R + 8}
+        y1={trackY + 2}
+        y2={trackY + 2}
+        stroke="#1a1f29"
+        stroke-width="0.5"
+      />
+
+      <!-- band labels: build wave → live testnet → audit → mainnet → permissionless -->
+      <g
+        font-family="JetBrains Mono, ui-monospace, monospace"
+        font-size="9"
+        fill="#4f5b6e"
+        letter-spacing="0.16em"
+      >
+        <text x={PAD_L} y={railY - 95}>SHIPPED</text>
+        <text x={(W) / 2} y={railY - 95} text-anchor="middle">— LIVE NOW —</text>
+        <text x={W - PAD_R} y={railY - 95} text-anchor="end">FUTURE</text>
+      </g>
+
+      <!-- nodes + labels -->
+      {
+        positioned.map((n, i) => {
+          const placement = side(i);
+          const labelY = placement === "above" ? railY - 32 : railY + 36;
+          const titleY = placement === "above" ? railY - 18 : railY + 50;
+          const quarterY = placement === "above" ? railY - 60 : railY + 80;
+          const bodyY = placement === "above" ? railY - 78 : railY + 96;
+          const tickFrom = placement === "above" ? railY - 16 : railY + 16;
+          const tickTo = placement === "above" ? railY - 50 : railY + 70;
+          return (
+            <g>
+              {/* tick from rail to label cluster */}
+              <line
+                x1={n.x}
+                x2={n.x}
+                y1={tickFrom}
+                y2={tickTo}
+                stroke="#36404f"
+                stroke-width="0.75"
+                stroke-dasharray="2 3"
+              />
+              {/* node disc */}
+              <circle
+                cx={n.x}
+                cy={railY}
+                r={nodeR}
+                fill={fillOf(n)}
+                stroke={strokeOf(n.kind)}
+                stroke-width="2"
+              />
+              {/* node id glyph */}
+              <text
+                x={n.x}
+                y={railY + 3}
+                text-anchor="middle"
+                font-family="JetBrains Mono, ui-monospace, monospace"
+                font-size="9"
+                font-weight="600"
+                fill={
+                  n.status === "done" || (n.status === "live" && n.kind === "test") || n.kind === "launch"
+                    ? "#0b0d10"
+                    : "#e9ebef"
+                }
+              >
+                {n.id}
+              </text>
+              {/* quarter label */}
+              <text
+                x={n.x}
+                y={quarterY}
+                text-anchor="middle"
+                font-family="JetBrains Mono, ui-monospace, monospace"
+                font-size="9"
+                fill="#7c8597"
+                letter-spacing="0.12em"
+              >
+                {n.q}
+              </text>
+              {/* title */}
+              <text
+                x={n.x}
+                y={titleY}
+                text-anchor="middle"
+                font-family="Inter, ui-sans-serif, system-ui, sans-serif"
+                font-size="12"
+                font-weight="600"
+                fill="#e9ebef"
+              >
+                {n.title}
+              </text>
+              {/* body — placed further out, wrapped manually */}
+              <text
+                x={n.x}
+                y={bodyY}
+                text-anchor="middle"
+                font-family="Inter, ui-sans-serif, system-ui, sans-serif"
+                font-size="9"
+                fill="#a5acbb"
+              >
+                <tspan x={n.x} dy="0">{n.body.split(" · ")[0]}</tspan>
+                {n.body.split(" · ")[1] && (
+                  <tspan x={n.x} dy="11" fill="#7c8597">
+                    · {n.body.split(" · ")[1]}
+                  </tspan>
+                )}
+              </text>
+            </g>
+          );
+        })
+      }
+    </svg>
+  </div>
+
+  <!-- legend -->
+  <ul
+    class="mt-2 flex flex-wrap gap-x-6 gap-y-2 border-t border-crust-800 pt-4 font-mono text-[11px] text-crust-400"
+  >
+    <li class="flex items-center gap-2">
+      <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-magma-500 bg-magma-500"></span>
+      shipped build wave
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-crystal-400 bg-crystal-500"></span>
+      Forge live now
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-crystal-500 bg-crust-950"></span>
+      audit gate (in progress)
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-magma-300 bg-magma-300"></span>
+      mainnet TGE (future)
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-magma-400 bg-crust-950"></span>
+      permissionless (future)
+    </li>
+  </ul>
+
+  <p class="mt-3 text-xs leading-relaxed text-crust-500">
+    W0 and W1 are shipped. Forge testnet is live and routing traffic today.
+    The audit gate, mainnet TGE, and permissionless onboarding follow. Each
+    milestone has a quantitative gate. Missing a gate moves the next
+    milestone, not the messaging — gate criteria for each node are detailed
+    in the phase table below.
+  </p>
+</figure>

@@ -1,0 +1,204 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import TierTable from "../components/TierTable.astro";
+import CtaButton from "../components/CtaButton.astro";
+
+const valueProps = [
+  {
+    title: "Drop-in OpenAI compatibility",
+    body: "LiteLLM-fronted gateway exposes /v1/chat/completions, /v1/embeddings, and SSE streaming. Point your existing OpenAI SDK at the Orogen base URL and your code works unchanged.",
+  },
+  {
+    title: "TEE-anchored receipts, not vibes",
+    body: "Every job returns a signed receipt bound to (model_hash, adapter_hash, prompt_hash, output_hash, attestation_quote). The chain stores the commitment; validators sample-replay 1–5% of jobs on identical hardware to detect drift.",
+  },
+  {
+    title: "USD-denominated payouts for operators",
+    body: "Burn-and-mint loop quotes operator rewards at oracle spot at job time. Default 70% auto-swap to USDC at protocol AMM. The 'I keep my GPU running because of speculation' failure mode is structurally prevented.",
+  },
+  {
+    title: "Demand-elastic emission",
+    body: "Year 3+ rule is pallet-enforced: mint ≤ rolling-90d burn × elasticity factor. Hard 5% supply/year ceiling. 0.5% floor for trough resilience. No foundation mint discretion, no halving.",
+  },
+];
+
+const steps = [
+  {
+    n: "1",
+    title: "Burn",
+    body: "Customer tops up the gateway in USDC/USD/ETH/BTC. The gateway burns OROG at oracle spot and mints non-transferable Compute Unit Credit (CUC), USD-pegged, 30-day expiry. No skip-the-token backdoor.",
+  },
+  {
+    n: "2",
+    title: "Route + execute",
+    body: "Multi-objective router picks an operator by latency target, price tier, KV-cache locality, and reputation. Worker runs vLLM V1 / SGLang / TRT-LLM with deterministic kernels in TEE; signed response receipt returned over the wire.",
+  },
+  {
+    n: "3",
+    title: "Verify + settle",
+    body: "Validators sample 1–5% of jobs and replay on identical hardware; mismatches trigger an opML challenge window. On finalisation, CUC is consumed and fresh OROG mints — 75% to the operator, 15% to verification work, 5% treasury, 5% governance.",
+  },
+];
+
+const quotes = [
+  {
+    text: "Bittensor SN3 ran 70+ peers across 3 continents at 500/110 Mbps commodity bandwidth — the operator base for a global verifiable inference network already exists; what's missing is a settlement layer with real burn-mint and a credible verification stack.",
+    source: "Bittensor SN3 public dashboards",
+  },
+  {
+    text: "Akash's post-BME redesign shifted from a 13–15% inflationary regime to revenue-pegged net deflation when demand runs hot. The architecture is repeatable; the missing piece is anchoring it to physical-work verification rather than community signalling.",
+    source: "Akash community reports",
+  },
+  {
+    text: "Phala TEE attestation routes >1B tokens/day for OpenRouter clients today. The TEE substrate works in production. What's missing is the economic layer that captures that demand as token-denominated burn.",
+    source: "Phala public dashboards",
+  },
+];
+---
+
+<Base
+  title="Orogen"
+  description="Orogen is a verifiable LLM inference network. OpenAI-compatible gateway, TEE-attested GPU operators, validator replay sampling, and burn-and-mint settlement on a Substrate-based chain."
+  path="/"
+>
+  <Hero />
+
+  <!-- Value props -->
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Why Orogen</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+      Inference that customers, operators, and the chain can all check.
+    </h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      Most DePIN-for-AI networks are bare GPU leasing markets — you rent a box,
+      you trust the operator, you reconcile invoices off-protocol. Orogen is
+      built the other way: the protocol owns the verification stack, the
+      settlement layer, and the marketplace. Every layer is pallet-enforced and
+      every job emits a receipt anyone can verify against the chain.
+    </p>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-2">
+      {
+        valueProps.map((v) => (
+          <div class="surface-card">
+            <h3 class="text-lg font-semibold text-crust-100">{v.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-crust-300">{v.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">How it works</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Three steps. One loop.</h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        The burn-and-mint engine (BME) closes every customer transaction in three
+        on-chain steps. Read the long form in <a href="/how-it-works">the verification stack walkthrough</a>.
+      </p>
+
+      <ol class="mt-10 grid gap-5 lg:grid-cols-3">
+        {
+          steps.map((s) => (
+            <li class="surface-card-strong relative">
+              <div class="flex items-center gap-3">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-sm text-magma-300">
+                  {s.n}
+                </span>
+                <h3 class="text-lg font-semibold text-crust-100">{s.title}</h3>
+              </div>
+              <p class="mt-3 text-sm leading-relaxed text-crust-300">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <!-- Inline diagram (ASCII-art rendered as <pre>) -->
+      <div class="mt-10 overflow-x-auto rounded-md border border-crust-800 bg-crust-950 p-5">
+<pre class="font-mono text-xs leading-snug text-crust-200">
+  customer USDC ──▶ gateway burns OROG at oracle spot ──▶ CUC minted (USD-pegged, 30d)
+                                                                  │
+                                                                  ▼
+                                                 router picks operator by tier + region
+                                                                  │
+                                                                  ▼
+                                       worker runs vLLM / SGLang / TRT-LLM in TEE
+                                       deterministic kernel, signed response receipt
+                                                                  │
+                                                                  ▼
+                                              validators sample-replay 1–5% on-chain
+                                                                  │
+                                                                  ▼
+                                   CUC burned → fresh OROG mints: 75% operator / 15%
+                                       verification / 5% treasury / 5% governance
+</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tier table -->
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Hardware tiers</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Six tiers. One protocol.</h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      Operators self-declare a tier at registration. The tier commits them to an
+      SLA (latency, verification posture, kernel determinism). Customers pick a
+      tier per request; the protocol does the routing. Stake floors and pricing
+      multiples are at-launch parameters and governance-adjustable.
+    </p>
+    <div class="mt-8">
+      <TierTable variant="full" caption="Orogen hardware tier matrix" />
+    </div>
+  </section>
+
+  <!-- Quotes / sourced facts -->
+  <section class="border-t border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Sourced from prior networks</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+        Not claims. Citations.
+      </h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        The Orogen design is the result of a long survey of every prior
+        DePIN-for-AI network. Three observations from the live ecosystem that
+        drove the architecture choices:
+      </p>
+
+      <div class="mt-8 grid gap-5 lg:grid-cols-3">
+        {
+          quotes.map((q) => (
+            <figure class="surface-card">
+              <blockquote class="text-sm leading-relaxed text-crust-200">
+                <p>"{q.text}"</p>
+              </blockquote>
+              <figcaption class="mt-3 text-xs text-crust-500">{q.source}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="container-page py-20">
+    <div class="surface-card-strong flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+          Ready to integrate?
+        </h2>
+        <p class="mt-2 max-w-2xl text-crust-300">
+          The Python and TypeScript SDKs are OpenAI-compatible drop-ins. The
+          CLI wallet and chain node binaries are running today on the Forge
+          testnet — point them at <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">forge-rpc.orogen.network</code>.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <CtaButton href="/downloads" variant="primary" size="lg">Download SDK</CtaButton>
+        <CtaButton href="/operators" variant="secondary" size="lg">Run a node</CtaButton>
+      </div>
+    </div>
+  </section>
+</Base>
