@@ -41,7 +41,7 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "How is Orogen different from Aethir or Pearl?",
-    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider rewards are paid from per-job emission and from the BME loop — both gated on real customer demand. On Orogen Forge, testnet OROG is earned by serving real jobs against a real verification stack; mainnet TGE follows only after $1M ARR is sustained on the centralised gateway and the multi-firm audit is clean, so the loop ships with measurable burn from Day 1.",
+    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider rewards are paid from per-job emission and from the BME loop — both gated on real customer demand. On Orogen Forge, testnet OROG is earned by serving real jobs against a real verification stack; mainnet TGE follows only after the published centralised-gateway revenue baseline is sustained and the multi-firm audit is clean, so the loop ships with measurable burn from Day 1.",
   },
   {
     aud: "general",
@@ -56,7 +56,7 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "When does mainnet TGE follow Forge?",
-    a: "Forge testnet is live now and carries real customer traffic, real operator registrations, and real validator replay. Mainnet TGE follows the multi-firm chain audit and is conditional on the published phase gates: $1M/yr revenue sustained for 90 days, AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
+    a: "Forge testnet is live now (seed validator + chain-indexer + GraphQL up; operator and customer onboarding paths in active integration). Mainnet TGE follows the multi-firm chain audit and is conditional on the published phase gates: a sustained centralised-gateway revenue baseline (90-day window), AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
   },
 
   // ---- Customers ----
@@ -100,7 +100,7 @@ const qas: QA[] = [
   {
     aud: "operators",
     q: "What does a single H100 SXM earn per day?",
-    a: "Reference numbers from live Forge operators: at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), gross customer revenue is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost. Net margin against a current mid-tier cloud H100 cost of ~$48/day is ~$87/day. Full assumption stack on the operators page. Not a forecast.",
+    a: "Modeled reference numbers (not measured from operator income today): at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), modeled gross is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost in the model. Against a current mid-tier cloud H100 cost of ~$48/day the modeled net is ~$87/day. Full assumption stack on the operators page. These are design-time figures, not realized earnings, and not a forecast.",
   },
   {
     aud: "operators",
