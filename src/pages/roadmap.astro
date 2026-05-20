@@ -121,7 +121,7 @@ const phases: Phase[] = [
     status: "future",
     title: "RL pilots at scale",
     target:
-      "Multiple concurrent INTELLECT-2-pattern RL runs (32B-class with math/code rewards). TOPLOC-style activation attestation for rollouts integrated. First externally-customer-paid post-training run.",
+      "Multiple concurrent INTELLECT-2-pattern RL runs (32B-class with math/code verifiers). TOPLOC-style activation attestation for rollouts integrated. First externally-customer-paid post-training run.",
     gate: "Phase 3 (federated post-training) enters production only if sustained $200K+ MRR is attributable to training at this gate.",
     kpis: [
       "$700K+ MRR",
@@ -171,7 +171,7 @@ const statusLabel: Record<Phase["status"], string> = {
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
       The W0 and W1 build waves are shipped as local code and verification
-      artifacts. Forge testnet, validator replay, operator rewards, and the
+      artifacts. Forge testnet, validator replay, operator settlement, and the
       multi-firm audit are planned readiness gates; mainnet TGE follows only
       after those gates close. The remaining arc —
       permissionless onboarding, the ETH bridge, mobile inference, federated
@@ -240,7 +240,7 @@ const statusLabel: Record<Phase["status"], string> = {
       <ul class="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-crust-200">
         <li>The BME loop runs unbroken from TGE Day 1; there is no "pay USDC and skip the token" backdoor at any phase.</li>
         <li>The verification stack is L1–L8 throughout; new layers may be added (e.g. ZKML for embeddings), but no layer is dropped.</li>
-        <li>The 75 / 15 / 5 / 5 reward split is at-launch governance-adjustable but constitutionally bounded — provider share cannot fall below 60%.</li>
+        <li>The 75 / 15 / 5 / 5 settlement split is at-launch governance-adjustable but constitutionally bounded — provider share cannot fall below 60%.</li>
         <li>The 5% supply/year mint ceiling is hard. The chain rejects mints above it. Governance can lower it; raising it requires constitutional amendment (supermajority, 60-day timelock).</li>
         <li>Multi-vendor TEE at launch. Single-vendor monoculture is treated as a security regression and reverts to permissioned-only operator onboarding until restored.</li>
       </ul>

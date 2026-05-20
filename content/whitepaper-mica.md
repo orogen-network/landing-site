@@ -42,7 +42,7 @@ Signed by the management body of the offeror on [TO FILL — date] at [TO FILL �
 
 **Utility.** Customers pay for inference in fiat or stablecoin; the gateway burns OROG at oracle spot in exchange for non-transferable USD-pegged compute credits ("CUC"); operators are minted fresh OROG when jobs are finalised; verification is paid from the same per-job emission.
 
-**Reward split per job emission.** 75 % to the operator that served the inference; 15 % to verification work (validators, opML challengers, zkML provers); 5 % to protocol treasury; 5 % to governance stakers performing active security functions.
+**Settlement split per job emission.** 75 % to the operator that served the inference; 15 % to verification work (validators, opML challengers, zkML provers); 5 % to protocol treasury; 5 % to governance stakers performing active security functions.
 
 **Emission policy.** A pallet-enforced rule binds new mint to rolling 90-day burn × an elasticity factor, with a floor of 0.5 % of supply per year and a ceiling of 5 % of supply per year after the bootstrap phase. There is no foundation discretion to mint outside the rule. There is no halving schedule.
 
@@ -90,7 +90,7 @@ Signed by the management body of the offeror on [TO FILL — date] at [TO FILL �
 | A.9 Response time for queries from holders | Within fifteen (15) working days for written queries received at legal@orogen.network. |
 | A.10 Parent company (if any) | [TO FILL — or "Not applicable"] |
 | A.11 Members of the management body | [TO FILL — full name, function, business address for each member, per Annex I A.11] |
-| A.12 Business activity of the offeror | The offeror's principal activity is the development, publication and operation of the Orogen network and the issuance, distribution and stewardship of OROG. Ancillary activities include licensing of trademarks ("Orogen", "OROG"), publication of open-source software, and contracting with service providers for protocol operations. The offeror does not, in its own right, operate a regulated crypto-asset service (CASP) and does not provide custody, exchange, trading-platform operation, order routing or investment advice. Where any such service is required, it is delegated to a duly authorised third-party CASP. |
+| A.12 Business activity of the offeror | The offeror's principal activity is the development, publication and operation of the Orogen network and the issuance, distribution and stewardship of OROG. Ancillary activities include licensing of trademarks ("Orogen", "OROG"), publication of open-source software, and contracting with service providers for protocol operations. The offeror does not, in its own right, operate a regulated crypto-asset service (CASP) and does not provide custody, exchange, trading-platform operation, order routing or financial advice. Where any such service is required, it is delegated to a duly authorised third-party CASP. |
 | A.13 Financial condition over the past three years | [TO FILL — audited or management accounts; or, if the entity is newly incorporated, a statement to that effect together with opening balance sheet]. As of the date of this white paper, the offeror has [TO FILL — equity figure] in shareholder equity and [TO FILL — debt figure] in financial debt. |
 | A.14 Description of risks specific to the offeror | See Part I §I.2 ("Risks of the offeror"). |
 
@@ -145,13 +145,13 @@ Orogen is a decentralised network for verifiable Large-Language-Model (LLM) infe
 
 **Customer surface.** Application developers, agent platform builders, regulated enterprises and open-weight model authors connect to the network through an OpenAI-compatible gateway. They top up the gateway in fiat or stablecoin and consume metered compute against the resulting USD-pegged credits.
 
-**Supply side.** Independent operators register attested GPU capacity in one of six hardware tiers (datacenter-premium, datacenter-standard, cloud-rented, prosumer, edge, embed-only). Operators stake OROG, run Trusted Execution Environments (NVIDIA H100/H200/B200 confidential-compute, Intel TDX, AMD SEV-SNP), and earn fresh OROG when their work is finalised on chain.
+**Supply side.** Independent operators register attested GPU capacity in one of six hardware tiers (datacenter-premium, datacenter-standard, cloud-rented, prosumer, edge, embed-only). Operators stake OROG, run Trusted Execution Environments (NVIDIA H100/H200/B200 confidential-compute, Intel TDX, AMD SEV-SNP), and receive OROG settlement when their work is finalised on chain.
 
 **Verification.** A multi-layer stack: (1) TEE attestation, (2) signed response receipts binding (model, prompt, output, attestation report) on chain, (3) validator replay of a stake-weighted random sample of inferences on independent hardware with deterministic kernels, (4) optimistic-ML (opML) challenge windows, (5) zero-knowledge ML proofs for selected sub-heads (moderation, routing, credit scoring), (6) commit-reveal randomness with customer nonces to bind the prompt to the inference, (7) watermarks where applicable, (8) administrative slashing for proven cheating.
 
 ### D.4 Reasons for the project
 
-The market for LLM inference in 2026 is dominated by closed-source APIs from a small number of US vendors. Independent operators of GPU hardware lack a credible payment and verification rail for selling inference time directly to application builders. The project's reason for being is to provide that rail: an open settlement layer that customers can audit, that operators can earn predictable USD-denominated revenue on, and that no single vendor can rent-seek on.
+The market for LLM inference in 2026 is dominated by closed-source APIs from a small number of US vendors. Independent operators of GPU hardware lack a credible payment and verification rail for selling inference time directly to application builders. The project's reason for being is to provide that rail: an open settlement layer that customers can audit, that gives operators predictable USD-denominated revenue mechanics, and that no single vendor can rent-seek on.
 
 ### D.5 Key milestones (past and planned)
 
@@ -179,9 +179,9 @@ If and to the extent OROG is sold to acquirers for fiat or other crypto-assets i
 
 OROG is the **only** means by which compute on the Orogen network may be paid for at protocol level. There is no fiat-direct or stablecoin-direct bypass: the gateway smart-contract enforces the burn of OROG at oracle spot in exchange for compute credit. OROG is also the asset in which network participants (operators, validators, opML challengers, zkML provers, governance stakers performing active security functions) are compensated, and the asset in which operator stake and slashing collateral are denominated.
 
-### D.9 Indication of whether the project relates to development, use or investment
+### D.9 Indication of whether the project relates to development, use or acquisition
 
-Development *and* use. The project relates both to the **development** of an open-source, decentralised inference protocol and to its **operational use** as a metered compute service. The project does not promise investment returns to OROG holders. OROG is a utility crypto-asset, not a financial instrument.
+Development *and* use. The project relates both to the **development** of an open-source, decentralised inference protocol and to its **operational use** as a metered compute service. OROG is a utility crypto-asset used for compute settlement, bonding, and governance.
 
 ---
 
@@ -262,7 +262,7 @@ The functions of OROG within the network are:
 1. **Burn-and-mint settlement medium.** OROG is the asset that the gateway burns at oracle spot to issue non-transferable USD-pegged compute credits ("CUC"). It is also the asset minted to operators at job finalisation.
 2. **Operator stake.** Operators stake OROG as a slashing-eligible bond against good behaviour and tier-cap eligibility.
 3. **Verification bond.** Validators, opML challengers and zkML provers stake OROG to participate in verification; their compensation is paid in OROG out of the per-job emission.
-4. **Governance.** Holders may stake OROG for governance and, subject to active participation thresholds, earn the governance share of per-job emission.
+4. **Governance.** Holders may stake OROG for governance and, subject to active participation thresholds, receive the governance share of per-job emission.
 
 ### F.2 Initial allocation and total supply
 
@@ -501,7 +501,7 @@ The protocol depends on, and inherits the risk profile of, the following major u
 - **Insufficient customer demand.** Demand for verifiable LLM inference in the commodity market in 2026–2028 is unproven beyond a small segment. If customer revenue does not develop, the BME loop will operate at the floor and OROG inflation will exceed real burn for an extended period.
 - **Insufficient operator participation.** If operators fail to register or maintain stake, network capacity and verification will be impaired.
 - **Operator concentration.** Early operator participation may be highly concentrated. The DAO has tools (tier-stake floors, sampling-rate increase) to counter this, but cannot fully eliminate it.
-- **Roadmap drift.** Phase-2 and Phase-3 capabilities (RL with verifiable rewards, federated post-training, decentralised pretraining) are research-grade and may not materialise on the indicative timeline.
+- **Roadmap drift.** Phase-2 and Phase-3 capabilities (RL with verifiable task scoring, federated post-training, decentralised pretraining) are research-grade and may not materialise on the indicative timeline.
 
 ### I.5 Risks of the underlying technology
 

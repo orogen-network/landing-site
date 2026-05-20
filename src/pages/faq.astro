@@ -31,7 +31,7 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "How is Orogen different from Bittensor?",
-    a: "Bittensor is a marketplace of subnets where each subnet defines its own scoring rubric; the work being rewarded is whatever the subnet owner says it is, mediated by validator preferences and dTAO alpha-token AMM dynamics. Orogen is one network, one token, one product (verifiable LLM inference + LoRA + later RL). Rewards are tied to physical replay of inference jobs, not to subnet-defined evaluator scores. We do not have subnet owners; we do not have alpha tokens; emission share is allocated by on-chain revenue measurement, not by stake-AMM pricing.",
+    a: "Bittensor is a marketplace of subnets where each subnet defines its own scoring rubric; the work being scored is whatever the subnet owner says it is, mediated by validator preferences and dTAO alpha-token AMM dynamics. Orogen is one network, one token, one product (verifiable LLM inference + LoRA + later RL). Emission share is tied to physical replay of inference jobs, not to subnet-defined evaluator scores. We do not have subnet owners; we do not have alpha tokens; emission share is allocated by on-chain revenue measurement, not by stake-AMM pricing.",
   },
   {
     aud: "general",
@@ -41,7 +41,7 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "How is Orogen different from Aethir or Pearl?",
-    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider rewards are paid from per-job emission and from the BME loop — both gated on real customer demand. On Orogen Forge, testnet OROG is earned by serving real jobs against a real verification stack; mainnet TGE follows only after the published centralised-gateway revenue baseline is sustained and the multi-firm audit is clean, so the loop ships with measurable burn from Day 1.",
+    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider settlement is paid from per-job emission and from the BME loop — both gated on real customer demand. On Orogen Forge, testnet OROG is distributed only for serving real jobs against a real verification stack; mainnet TGE follows only after the published centralised-gateway revenue baseline is sustained and the multi-firm audit is clean, so the loop ships with measurable burn from Day 1.",
   },
   {
     aud: "general",
@@ -99,8 +99,8 @@ const qas: QA[] = [
   },
   {
     aud: "operators",
-    q: "What does a single H100 SXM earn per day?",
-    a: "Modeled reference numbers (not measured from operator income today): at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), modeled gross is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost in the model. Against a current mid-tier cloud H100 cost of ~$48/day the modeled net is ~$87/day. Full assumption stack on the operators page. These are design-time figures, not realized earnings, and not a forecast.",
+    q: "What does a single H100 SXM model look like?",
+    a: "Modeled reference numbers (not measured from operator income today): at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), modeled gross is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost in the model. Against a current mid-tier cloud H100 cost of ~$48/day the modeled net is ~$87/day. Full assumption stack on the operators page. These are design-time figures, not realized operator income, and not a forecast.",
   },
   {
     aud: "operators",
@@ -117,7 +117,7 @@ const qas: QA[] = [
   {
     aud: "validators",
     q: "What's the validator-watcher distinction?",
-    a: "Validators are permissionless, stake-bonded, and paid from the verification slice for replays performed. Validator-watchers are a smaller, foundation-and-DAO-operated set that runs the opML bisection game and serves the dispute panel. Watchers bond more (50,000 OROG at-launch) and rotate by governance. The separation prevents validators from being judge-and-jury over each other. The watcher set opens to permissionless entry on the post-mainnet roadmap (see /roadmap), with a 6-month observation period before earning the full reward slice. Full details on /validators.",
+    a: "Validators are permissionless, stake-bonded, and paid from the verification slice for replays performed. Validator-watchers are a smaller, foundation-and-DAO-operated set that runs the opML bisection game and serves the dispute panel. Watchers bond more (50,000 OROG at-launch) and rotate by governance. The separation prevents validators from being judge-and-jury over each other. The watcher set opens to permissionless entry on the post-mainnet roadmap (see /roadmap), with a 6-month observation period before receiving the full verification slice. Full details on /validators.",
   },
   {
     aud: "validators",
@@ -133,30 +133,20 @@ const qas: QA[] = [
   // ---- Token holders / governance ----
   {
     aud: "holders",
-    q: "Is OROG an investment?",
-    a: "No. OROG is a work token. The four uses are (a) gateway burn at customer top-up, (b) operator stake, (c) validator stake, (d) governance. The protocol does not advertise, encourage, or accommodate purchase of OROG for the purpose of holding it for price appreciation. There is no staker-for-yield class, no foundation buyback program, no halving narrative. We deliberately do not use the words 'APY' or 'earn' or 'yield' on this site. See /legal for the regulatory framing.",
-  },
-  {
-    aud: "holders",
-    q: "Why no marketing of token yield or 'earn rewards'?",
-    a: "Two reasons. Regulatory: marketing a token as a yield-bearing investment is the fastest path to a Howey-test failure in the US. We avoid the language across all surfaces. Substantive: the token is paid for productive work, not for holding. Marketing it as yield would falsely suggest that capital alone earns; it does not. Capital plus replay work earns. Capital plus operator work earns. Capital alone is unproductive on Orogen.",
-  },
-  {
-    aud: "holders",
     q: "What's the subsidy ratio target?",
     a: "Less than 2× in Year 1 (post-TGE), less than 1.2× in Year 2, less than 1× in Year 3 and beyond. The subsidy ratio is (USD-equivalent OROG minted) ÷ (USD revenue burned). A ratio < 1 means the network is net deflationary — the burn from customer top-ups exceeds the mint to operators. Year 3+ the pallet enforces mint ≤ rolling-90d burn × elasticity factor, so the ratio is structurally bounded.",
   },
   {
     aud: "holders",
     q: "What is the genesis allocation?",
-    a: "100% of genesis supply splits eight ways: 40% mining emissions (provider rewards, vested by milestone), 12% investors (36-month vest, 12-month cliff), 12% team (same), 10% treasury (foundation-managed, audit + security + integrations), 8% ecosystem grants (milestone-gated), 8% provider bootstrap (subsidy budget for Year-1 onboarding), 5% public sale (TGE unlock), 5% reserve (governance-gated, 30-day timelock to unlock). See the tokenomics page for the donut and the vesting summary.",
+    a: "100% of genesis supply splits eight ways: 40% provider emissions (vested by milestone), 12% investors (36-month vest, 12-month cliff), 12% team (same), 10% treasury (foundation-managed, audit + security + integrations), 8% ecosystem grants (milestone-gated), 8% provider bootstrap (subsidy budget for Year-1 onboarding), 5% public sale (TGE unlock), 5% reserve (governance-gated, 30-day timelock to unlock). See the tokenomics page for the donut and the vesting summary.",
   },
 
   // ---- Security & ops ----
   {
     aud: "general",
     q: "Where can I report a security issue?",
-    a: "Email security@orogen.network for coordinated disclosure. The foundation runs a public bug-bounty program for the Forge testnet; critical attestation, slashing-pallet, and gateway-burn issues are eligible for an emergency reward path. Findings reported during Forge are eligible for retroactive uplift at mainnet TGE. Do not file security issues in GitHub Issues.",
+    a: "Email security@orogen.network for coordinated disclosure. The foundation runs a public bug-bounty program for the Forge testnet; critical attestation, slashing-pallet, and gateway-burn issues are eligible for an emergency bounty path. Findings reported during Forge are eligible for retroactive uplift at mainnet TGE. Do not file security issues in GitHub Issues.",
   },
 ];
 ---

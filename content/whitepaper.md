@@ -37,7 +37,7 @@ The rest of this paper sets out how the system meets those claims.
 
 ### 2.1 Participants
 
-| Role | What they do | What they stake / hold | What they earn |
+| Role | What they do | What they stake / hold | Settlement |
 |---|---|---|---|
 | Customer | Calls the OpenAI-compatible API; pays in fiat or stablecoin | Compute credits (CUC) | Inference results |
 | Gateway | Routes requests to operators; verifies receipts; burns OROG at TWAP spot when customers top up | Operator-class stake (gateways are themselves registered) | Routing margin out of per-job emission |
@@ -65,7 +65,7 @@ A single request walks through the network as follows:
                     │                     │
                     ▼                     ▼
               Stake-weighted             Burn of customer credit
-              random sample              Mint of operator reward
+              random sample              Mint operator settlement
                     │
                     ▼
               Validator replay on independent hardware
@@ -301,7 +301,7 @@ The OROG minted on each finalised job is allocated as follows:
 | Treasury | 5 % | Protocol expenses, audits, grants |
 | Active-security governance stakers | 5 % | Stakers who participate in dispute panels, oracle attestation, governance votes within the rolling window |
 
-The "active-security" share is not a passive yield. It is paid only to governance stakers whose participation across panels, oracle attestations, and parameter votes exceeds a rolling threshold over the prior thirty days. The intent is to align governance compensation with governance work.
+The active-security share is paid only to governance stakers whose participation across panels, oracle attestations, and parameter votes exceeds a rolling threshold over the prior thirty days. The intent is to align governance compensation with governance work.
 
 ### 5.3 Emission policy
 
@@ -387,9 +387,9 @@ A disputing operator posts a 10 % dispute bond and a counter-evidence hash. The 
 
 ### 6.5 Watcher economics
 
-Watchers are an independent, staked detection layer. They register by posting a bond (≥ ~1 ETH-equivalent in OROG) and earn a share of any slashing they correctly trigger. A watcher whose evidence is rejected loses the full bond on first offence, the bond × 10 on second offence within 90 days, and is permanently banned on the second offence. Forged evidence is referred to law enforcement under the applicable jurisdiction.
+Watchers are an independent, staked detection layer. They register by posting a bond (≥ ~1 ETH-equivalent in OROG) and receive a share of any slashing they correctly trigger. A watcher whose evidence is rejected loses the full bond on first offence, the bond × 10 on second offence within 90 days, and is permanently banned on the second offence. Forged evidence is referred to law enforcement under the applicable jurisdiction.
 
-The asymmetry is deliberate: the network rewards honest detection generously and punishes false detection at a multiple, so that the equilibrium pulls toward truthful reporting even when reporting is profitable.
+The asymmetry is deliberate: the network compensates honest detection and punishes false detection at a multiple, so that the equilibrium pulls toward truthful reporting even when reporting is profitable.
 
 ---
 
@@ -497,4 +497,4 @@ The source for every component named in this paper is published under the `oroge
 
 ---
 
-*This whitepaper is a technical description of the Orogen network as currently designed and partially implemented. It is not an offer to sell OROG, an investment prospectus, or legal or financial advice. The MiCA-aligned regulatory white paper, published separately, is the governing document for any acquisition decision regarding OROG.*
+*This whitepaper is a technical description of the Orogen network as currently designed and partially implemented. It is not an offer to sell OROG or legal, tax, accounting, or financial advice. The MiCA-aligned regulatory white paper, published separately, is the governing document for any acquisition decision regarding OROG.*

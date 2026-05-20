@@ -14,7 +14,7 @@ interface Allocation {
 }
 
 const allocations: Allocation[] = [
-  { label: "Mining emissions (provider rewards)", pct: 40, swatch: "bg-magma-500", hex: "#f59e0b" },
+  { label: "Provider emissions", pct: 40, swatch: "bg-magma-500", hex: "#f59e0b" },
   { label: "Investors", pct: 12, swatch: "bg-magma-400", hex: "#fbbf24" },
   { label: "Team", pct: 12, swatch: "bg-magma-300", hex: "#fcd34d" },
   { label: "Treasury", pct: 10, swatch: "bg-crystal-500", hex: "#34d399" },
@@ -58,12 +58,12 @@ const subsidyTargets = [
 
 <Base
   title="Tokenomics"
-  description="OROG is the work token of the Orogen network. Burn-and-mint engine, demand-elastic emission with hard floor and ceiling, 40% emissions / 12% investors / 12% team / 10% treasury / 8% ecosystem / 8% provider bootstrap / 5% public / 5% reserve at TGE."
+  description="OROG is the settlement token of the Orogen network. Burn-and-mint engine, demand-elastic emission with hard floor and ceiling, 40% emissions / 12% investors / 12% team / 10% treasury / 8% ecosystem / 8% provider bootstrap / 5% public / 5% reserve at TGE."
   path="/tokenomics"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">Tokenomics</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">OROG is a work token, not an investment vehicle.</h1>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">OROG coordinates compute settlement.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
       Every unit of OROG is minted in response to a finalised inference job and
       burned in response to a customer top-up. The chain enforces the rule; the
@@ -88,13 +88,13 @@ const subsidyTargets = [
         <div class="surface-card">
           <h3 class="text-lg font-semibold">Operator stake</h3>
           <p class="mt-2 text-sm leading-relaxed text-crust-300">
-            Operators bond OROG to participate. Tier-dependent: 500 OROG dc-premium → 25 OROG prosumer. Slashable for sampling mismatches, fraudulent attestation, or coldkey duplication. Stake is not yield-bearing on its own.
+            Operators bond OROG to participate. Tier-dependent: 500 OROG dc-premium → 25 OROG prosumer. Slashable for sampling mismatches, fraudulent attestation, or coldkey duplication.
           </p>
         </div>
         <div class="surface-card">
           <h3 class="text-lg font-semibold">Validator stake</h3>
           <p class="mt-2 text-sm leading-relaxed text-crust-300">
-            Validators bond 10× the operator-min stake for the tier they sample. Earns a share of the 15% verification slice proportional to (replays performed) × (consensus alignment). No yield for passive holding.
+            Validators bond 10× the operator-min stake for the tier they sample. Verification compensation is proportional to (replays performed) × (consensus alignment).
           </p>
         </div>
         <div class="surface-card">
@@ -108,7 +108,7 @@ const subsidyTargets = [
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Per-job reward split</p>
+    <p class="heading-eyebrow">Per-job settlement split</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">75 / 15 / 5 / 5.</h2>
     <p class="mt-3 max-w-3xl text-crust-300">
       Every per-job emission — sized by the pallet rule below — splits four
@@ -193,10 +193,8 @@ const subsidyTargets = [
         the rule's output, including any attempted foundation override.
       </p>
       <p class="mt-4 max-w-3xl text-crust-300">
-        What we explicitly do not do: no halving (utility-token demand is the
-        work being purchased, not a monetary thesis), no foundation buyback
-        program, no staker-for-yield class, no subnet alpha tokens or pool AMMs.
-        One token, one network.
+        The design has no halving schedule, no foundation buyback program, no
+        subnet alpha tokens, and no pool AMMs. One token, one network.
       </p>
     </div>
   </section>

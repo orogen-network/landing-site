@@ -97,12 +97,11 @@ governance_review = required (publish dispute panel verdict on-chain)`;
         operator, and (severely) for collusion with a sampled operator.
       </p>
       <p class="mt-4 max-w-3xl text-crust-300">
-        Validators do <em>not</em> earn yield for passive holding. The 15%
-        verification slice is paid out per epoch in proportion to replays
-        actually performed (with consensus alignment as a multiplier). A
-        validator with stake but no replay activity earns zero. This is the
-        Bittensor 41/41/18 model inverted: the protocol pays validators for
-        verifiable work, not for being present.
+        The 15% verification slice is paid out per epoch in proportion to
+        replays actually performed (with consensus alignment as a multiplier).
+        A validator with stake but no replay activity receives no verification
+        allocation. This is the Bittensor 41/41/18 model inverted: the protocol
+        pays validators for verifiable work, not for being present.
       </p>
     </div>
   </section>
@@ -131,16 +130,16 @@ governance_review = required (publish dispute panel verdict on-chain)`;
       <p class="mt-4 max-w-3xl text-crust-300">
         Slashed stake is burned at the chain level (it is not redistributed to
         the challenger). This avoids the well-known incentive misalignment where
-        challengers profit from false positives; the only reward for raising a
-        valid challenge is the reputation gain and the share of the 15%
-        verification slice earned through Yuma-weighted replays.
+        challengers profit from false positives; the protocol benefit for
+        raising a valid challenge is the reputation gain and the share of the 15%
+        verification slice received through Yuma-weighted replays.
       </p>
     </div>
   </section>
 
   <section class="container-page py-16">
     <p class="heading-eyebrow">Validator-vs-watcher separation</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Two roles, two stake pools, two reward streams.</h2>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Two roles, two stake pools, two verification streams.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
       The protocol distinguishes between <strong class="text-crust-100">validators</strong>
       — permissionless, stake-bonded, paid from the verification slice — and
@@ -159,7 +158,7 @@ governance_review = required (publish dispute panel verdict on-chain)`;
     <p class="mt-4 max-w-3xl text-crust-300">
       On the post-mainnet roadmap, the watcher set opens to permissionless
       entry (with the larger stake and a 6-month observation period before
-      earning the full reward slice). Until then, watcher operation, public
+      receiving the full verification slice). Until then, watcher operation, public
       decision logs, and on-chain audit trails are Forge/mainnet readiness
       items rather than live public services.
     </p>

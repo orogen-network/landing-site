@@ -40,7 +40,7 @@ const attestationReqs = [
   },
 ];
 
-const rewardSplit = [
+const settlementSplit = [
   { who: "Operator (provider)", pct: "75%", why: "The compute is the product." },
   { who: "Verification work (validators + opML watchers + zkML provers)", pct: "15%", why: "Real GPU work; paid proportional to verification performed and consensus alignment." },
   { who: "Protocol treasury", pct: "5%", why: "Audits, security response, customer integrations. Bounded spend rate (≤ 18-month runway burn)." },
@@ -75,7 +75,7 @@ orogen-worker serve \\
 
 <Base
   title="Operators"
-  description="Run a GPU operator on the Orogen network. Six hardware tiers from B200/NVL72 down to Apple M-series. Stake floors, attestation requirements, reward splits, and a worked example of per-H100 unit economics."
+  description="Run a GPU operator on the Orogen network. Six hardware tiers from B200/NVL72 down to Apple M-series. Stake floors, attestation requirements, settlement splits, and a worked example of per-H100 unit economics."
   path="/operators"
 >
   <section class="container-page py-16">
@@ -85,7 +85,7 @@ orogen-worker serve \\
       Orogen operators are the GPU side of the network. You run an open-source
       inference server (vLLM V1, SGLang, TRT-LLM, llama.cpp), with three
       additions: TEE attestation, deterministic kernels, and the receipt
-      sidecar. Rewards are minted in OROG at oracle spot when each job
+      sidecar. Per-job settlement is minted in OROG at oracle spot when each job
       finalises, with a default 70% auto-swap to USDC at the protocol AMM.
     </p>
   </section>
@@ -122,8 +122,8 @@ orogen-worker serve \\
     <p class="mt-4 max-w-3xl text-crust-300">
       Validators must hold <strong class="text-crust-100">10× the operator minimum</strong>
       for the tier they sample. That ratio is the floor; in practice validator
-      stake is significantly higher because validator rewards scale with active
-      stake (Yuma-weighted). See <a href="/validators">Validators</a>.
+      stake is significantly higher because verification compensation scales
+      with active stake (Yuma-weighted). See <a href="/validators">Validators</a>.
     </p>
   </section>
 
@@ -148,7 +148,7 @@ orogen-worker serve \\
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Reward split per job</p>
+    <p class="heading-eyebrow">Settlement split per job</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">75 / 15 / 5 / 5.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
       Per-job emission is pallet-computed (subject to the year-N cap, the rolling-burn
@@ -166,7 +166,7 @@ orogen-worker serve \\
         </thead>
         <tbody>
           {
-            rewardSplit.map((r) => (
+            settlementSplit.map((r) => (
               <tr>
                 <td>{r.who}</td>
                 <td class="text-right font-mono text-magma-300">{r.pct}</td>
@@ -178,7 +178,7 @@ orogen-worker serve \\
       </table>
     </div>
     <p class="mt-3 text-xs text-crust-500">
-      No subnet-owner class. No staker-for-yield class. Every recipient slot is doing work.
+      No subnet-owner class. Every recipient slot maps to an operating role.
     </p>
   </section>
 
@@ -244,8 +244,8 @@ orogen-worker serve \\
       <p class="mt-3 text-xs text-crust-500">
         Disclaimer. Numbers are reference points sourced from public operator
         cost data and modeled vLLM throughput at design assumptions; they are
-        not realized operator earnings and not a forecast. Token-denominated
-        rewards depend on emission policy and oracle spot at job time.
+        not realized operator income and not a forecast. Token-denominated
+        payouts depend on emission policy and oracle spot at job time.
       </p>
     </div>
   </section>
