@@ -34,19 +34,19 @@ const nodes: Node[] = [
   },
   {
     id: "T",
-    q: "live now",
+    q: "planned",
     title: "Forge testnet",
-    body: "OpenAI-compatible traffic routed to attested operators · validators replaying samples · audited pallets.",
+    body: "Public RPC, GraphQL, gateway traffic, validator replay, and operators pending readiness gates.",
     kind: "test",
-    status: "live",
+    status: "future",
   },
   {
     id: "A",
-    q: "in progress",
+    q: "planned",
     title: "Audit gate",
-    body: "Multi-firm chain audit · slashing pallet stress test · CRL drill execution.",
+    body: "Multi-firm chain audit · slashing pallet stress test · CRL drill execution after Forge readiness.",
     kind: "audit",
-    status: "live",
+    status: "future",
   },
   {
     id: "TGE",
@@ -129,7 +129,7 @@ function fillOf(n: Node): string {
       </h3>
     </div>
     <p class="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-crust-500 sm:block">
-      shipped → live → future · 6 gates
+      shipped → planned → future · 6 gates
     </p>
   </div>
 
@@ -188,7 +188,7 @@ function fillOf(n: Node): string {
         stroke-width="0.5"
       />
 
-      <!-- band labels: build wave → live testnet → audit → mainnet → permissionless -->
+      <!-- band labels: build wave → planned testnet → audit → mainnet → permissionless -->
       <g
         font-family="JetBrains Mono, ui-monospace, monospace"
         font-size="9"
@@ -196,7 +196,7 @@ function fillOf(n: Node): string {
         letter-spacing="0.16em"
       >
         <text x={PAD_L} y={railY - 95}>SHIPPED</text>
-        <text x={(W) / 2} y={railY - 95} text-anchor="middle">— LIVE NOW —</text>
+        <text x={(W) / 2} y={railY - 95} text-anchor="middle">— PLANNED —</text>
         <text x={W - PAD_R} y={railY - 95} text-anchor="end">FUTURE</text>
       </g>
 
@@ -304,11 +304,11 @@ function fillOf(n: Node): string {
     </li>
     <li class="flex items-center gap-2">
       <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-crystal-400 bg-crystal-500"></span>
-      Forge live now
+      Forge planned
     </li>
     <li class="flex items-center gap-2">
       <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-crystal-500 bg-crust-950"></span>
-      audit gate (in progress)
+      audit gate (planned)
     </li>
     <li class="flex items-center gap-2">
       <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-magma-300 bg-magma-300"></span>
@@ -321,8 +321,8 @@ function fillOf(n: Node): string {
   </ul>
 
   <p class="mt-3 text-xs leading-relaxed text-crust-500">
-    W0 and W1 are shipped. Forge testnet is live and routing traffic today.
-    The audit gate, mainnet TGE, and permissionless onboarding follow. Each
+    W0 and W1 are shipped as local implementation work. Forge testnet,
+    the audit gate, mainnet TGE, and permissionless onboarding follow. Each
     milestone has a quantitative gate. Missing a gate moves the next
     milestone, not the messaging — gate criteria for each node are detailed
     in the phase table below.

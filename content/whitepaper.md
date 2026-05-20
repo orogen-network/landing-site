@@ -468,7 +468,7 @@ The network's milestones, as planned at the date of writing, are:
 |---|---|---|
 | Stealth / research | 2025 H2 → 2026 Q1 | Research dossier, design, initial team. (Complete.) |
 | Centralised stack | 2026 Q1 → 2026 Q2 | Inference gateway operational; first paying customers in pilot. (Complete.) |
-| **Forge testnet** | 2026 Q2 → 2027 Q1 | Public testnet "Forge" live. Operators register, validators replay, customers route OpenAI-compatible traffic. Testnet OROG only — no economic value. |
+| **Forge testnet** | 2026 Q2 → 2027 Q1 | Public testnet "Forge" readiness phase. Operators register, validators replay, and customers route OpenAI-compatible traffic only after public endpoints and release gates are announced. Testnet OROG only — no economic value. |
 | Multi-firm audit | 2027 Q1 → 2027 Q2 | Chain and protocol audits. |
 | Mainnet TGE | 2027 Q2 | Token Generation Event, mainnet block production, BME loop active from day one. |
 | Permissionless transition | 2027 Q3 | Operator registration becomes fully permissionless; multi-vendor attestation required by tier. |
@@ -490,14 +490,10 @@ These items will, where retained, become subject to their own design RFCs and au
 
 - **Documentation site** — [docs.orogen.network](https://docs.orogen.network)
 - **Public chain RFCs (canonical specs for the integration contracts summarised above)** — [github.com/orogen-network/chain-tooling-rust](https://github.com/orogen-network/chain-tooling-rust)/specs/
-- **Block explorer** — [explorer.orogen.network](https://explorer.orogen.network)
-- **Attestation explorer** — [attestation.orogen.network](https://attestation.orogen.network)
-- **Network status** — [status.orogen.network](https://status.orogen.network)
-- **Subsidy dashboard** — [subsidy.orogen.network](https://subsidy.orogen.network)
-- **Operator onboarding** — [onboarding.orogen.network](https://onboarding.orogen.network)
+- **Forge readiness and release gates** — [docs.orogen.network/start/forge-testnet](https://docs.orogen.network/start/forge-testnet)
 - **Regulatory white paper (MiCA Annex I)** — [orogen.network/downloads/orogen-mica-whitepaper.pdf](https://orogen.network/downloads/orogen-mica-whitepaper.pdf)
 
-The source for every component named in this paper is published under the `orogen-network` GitHub organisation. The Forge testnet is live at the date of publication; the public RPC endpoint, the on-chain genesis, and the validator and operator clients are linked from the documentation site.
+The source for every component named in this paper is published under the `orogen-network` GitHub organisation. Forge public endpoints, on-chain genesis, and validator/operator client instructions will be linked from the documentation site only after the readiness gates close.
 
 ---
 

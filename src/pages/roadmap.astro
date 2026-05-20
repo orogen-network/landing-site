@@ -42,11 +42,11 @@ const phases: Phase[] = [
     ],
   },
   {
-    quarter: "Live now (Forge)",
-    status: "live",
+    quarter: "Preparing (Forge)",
+    status: "future",
     title: "Forge testnet",
     target:
-      "Forge public testnet is live. Seed validator node up; chain-indexer + GraphQL up; OpenAI-compatible traffic path to attested operators in active integration. Target second-vendor profile: AMD MI3xx and Blackwell B200 CC operators alongside H100/H200. Pallet suite covers pallet-bme, pallet-model-registry, pallet-operator-stake, pallet-job-market, pallet-yuma-consensus, pallet-slashing (pre-audit).",
+      "Forge public testnet is the next integration target. Seed validator, chain-indexer + GraphQL, OpenAI-compatible traffic path, and attested operator onboarding must be brought up before this phase is called live. Target second-vendor profile: AMD MI3xx and Blackwell B200 CC operators alongside H100/H200. Pallet suite covers pallet-bme, pallet-model-registry, pallet-operator-stake, pallet-job-market, pallet-yuma-consensus, pallet-slashing (pre-audit).",
     gate: "Second-vendor (AMD) operators reaching production-grade keeps the mainnet TGE schedule intact. Slippage here moves mainnet TGE forward in time.",
     kpis: [
       "15+ operators across NVIDIA + AMD on testnet",
@@ -57,11 +57,11 @@ const phases: Phase[] = [
     ],
   },
   {
-    quarter: "In progress (audit)",
-    status: "live",
+    quarter: "Planned (audit)",
+    status: "future",
     title: "Multi-firm chain audit",
     target:
-      "Three independent firms reviewing the chain pallets, the gateway burn path, and the slashing schedule in parallel. Slashing pallet stress test under way; CRL drill executed on Forge.",
+      "Three independent firms will review the chain pallets, the gateway burn path, and the slashing schedule in parallel after Forge is operating. Slashing pallet stress tests and CRL drills must pass before this phase is marked complete.",
     gate: "Mainnet TGE is conditional on the audit closing clean. Findings reset the clock; the audit gate moves the launch, not the messaging.",
     kpis: [
       "Three independent audit reports filed",
@@ -154,26 +154,26 @@ const statusBadge: Record<Phase["status"], string> = {
 
 const statusLabel: Record<Phase["status"], string> = {
   shipped: "SHIPPED",
-  live: "LIVE NOW",
+  live: "LIVE",
   future: "FUTURE",
 };
 ---
 
 <Base
   title="Roadmap"
-  description="Forge testnet is live now, routing OpenAI-compatible traffic to attested operators. The W0 and W1 build waves are shipped. The audit gate is in progress. Mainnet TGE, the ETH bridge, permissionless onboarding, RL at scale, and federated post-training follow."
+  description="Forge testnet, audits, mainnet TGE, the ETH bridge, permissionless onboarding, RL at scale, and federated post-training are staged behind explicit readiness gates."
   path="/roadmap"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">Roadmap</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-      Shipped, live, future. Nine phases. Nine decision gates.
+      Shipped, planned, future. Nine phases. Nine decision gates.
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      The W0 and W1 build waves are shipped. The Forge testnet is live now —
-      routing OpenAI-compatible traffic to attested operators, with validators
-      replaying samples and operators earning testnet OROG. The multi-firm
-      audit is in progress; mainnet TGE follows it. The remaining arc —
+      The W0 and W1 build waves are shipped as local code and verification
+      artifacts. Forge testnet, validator replay, operator rewards, and the
+      multi-firm audit are planned readiness gates; mainnet TGE follows only
+      after those gates close. The remaining arc —
       permissionless onboarding, the ETH bridge, mobile inference, federated
       post-training — is future, each phase gated on real KPIs from the
       previous one. Gates are real: missing one moves the next phase, not the
@@ -189,8 +189,8 @@ const statusLabel: Record<Phase["status"], string> = {
     <p class="heading-eyebrow">Phase detail</p>
     <h2 class="mt-2 text-2xl font-semibold tracking-tight">Targets, gates, KPIs.</h2>
     <p class="mt-3 max-w-3xl text-crust-300">
-      The first four phases map to the visual arc above (two shipped, Forge
-      live, audit in progress). The remaining five are sequenced after
+      The first four phases map to the visual arc above (two shipped locally,
+      Forge planned, audit planned). The remaining five are sequenced after
       mainnet TGE: permissionless onboarding, mobile + bridge, RL pilots,
       federated post-training, and the Phase 4 pretraining-from-scratch
       go/no-go.

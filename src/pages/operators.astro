@@ -47,12 +47,15 @@ const rewardSplit = [
   { who: "Governance stakers", pct: "5%", why: "Only if governance retains a real security function (slashing arbitration, parameter review). Otherwise rolls into the 15% verification slice." },
 ];
 
-const cliExample = `# Install the wallet CLI
-curl -fsSL https://orogen.network/install.sh | sh
-wallet-cli --version
+const cliExample = `# Wallet CLI and worker binaries are released after signed
+# Forge artifacts exist. Until then, build from the source repositories.
+git clone https://github.com/orogen-network/wallet-cli.git
+cd wallet-cli
+cargo build --release
+./target/release/wallet-cli --version
 
-# Register an operator
-wallet-cli register-operator \\
+# Planned Forge registration flow
+./target/release/wallet-cli register-operator \\
   --coldkey ~/.orogen/coldkey.json \\
   --hotkey  ~/.orogen/hotkey.json \\
   --tier    dc-standard \\
@@ -62,7 +65,7 @@ wallet-cli register-operator \\
   --region  us-east-1 \\
   --bond    100
 
-# Start the worker
+# Planned worker start flow
 orogen-worker serve \\
   --backend vllm \\
   --determinism on \\
@@ -249,7 +252,7 @@ orogen-worker serve \\
 
   <section class="container-page py-16">
     <p class="heading-eyebrow">Bootstrap</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">From install to first job.</h2>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">From source build to registration readiness.</h2>
 
     <CodeBlock code={cliExample} lang="bash" filename="install.sh" />
 
@@ -257,13 +260,13 @@ orogen-worker serve \\
       The wallet CLI handles coldkey/hotkey ceremony, attestation report
       generation, and on-chain registration. The worker daemon embeds vLLM V1
       (or SGLang / TRT-LLM / llama.cpp for the edge tier) with the
-      Orogen-specific plugin loaded. First job after registration usually
-      lands within 2–3 epochs (~5 minutes) — the router waits for the first
-      heartbeat and at least one validator probe to confirm the tier claim.
+      Orogen-specific plugin loaded. Forge registration and first-job routing
+      remain behind the public endpoint, signed-artifact, and validator-probe
+      readiness gates.
     </p>
 
     <div class="mt-8 flex flex-wrap gap-3">
-      <CtaButton href="/downloads" variant="primary">Download node binaries</CtaButton>
+      <CtaButton href="/downloads" variant="primary">Artifact policy</CtaButton>
       <CtaButton href="https://docs.orogen.network" variant="secondary" rel="noopener noreferrer">Operator guide</CtaButton>
       <CtaButton href="/validators" variant="ghost">Validator role</CtaButton>
     </div>

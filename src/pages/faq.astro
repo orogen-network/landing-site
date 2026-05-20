@@ -56,7 +56,7 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "When does mainnet TGE follow Forge?",
-    a: "Forge testnet is live now (seed validator + chain-indexer + GraphQL up; operator and customer onboarding paths in active integration). Mainnet TGE follows the multi-firm chain audit and is conditional on the published phase gates: a sustained centralised-gateway revenue baseline (90-day window), AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
+    a: "Forge testnet is the next public readiness gate, not a current production claim. Mainnet TGE follows Forge operation and the multi-firm chain audit, and is conditional on the published phase gates: a sustained centralised-gateway revenue baseline (90-day window), AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
   },
 
   // ---- Customers ----
@@ -73,7 +73,7 @@ const qas: QA[] = [
   {
     aud: "customers",
     q: "How do I verify a receipt independently?",
-    a: "Every response carries a receipt object containing (model_hash, adapter_hash, prompt_hash, output_hash, operator_hotkey, attestation_quote, timestamp, nonce, signature). The Python and TypeScript SDKs ship a `receipt.verify()` helper that checks (a) the operator signature against the on-chain hotkey, (b) the attestation chain against NVTrust + Intel TA / AMD KDS root certificates, and (c) the (model, adapter) Merkle roots against pallet-model-registry. You can also drop the receipt into the attestation explorer at attestation.orogen.network and verify in the browser.",
+    a: "Every response carries a receipt object containing (model_hash, adapter_hash, prompt_hash, output_hash, operator_hotkey, attestation_quote, timestamp, nonce, signature). The Python and TypeScript SDKs ship a `receipt.verify()` helper that checks (a) the operator signature against the on-chain hotkey, (b) the attestation chain against NVTrust + Intel TA / AMD KDS root certificates, and (c) the (model, adapter) Merkle roots against pallet-model-registry. Browser verification is planned through the attestation explorer once public surfaces are live.",
   },
   {
     aud: "customers",
