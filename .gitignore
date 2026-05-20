@@ -1,6 +1,7 @@
 # build output
 dist/
 .astro/
+/public/downloads/orogen-mica-whitepaper.pdf
 
 # dependencies
 node_modules/
