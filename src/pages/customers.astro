@@ -5,10 +5,10 @@ import CodeBlock from "../components/CodeBlock.astro";
 import CtaButton from "../components/CtaButton.astro";
 
 const pythonExample = `# pip install orogen-sdk
-# Or use the OpenAI client directly — Orogen exposes /v1/chat/completions.
+# Or use the OpenAI client directly once Forge endpoints are announced.
 from orogen import Orogen
 
-client = Orogen(api_key="og_live_...", base_url="https://api.orogen.network/v1")
+client = Orogen(api_key="og_test_...", base_url="$OROGEN_GATEWAY_URL/v1")
 
 response = client.chat.completions.create(
     model="llama-3.1-70b-instruct@my-finetune-v3",   # base@adapter syntax
@@ -29,7 +29,7 @@ import { Orogen } from "@orogen/sdk";
 
 const client = new Orogen({
   apiKey: process.env.OROGEN_API_KEY,
-  baseURL: "https://api.orogen.network/v1",
+  baseURL: \`\${process.env.OROGEN_GATEWAY_URL}/v1\`,
 });
 
 const response = await client.chat.completions.create({
@@ -51,15 +51,15 @@ import litellm
 response = litellm.completion(
     model="orogen/llama-3.1-70b-instruct@my-finetune-v3",
     messages=[{"role": "user", "content": "Hello"}],
-    api_key="og_live_...",
+    api_key="og_test_...",
 )`;
 
 const openaiCompat = `# Use the OpenAI SDK as-is — Orogen is a drop-in replacement
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="og_live_...",
-    base_url="https://api.orogen.network/v1",
+    api_key="og_test_...",
+    base_url="$OROGEN_GATEWAY_URL/v1",
 )
 
 response = client.chat.completions.create(
@@ -76,7 +76,7 @@ receipt = response.receipt.to_dict()
 #                 operator_hotkey, attestation_quote, timestamp, nonce, sig
 ok = verify_receipt(
     receipt,
-    chain_rpc="https://rpc.orogen.network",
+    chain_rpc="$OROGEN_RPC_URL",
     # Optionally pin a known-good attestation chain
     nvtrust_root_ca="/etc/orogen/nvtrust-roots.pem",
 )`;
@@ -93,10 +93,11 @@ ok = verify_receipt(
       Drop-in OpenAI compatibility. Receipt-grade verifiability.
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Point your existing OpenAI client at <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">https://api.orogen.network/v1</code>
-      and your code works unchanged. The difference shows up in two places: you
-      can pick a hardware tier per request, and every response comes back with a
-      receipt that you can verify locally against the chain.
+      Point your existing OpenAI client at the Forge gateway once public
+      endpoints are announced, and your code works unchanged. The difference
+      shows up in two places: you can pick a hardware tier per request, and
+      every response comes back with a receipt that you can verify locally
+      against the chain.
     </p>
   </section>
 

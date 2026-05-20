@@ -161,7 +161,7 @@ The following milestones reflect the project's plan as of the date of this white
 |---|---|---|---|
 | Stealth / research | 2025 H2 → 2026 Q1 | Completed | Research dossier, design, initial team. |
 | Centralised stack | 2026 Q1 → 2026 Q2 | Completed | Inference gateway operational; first paying customers in pilot. |
-| Forge testnet | 2026 Q2 → 2027 Q1 | **Live as of date of publication** | Public testnet "Forge". Operators register, validators replay, customers route OpenAI-compatible traffic. Testnet OROG only — no economic value. |
+| Forge testnet | 2026 Q2 → 2027 Q1 | Readiness phase | Public testnet "Forge". Operators register, validators replay, and customers route OpenAI-compatible traffic only after public endpoints and release gates are announced. Testnet OROG only — no economic value. |
 | Audit | 2027 Q1 → 2027 Q2 | Planned | Multi-firm chain and protocol audits. |
 | TGE / mainnet | 2027 Q2 | Planned | Token Generation Event; mainnet block production; BME loop active from day 1. |
 | Permissionless transition | 2027 Q3 | Planned | Operator registration becomes fully permissionless; multi-vendor attestation required. |
