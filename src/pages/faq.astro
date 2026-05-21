@@ -97,13 +97,8 @@ const qas: QA[] = [
   },
   {
     aud: "operators",
-    q: "What does a single H100 SXM model look like?",
-    a: "Modeled reference numbers (not measured from operator income today): at 50% utilization on Llama-3.1-70B FP8 served at dc-standard ($0.24/1M output tokens after the 0.6× tier multiplier), modeled gross is ~$93/day. The operator share of per-job emission (75% of the pallet-computed mint at oracle spot, default 70% auto-swapped to USDC) plus the gross-revenue spread comes out to roughly $135/day before cost in the model. Against a current mid-tier cloud H100 cost of ~$48/day the modeled net is ~$87/day. Full assumption stack on the operators page. These are design-time figures, not realized operator income, and not a forecast.",
-  },
-  {
-    aud: "operators",
     q: "How is the operator paid in USD, not in volatile OROG?",
-    a: "The chain mints OROG to the operator at oracle spot when the job finalises. The operator hotkey is configured with an `auto_swap_pct` parameter (default 70%) that immediately routes that fraction to USDC through the protocol-managed AMM. The net effect: the operator receives USD-equivalent units mechanically, and only the configurable residual remains exposed to OROG price. The customer pays in USDC at the gateway; the BME loop is the only conduit between those two USD flows.",
+    a: "Settlement is computed per verified job at oracle spot when the job finalises. The operator hotkey includes an `auto_swap_pct` parameter that can route a configured fraction through the protocol-managed AMM. Customer payment, token burn, verifier sampling, and settlement are tied to completed work; holding capital alone does not create payment rights.",
   },
 
   // ---- Validators ----

@@ -219,33 +219,27 @@ orogen-worker serve \\
               <td>Base posture; large customers negotiate sub-base via volume.</td>
             </tr>
             <tr>
-              <td>Net revenue at 50% utilization (24h × 4500 tok/s × $0.24/M)</td>
-              <td class="text-right font-mono">~$93 / day gross</td>
-              <td>Gross before protocol take.</td>
+              <td>Reference billable volume at 50% utilization</td>
+              <td class="text-right font-mono">~389M output tok / day</td>
+              <td>24h × 4500 tok/s, before routing, verification, and customer demand constraints.</td>
             </tr>
             <tr>
-              <td>Operator share (75% of emission)</td>
-              <td class="text-right font-mono">~$135 / day</td>
-              <td>Effective payout including the BME mint at oracle spot. Operator share is computed against per-job emission, then auto-swapped to USDC by default.</td>
+              <td>Settlement path</td>
+              <td class="text-right font-mono">per verified job</td>
+              <td>Customer-side burn, verifier sampling, and protocol settlement are computed by the runtime.</td>
             </tr>
             <tr>
-              <td>Net margin per H100 SXM</td>
-              <td class="text-right font-mono">~$87 / day</td>
-              <td>$135 − $48. Higher at higher utilization, lower if KV-cache strategy is poor.</td>
-            </tr>
-            <tr>
-              <td>Annualized margin per H100 SXM</td>
-              <td class="text-right font-mono">~$31,000 / yr</td>
-              <td>$87 × 365. 8× H100 SXM rig: ~$248K / yr at 50% util.</td>
+              <td>Operator exposure controls</td>
+              <td class="text-right font-mono">configurable</td>
+              <td>Auto-swap percentage, routing tier, and stake floor are registration parameters.</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p class="mt-3 text-xs text-crust-500">
-        Disclaimer. Numbers are reference points sourced from public operator
-        cost data and modeled vLLM throughput at design assumptions; they are
-        not realized operator income and not a forecast. Token-denominated
-        payouts depend on emission policy and oracle spot at job time.
+        Reference values are design assumptions for capacity planning and
+        integration testing. They are not realized operator revenue, not a
+        forecast, and not financial guidance.
       </p>
     </div>
   </section>

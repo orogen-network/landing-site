@@ -15,8 +15,8 @@ const valueProps = [
     body: "Every job returns a signed receipt bound to (model_hash, adapter_hash, prompt_hash, output_hash, attestation_quote). The chain stores the commitment; validators sample-replay 1–5% of jobs on identical hardware to detect drift.",
   },
   {
-    title: "USD-denominated payouts for operators",
-    body: "Burn-and-mint loop quotes operator payouts at oracle spot at job time. Default 70% auto-swap to USDC at protocol AMM. Routing depends on served demand and verification results.",
+    title: "Work-based operator settlement",
+    body: "Burn-and-mint accounting is computed at oracle spot per verified job. Routing depends on served demand, attestation status, and verification results.",
   },
   {
     title: "Demand-elastic emission",
@@ -38,7 +38,7 @@ const steps = [
   {
     n: "3",
     title: "Verify + settle",
-    body: "Validators sample 1–5% of jobs and replay on identical hardware; mismatches trigger an opML challenge window. On finalisation, CUC is consumed and fresh OROG mints — 75% to the operator, 15% to verification work, 5% treasury, 5% governance.",
+    body: "Validators sample 1–5% of jobs and replay on identical hardware; mismatches trigger an opML challenge window. On finalisation, CUC is consumed and the runtime applies the protocol settlement split.",
   },
 ];
 
