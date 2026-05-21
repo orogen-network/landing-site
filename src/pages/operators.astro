@@ -42,7 +42,7 @@ const attestationReqs = [
 
 const settlementSplit = [
   { who: "Operator (provider)", pct: "75%", why: "The compute is the product." },
-  { who: "Verification work (validators + opML watchers + zkML provers)", pct: "15%", why: "Real GPU work; paid proportional to verification performed and consensus alignment." },
+  { who: "Verification work (validators + opML watchers + zkML provers)", pct: "15%", why: "Work-based settlement proportional to verification performed and consensus alignment." },
   { who: "Protocol treasury", pct: "5%", why: "Audits, security response, customer integrations. Bounded spend rate (≤ 18-month runway burn)." },
   { who: "Governance stakers", pct: "5%", why: "Only if governance retains a real security function (slashing arbitration, parameter review). Otherwise rolls into the 15% verification slice." },
 ];
@@ -80,7 +80,7 @@ orogen-worker serve \\
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">For operators</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Run a node. Get paid in USD.</h1>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Run a node. Serve verified work.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
       Orogen operators are the GPU side of the network. You run an open-source
       inference server (vLLM V1, SGLang, TRT-LLM, llama.cpp), with three
