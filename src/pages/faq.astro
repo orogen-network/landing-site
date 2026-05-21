@@ -95,12 +95,6 @@ const qas: QA[] = [
     q: "Can I run on consumer hardware?",
     a: "Yes, via the edge tier (Mac Studio Ultra, dual 3090, prosumer 4090/5090) and the embed-only tier (CPU AVX-512, Apple M-series). Edge and embed-only are stake-only verification — you accept lower pricing and the customer accepts a weaker verification posture. The prosumer tier (1–2× RTX 5090 / PRO 6000) requires deterministic-kernel mode and L4 replay sampling at 10%+. Apple Silicon TEE is not currently supported (no NVTrust equivalent in 2026).",
   },
-  {
-    aud: "operators",
-    q: "How does operator settlement reduce token exposure?",
-    a: "Settlement is computed per verified job at oracle spot when the job finalises. The operator hotkey includes an `auto_swap_pct` parameter that can route a configured fraction through the protocol-managed AMM. Customer payment, token burn, verifier sampling, and settlement are tied to completed work; holding capital alone does not create payment rights.",
-  },
-
   // ---- Validators ----
   {
     aud: "validators",
