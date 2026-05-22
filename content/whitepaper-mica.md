@@ -564,7 +564,7 @@ For full disclosure, the application-layer footprint, which is materially larger
 
 ### J.4 Methodology
 
-Indicators in §J.2 and §J.3 are derived from on-chain heartbeat data (`pallet-attestation-registry`, `heartbeat-svc`) and operator manifests, aggregated via `chain-indexer` and published on the public subsidy-and-sustainability dashboard at orogen.network/dashboard. Methodology follows the indicators set out in Annex III to Commission Delegated Regulation (EU) 2025/422, where applicable to a Proof-of-Stake protocol. Renewable-energy claims by operators are verified on a sampling basis by an independent third party [TO FILL — name, frequency of verification].
+Indicators in §J.2 and §J.3 are derived from on-chain heartbeat data (`pallet-attestation-registry`, `heartbeat-svc`) and operator manifests, aggregated via `chain-indexer` and published on the planned public subsidy-and-sustainability dashboard. Methodology follows the indicators set out in Annex III to Commission Delegated Regulation (EU) 2025/422, where applicable to a Proof-of-Stake protocol. Renewable-energy claims by operators are verified on a sampling basis by an independent third party [TO FILL — name, frequency of verification].
 
 ### J.5 Mitigation actions
 
