@@ -21,6 +21,36 @@ const artifacts: Artifact[] = [
   },
 ];
 
+// Client binaries published as GitHub releases (Forge testnet, v0.1.0-testnet).
+// Linux x86-64 (glibc); unsigned testnet builds — checksums attached to each release.
+interface Binary {
+  label: string;
+  repo: string;
+  tag: string;
+  asset: string;
+  description: string;
+}
+const binaries: Binary[] = [
+  {
+    label: "wallet-cli",
+    repo: "wallet-cli",
+    tag: "v0.1.0-testnet",
+    asset: "wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz",
+    description: "Wallet + operator CLI: create an account, get testnet OROG from the faucet, register as an operator, and send heartbeats. The tool a miner needs to join.",
+  },
+  {
+    label: "mining-cli",
+    repo: "chain-tooling-rust",
+    tag: "v0.1.0-testnet",
+    asset: "mining-cli-0.1.0-x86_64-linux-gnu.tar.gz",
+    description: "Chain-spec generation, RFC list/check, and slash-receipt verification tooling.",
+  },
+];
+const ghRelease = (repo: string, tag: string) =>
+  `https://github.com/orogen-network/${repo}/releases/tag/${tag}`;
+const ghAsset = (repo: string, tag: string, asset: string) =>
+  `https://github.com/orogen-network/${repo}/releases/download/${tag}/${asset}`;
+
 // Package names verified against the source:
 //   customer-sdk-py/pyproject.toml  ->  orogen-sdk   (PyPI name; not published yet)
 //   customer-sdk-ts/package.json    ->  @orogen/sdk  (npm name; not published yet)
@@ -39,9 +69,11 @@ const installLitellm = `# Drop-in LiteLLM provider — registers the orogen/* na
 # Not on PyPI yet (publish coming soon) — install from source:
 pip install "git+https://github.com/orogen-network/litellm-backend-driver"`;
 
-const installNode = `# Wallet CLI + chain-node tooling (Linux x86-64).
-# Binary tarballs are published from signed GitHub releases once a release is cut.
-# Until then, build from source in the corresponding repository.`;
+const installNode = `# Wallet CLI (Linux x86-64) — Forge testnet release v0.1.0-testnet
+curl -fsSLO https://github.com/orogen-network/wallet-cli/releases/download/v0.1.0-testnet/wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz
+curl -fsSLO https://github.com/orogen-network/wallet-cli/releases/download/v0.1.0-testnet/wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz.sha256
+sha256sum -c wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz.sha256   # verify
+tar xzf wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz && ./wallet-cli --help`;
 
 const verifyArtifact = `# Release artifact policy:
 # 1. GitHub release contains the tarball, SHA256SUMS, manifest, SBOM, and provenance.
@@ -58,11 +90,52 @@ const verifyArtifact = `# Release artifact policy:
     <p class="heading-eyebrow">Downloads</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Binaries, SDKs, and the whitepaper.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Current artifact policy. The SDKs are not on PyPI / npm yet (registry
-      publish is coming soon) — install them from source for now. Node and
-      wallet binaries are linked here only after a signed release tarball
-      exists. Source for every artifact lives at
+      Client binaries for the <strong>Forge testnet</strong> are below
+      (<code class="rounded bg-crust-800 px-1 py-0.5">v0.1.0-testnet</code>,
+      Linux x86-64, checksummed — unsigned testnet builds). The SDKs are not on
+      PyPI / npm yet (registry publish is coming soon) — install them from
+      source for now. Source for every artifact lives at
       <a href="https://github.com/orogen-network">github.com/orogen-network</a>.
+    </p>
+  </section>
+
+  <section class="container-page pt-16">
+    <p class="heading-eyebrow">Client binaries</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Forge testnet · Linux x86-64.</h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      Download, verify the SHA-256, and run. These are unsigned testnet builds;
+      mainnet releases will be signed with the foundation release key.
+    </p>
+    <div class="mt-8 grid gap-4 lg:grid-cols-2">
+      {
+        binaries.map((b) => (
+          <div class="surface-card flex flex-col gap-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-base font-semibold text-crust-100">{b.label}</h3>
+                <p class="mt-1 text-xs font-mono text-crust-500">
+                  {b.tag} · Linux x86-64 ·{" "}
+                  <a href={ghRelease(b.repo, b.tag)} rel="noopener noreferrer">release notes + SHA-256</a>
+                </p>
+              </div>
+              <a
+                href={ghAsset(b.repo, b.tag, b.asset)}
+                class="shrink-0 rounded-md border border-magma-500/60 bg-magma-500/10 px-3 py-1.5 text-sm font-medium text-magma-300 no-underline hover:bg-magma-500/20"
+                rel="noopener noreferrer"
+              >
+                Download
+              </a>
+            </div>
+            <p class="text-sm leading-relaxed text-crust-300">{b.description}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 text-xs text-crust-500">
+      SDKs (Python / TypeScript) and the chain-node binary are published as
+      GitHub releases too — see
+      <a href="https://github.com/orogen-network">github.com/orogen-network</a>
+      and the quick-install commands below.
     </p>
   </section>
 
