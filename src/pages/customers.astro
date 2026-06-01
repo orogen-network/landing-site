@@ -4,62 +4,66 @@ import TierTable from "../components/TierTable.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import CtaButton from "../components/CtaButton.astro";
 
-const pythonExample = `# pip install orogen-sdk
-# Or use the OpenAI client directly once Forge endpoints are announced.
-from orogen import Orogen
+const pythonExample = `# Not on PyPI yet — install from source (registry publish coming soon):
+#   pip install "git+https://github.com/orogen-network/customer-sdk-py"
+from orogen_sdk import OrogenClient
 
-client = Orogen(api_key="og_test_...", base_url="$OROGEN_GATEWAY_URL/v1")
+# base_url defaults to the live test-mode gateway when omitted.
+with OrogenClient(
+    api_key="orog_...",
+    base_url="https://gateway.orogen.network/v1",
+) as client:
+    response = client.chat.completions.create(
+        model="llama-3.1-70b-instruct@my-finetune-v3",   # base@adapter syntax
+        messages=[{"role": "user", "content": "Summarise this contract clause..."}],
+        useful_tier="dc-standard",      # dc-premium | dc-standard | cloud-rented | prosumer | edge | embed-only
+        max_tokens=512,
+        useful_verify_receipt=True,     # client-side, best-effort receipt check
+    )
 
-response = client.chat.completions.create(
-    model="llama-3.1-70b-instruct@my-finetune-v3",   # base@adapter syntax
-    messages=[{"role": "user", "content": "Summarise this contract clause..."}],
-    tier="dc-standard",      # dc-premium | dc-standard | cloud-rented | prosumer | edge | embed-only
-    max_tokens=512,
-)
+    print(response.choices[0]["message"]["content"])
+    # Receipt + verification summary travel with every response.
+    print(response.useful_verification.overall)`;
 
-# Receipt verification (every response carries a chain-anchored receipt)
-ok = response.receipt.verify()
-assert ok, "operator signature or attestation chain failed to verify"
+const typescriptExample = `// Not on npm yet — install from source (registry publish coming soon):
+//   npm install github:orogen-network/customer-sdk-ts
+import { OrogenClient } from "@orogen/sdk";
 
-print(response.choices[0].message.content)
-print(response.receipt.model_hash, response.receipt.adapter_hash)`;
-
-const typescriptExample = `// npm install @orogen/sdk
-import { Orogen } from "@orogen/sdk";
-
-const client = new Orogen({
-  apiKey: process.env.OROGEN_API_KEY,
-  baseURL: \`\${process.env.OROGEN_GATEWAY_URL}/v1\`,
+const client = new OrogenClient({
+  apiKey: process.env.OROGEN_API_KEY!,
+  // baseUrl defaults to https://gateway.orogen.network/v1 when omitted.
+  baseUrl: "https://gateway.orogen.network/v1",
 });
 
 const response = await client.chat.completions.create({
   model: "llama-3.1-70b-instruct@my-finetune-v3",
   messages: [{ role: "user", content: "Summarise this contract clause..." }],
-  tier: "dc-standard",
-  maxTokens: 512,
+  useful_tier: "dc-standard",
+  max_tokens: 512,
+  useful_verify_receipt: true,
 });
 
-const ok = await response.receipt.verify();
-if (!ok) throw new Error("operator signature or attestation chain failed");
+console.log(response.choices[0]?.message.content);
+console.log(response.useful_verification);`;
 
-console.log(response.choices[0].message.content);
-console.log(response.receipt.modelHash, response.receipt.adapterHash);`;
-
-const litellmExample = `# pip install 'litellm[orogen]' or 'litellm-orogen-provider'
+const litellmExample = `# Not on PyPI yet — install from source (coming soon):
+#   pip install "git+https://github.com/orogen-network/litellm-backend-driver"
 import litellm
 
 response = litellm.completion(
     model="orogen/llama-3.1-70b-instruct@my-finetune-v3",
     messages=[{"role": "user", "content": "Hello"}],
-    api_key="og_test_...",
+    api_base="https://gateway.orogen.network/v1",
+    api_key="orog_...",
 )`;
 
-const openaiCompat = `# Use the OpenAI SDK as-is — Orogen is a drop-in replacement
+const openaiCompat = `# Use the OpenAI SDK as-is — the gateway is OpenAI-compatible.
+# You lose tier selection + receipt verification, but the request works.
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="og_test_...",
-    base_url="$OROGEN_GATEWAY_URL/v1",
+    api_key="orog_...",
+    base_url="https://gateway.orogen.network/v1",
 )
 
 response = client.chat.completions.create(
@@ -67,19 +71,14 @@ response = client.chat.completions.create(
     messages=[{"role": "user", "content": "Hello"}],
 )`;
 
-const verifyReceipt = `# Verifying a receipt independently
-import json, hashlib
-from orogen.verify import verify_receipt
+const verifyReceipt = `# Verifying a receipt independently with the SDK helper.
+from orogen_sdk import verify_receipt
 
-receipt = response.receipt.to_dict()
-# Receipt fields: model_hash, adapter_hash, prompt_hash, output_hash,
-#                 operator_hotkey, attestation_quote, timestamp, nonce, sig
-ok = verify_receipt(
-    receipt,
-    chain_rpc="$OROGEN_RPC_URL",
-    # Optionally pin a known-good attestation chain
-    nvtrust_root_ca="/etc/orogen/nvtrust-roots.pem",
-)`;
+# response.useful_receipt is the RFC-0001 record returned with every response.
+result = verify_receipt(response.useful_receipt, expected_nonce=nonce)
+# result fields: signature_valid, attestation_fresh, nonce_unique,
+#                model_in_registry, overall
+assert result.overall, "receipt failed client-side verification"`;
 ---
 
 <Base
@@ -93,11 +92,13 @@ ok = verify_receipt(
       Drop-in OpenAI compatibility. Receipt-grade verifiability.
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Point your existing OpenAI client at the Forge gateway once public
-      endpoints are announced, and your code works unchanged. The difference
-      shows up in two places: you can pick a hardware tier per request, and
-      every response comes back with a receipt that you can verify locally
-      against the chain.
+      Point your existing OpenAI client at the live Forge gateway
+      (<code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">https://gateway.orogen.network/v1</code>)
+      and your code works unchanged. The difference shows up in two places: you
+      can pick a hardware tier per request, and every response comes back with a
+      receipt that you can verify locally against the chain. The gateway is in
+      <strong class="text-crust-100">test mode</strong> on Forge — see the
+      <a class="text-magma-300 underline" href="https://docs.orogen.network/start/forge-testnet">testnet caveats</a>.
     </p>
   </section>
 
@@ -149,7 +150,8 @@ ok = verify_receipt(
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">orogen-sdk</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
       The Python SDK wraps the OpenAI client, adds tier selection, and exposes
-      the receipt object. <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">pip install orogen-sdk</code>.
+      the receipt object. Not on PyPI yet (coming soon) — install from source:
+      <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">pip install "git+https://github.com/orogen-network/customer-sdk-py"</code>.
     </p>
     <CodeBlock code={pythonExample} lang="python" filename="example.py" />
   </section>
@@ -160,8 +162,9 @@ ok = verify_receipt(
       <h2 class="mt-2 text-3xl font-semibold tracking-tight">@orogen/sdk</h2>
       <p class="mt-4 max-w-3xl text-crust-300">
         The TypeScript SDK is a thin layer over <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">fetch</code>
-        with first-class types for tiers and receipts.
-        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">npm install @orogen/sdk</code>.
+        with first-class types for tiers and receipts. Not on npm yet (coming
+        soon) — install from source:
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">npm install github:orogen-network/customer-sdk-ts</code>.
       </p>
       <CodeBlock code={typescriptExample} lang="typescript" filename="example.ts" />
     </div>

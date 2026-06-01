@@ -71,7 +71,7 @@ const qas: QA[] = [
   {
     aud: "customers",
     q: "How do I verify a receipt independently?",
-    a: "Every response carries a receipt object containing (model_hash, adapter_hash, prompt_hash, output_hash, operator_hotkey, attestation_quote, timestamp, nonce, signature). The Python and TypeScript SDKs ship a `receipt.verify()` helper that checks (a) the operator signature against the on-chain hotkey, (b) the attestation chain against NVTrust + Intel TA / AMD KDS root certificates, and (c) the (model, adapter) Merkle roots against pallet-model-registry. Browser verification is planned through the attestation explorer once public surfaces are live.",
+    a: "Every response carries a `useful_receipt` (the RFC-0001 record). Request `useful_verify_receipt=true` and the SDK runs a client-side check, or call the `verify_receipt(receipt, expected_nonce=...)` helper directly. The result reports `signature_valid`, `attestation_fresh`, `nonce_unique`, `model_in_registry`, and `overall`. Client-side verification is best-effort; authoritative verification is on-chain by validators via RFC-0006 sampling. You can browse submitted attestation reports at attestation.orogen.network.",
   },
   {
     aud: "customers",

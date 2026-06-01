@@ -22,24 +22,22 @@ const artifacts: Artifact[] = [
 ];
 
 // Package names verified against the source:
-//   customer-sdk-py/pyproject.toml  →  orogen-sdk      (PyPI)
-//   customer-sdk-ts/package.json    →  @orogen/sdk     (npm)
-//   public/install.sh                →  wallet-cli installer
+//   customer-sdk-py/pyproject.toml  ->  orogen-sdk   (PyPI name; not published yet)
+//   customer-sdk-ts/package.json    ->  @orogen/sdk  (npm name; not published yet)
+//   public/install.sh                ->  wallet-cli installer
+// SDKs are not on PyPI/npm yet; install from the source repos for now.
 
-const installPython = `# Python SDK — Python ≥ 3.10
-pip install orogen-sdk
-# or with uv (recommended for reproducible installs):
-uv pip install orogen-sdk`;
+const installPython = `# Python SDK — Python >= 3.10
+# Not on PyPI yet (publish coming soon) — install from source:
+pip install "git+https://github.com/orogen-network/customer-sdk-py"`;
 
-const installTypescript = `# TypeScript / Node ≥ 20 (works in browsers via fetch)
-npm install @orogen/sdk
-# or
-pnpm add @orogen/sdk
-# or
-yarn add @orogen/sdk`;
+const installTypescript = `# TypeScript / Node >= 20 (works in browsers via fetch)
+# Not on npm yet (publish coming soon) — install from source:
+npm install github:orogen-network/customer-sdk-ts`;
 
 const installLitellm = `# Drop-in LiteLLM provider — registers the orogen/* namespace
-pip install 'litellm[orogen]'`;
+# Not on PyPI yet (publish coming soon) — install from source:
+pip install "git+https://github.com/orogen-network/litellm-backend-driver"`;
 
 const installNode = `# Wallet CLI + chain-node tooling (Linux x86-64).
 # Binary tarballs are published from signed GitHub releases once a release is cut.
@@ -60,9 +58,10 @@ const verifyArtifact = `# Release artifact policy:
     <p class="heading-eyebrow">Downloads</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Binaries, SDKs, and the whitepaper.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Current artifact policy. SDKs install from PyPI and npm; node and wallet
-      binaries are linked here only after a signed release tarball exists.
-      Source for every artifact lives at
+      Current artifact policy. The SDKs are not on PyPI / npm yet (registry
+      publish is coming soon) — install them from source for now. Node and
+      wallet binaries are linked here only after a signed release tarball
+      exists. Source for every artifact lives at
       <a href="https://github.com/orogen-network">github.com/orogen-network</a>.
     </p>
   </section>
@@ -72,8 +71,8 @@ const verifyArtifact = `# Release artifact policy:
       <p class="heading-eyebrow">Quick install</p>
       <h2 class="mt-2 text-3xl font-semibold tracking-tight">One-liners.</h2>
       <p class="mt-3 max-w-3xl text-crust-300">
-        Three SDK registry installs plus the binary release policy for
-        operators, validators, and self-hosters.
+        Three SDK source installs (registry publish coming soon) plus the
+        binary release policy for operators, validators, and self-hosters.
       </p>
 
       <div class="mt-8 grid gap-5 lg:grid-cols-2">
@@ -104,8 +103,9 @@ const verifyArtifact = `# Release artifact policy:
       </div>
 
       <p class="mt-6 text-xs text-crust-500">
-        Note: PyPI and npm are the recommended SDK installation path. Direct
-        download links are added only when the corresponding file is present in
+        Note: the SDKs are not yet on PyPI / npm — install from the source
+        repos above for now; registry publish is coming soon. Direct download
+        links are added only when the corresponding file is present in
         <code class="rounded bg-crust-800 px-1 py-0.5">public/downloads/</code>
         and covered by release checksums.
       </p>

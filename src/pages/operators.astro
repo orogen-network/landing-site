@@ -47,30 +47,36 @@ const settlementSplit = [
   { who: "Governance stakers", pct: "5%", why: "Only if governance retains a real security function (slashing arbitration, parameter review). Otherwise rolls into the 15% verification slice." },
 ];
 
-const cliExample = `# Wallet CLI and worker binaries are released after signed
-# Forge artifacts exist. Until then, build from the source repositories.
+const cliExample = `# Build wallet-cli from source (release tarballs come with a signed release).
 git clone https://github.com/orogen-network/wallet-cli.git
 cd wallet-cli
 cargo build --release
-./target/release/wallet-cli --version
+WALLET=./target/release/wallet-cli
 
-# Planned Forge registration flow
-./target/release/wallet-cli register-operator \\
-  --coldkey ~/.orogen/coldkey.json \\
-  --hotkey  ~/.orogen/hotkey.json \\
-  --tier    dc-standard \\
-  --gpu-device-cert /etc/nvtrust/h100-cert.bin \\
-  --tdx-quote      /etc/tdx/quote.bin \\
-  --models  llama-3.1-70b-instruct,mixtral-8x22b-instruct \\
-  --region  us-east-1 \\
-  --bond    100
+# Point every command at the live Forge testnet RPC.
+export OROGEN_RPC_URL=wss://forge-rpc.orogen.network
 
-# Planned worker start flow
-orogen-worker serve \\
-  --backend vllm \\
-  --determinism on \\
-  --kv-strategy radix \\
-  --listen 0.0.0.0:7331`;
+# 1. Create an account (sr25519 hotkey + EVM key from one mnemonic).
+$WALLET new my-operator
+$WALLET address my-operator
+
+# 2. Fund it from the public faucet (testnet OROG, low-cap).
+curl -X POST https://faucet.orogen.network/drip-public \\
+  -H 'Content-Type: application/json' \\
+  -d '{"recipient":"<the ss58 address from step 1>"}'
+$WALLET balance my-operator
+
+# 3. Register as an operator. --stake is in plancks; MinStake = 1_000_000_000_000 (1 OROG).
+#    --attestation-hash defaults to the zero hash for bring-up.
+$WALLET register-operator my-operator \\
+  --stake 1000000000000 \\
+  --attestation-hash 0x0000000000000000000000000000000000000000000000000000000000000000 \\
+  --rpc-url wss://forge-rpc.orogen.network
+
+# 4. Submit an on-chain liveness heartbeat for the current epoch.
+$WALLET heartbeat-test my-operator --submit --epoch <current-epoch>
+
+# Worker daemon images are forthcoming at ghcr.io/orogen-network/infer-worker-*.`;
 ---
 
 <Base
@@ -251,12 +257,14 @@ orogen-worker serve \\
     <CodeBlock code={cliExample} lang="bash" filename="install.sh" />
 
     <p class="mt-4 max-w-3xl text-crust-300">
-      The wallet CLI handles coldkey/hotkey ceremony, attestation report
-      generation, and on-chain registration. The worker daemon embeds vLLM V1
-      (or SGLang / TRT-LLM / llama.cpp for the edge tier) with the
-      Orogen-specific plugin loaded. Forge registration and first-job routing
-      remain behind the public endpoint, signed-artifact, and validator-probe
-      readiness gates.
+      The wallet CLI handles account creation, attestation hash binding, and
+      on-chain registration against the live Forge RPC. The worker daemon embeds
+      vLLM V1 (or SGLang / TRT-LLM / llama.cpp for the edge tier) with the
+      Orogen-specific plugin loaded; the worker images are forthcoming at
+      <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">ghcr.io/orogen-network/infer-worker-*</code>.
+      Forge is a <strong class="text-crust-100">test-mode preview</strong>:
+      attestation uses mock quotes and the faucet is low-cap — see the
+      <a class="text-magma-300 underline" href="https://docs.orogen.network/start/forge-testnet">testnet caveats</a>.
     </p>
 
     <div class="mt-8 flex flex-wrap gap-3">
