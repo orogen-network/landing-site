@@ -63,13 +63,24 @@ const subsidyTargets = [
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">Tokenomics</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">OROG coordinates compute settlement.</h1>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">The token earns its supply.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Every unit of OROG is minted in response to a finalised inference job and
-      burned in response to a customer top-up. The chain enforces the rule; the
-      foundation has no discretionary mint authority. This page covers
-      utility, the burn-and-mint loop, emission policy, allocation at TGE, and
-      the subsidy targets the protocol commits to.
+      OROG is the settlement token of the Orogen network, and its design answers
+      the question a crypto-native reader asks first: where does new supply come
+      from. Issuance is minted only against verified inference work. Customers
+      pay in stablecoins, the gateway burns OROG to settle each completed job,
+      and new OROG enters circulation in proportion to the revenue that real
+      demand creates. There is no fixed inflation schedule, no halving calendar,
+      and no discretionary mint the foundation can reach for. The chain computes
+      the cap and enforces it.
+    </p>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Operators are paid per completed, verified job at the oracle spot price,
+      denominated against the dollar, with most of each payout auto-swapped to a
+      stablecoin at settlement. The token is the rail underneath the settlement,
+      not a position operators are forced to carry, and because issuance is
+      minted only against verified work, honest operators are not diluted by
+      emissions paid to anyone who did not do the job.
     </p>
   </section>
 
@@ -111,10 +122,11 @@ const subsidyTargets = [
     <p class="heading-eyebrow">Per-job settlement split</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">75 / 15 / 5 / 5.</h2>
     <p class="mt-3 max-w-3xl text-crust-300">
-      Every per-job emission — sized by the pallet rule below — splits four
-      ways. The slice for governance only flows if governance retains a real
-      security function (slashing arbitration, parameter review). Otherwise it
-      rolls into the verification slice.
+      Every per-job emission, sized by the pallet rule below, splits four ways,
+      and every slice maps to a working role. Governance stakers take their 5
+      percent only while governance holds a real security function such as
+      slashing arbitration or parameter review, and that slice folds back into
+      verification otherwise.
     </p>
 
     <div class="mt-8">
@@ -295,7 +307,7 @@ const subsidyTargets = [
     <p class="mt-6 max-w-3xl text-crust-300">
       Vesting summary. Team and locked-backer tranches vest over 36 months
       with a 12-month cliff. Ecosystem grants and provider bootstrap unlock per a
-      milestone-gated schedule managed by foundation governance with on-chain
+      milestone-based schedule managed by foundation governance with on-chain
       attestations. Public-sale tranche unlocks at TGE. Reserve is a long-tail
       buffer for adverse events; unlocking requires a supermajority governance
       vote with a 30-day timelock.
@@ -352,7 +364,7 @@ const subsidyTargets = [
     </div>
 
     <div class="mt-10 flex flex-wrap gap-3">
-      <CtaButton href="/roadmap" variant="primary">Roadmap and gates</CtaButton>
+      <CtaButton href="/roadmap" variant="primary">Roadmap</CtaButton>
       <CtaButton href="/operators" variant="secondary">Operator economics</CtaButton>
       <CtaButton href="/legal" variant="ghost">Legal disclaimers</CtaButton>
     </div>

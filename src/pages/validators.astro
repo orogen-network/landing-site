@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import CtaButton from "../components/CtaButton.astro";
 
-const slashingMath = `# Indicative slashing schedule (pallet-slashing, at-launch parameters)
+const slashingMath = `# Indicative slashing schedule (at-launch parameters)
 
 # Soft fault (single sampling mismatch on a low-stakes request)
 slash = min(stake * 0.005, 25 OROG)
@@ -21,152 +21,160 @@ governance_review = required (publish dispute panel verdict on-chain)`;
 
 <Base
   title="Validators"
-  description="Validators on Orogen sample-replay 1–5% of jobs on identical attested hardware. Yuma-style consensus, 10× operator-min stake, slashing math, and a hard separation between validators and the foundation-run validator-watcher set."
+  description="Earn by replaying a sample of Orogen jobs on identical hardware and catching faults. Replay-based verification, VRF-seeded sampling, work-weighted pay, and the full slashing math."
   path="/validators"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">For validators</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Validators are GPU operators with a different job.</h1>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+      Get paid to check the work.
+    </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      A validator runs the same hardware as a dc-standard or dc-premium
-      operator — but instead of serving customer inference, they pull a 1–5%
-      sample of finalised jobs and replay them. If the replay output disagrees
-      with the operator's signed receipt, the validator raises a challenge.
-      Disagreement is the signal; consensus over many validators is the
-      arbitrator.
+      A validator runs the same hardware as a datacenter operator, but instead of
+      serving customer inference, you pull a sample of finished jobs and re-run
+      them. When your replay output matches the operator's signed receipt, the
+      job stands. When it disagrees, you raise a challenge. You earn from the
+      verification slice in proportion to the replays you actually perform, so
+      your pay tracks the work you do rather than the size of your wallet.
     </p>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
       <p class="heading-eyebrow">The role</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Replay, not consensus on weights.</h2>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Replay, not opinion.</h2>
       <p class="mt-4 max-w-3xl text-crust-300">
-        Orogen validators do not vote on model outputs. They <em>replay</em>
-        them. The replay is bit-exact when (a) the operator runs in
-        deterministic-kernel mode and (b) the validator runs the same model and
-        adapter on equivalent hardware. The protocol pays the validator out of
-        the 15% verification slice in proportion to (replays performed) ×
-        (consensus alignment with the majority replay outcome).
+        Orogen validators do not vote on whether an answer is good. You
+        re-execute the job and compare hashes. The replay is bit-exact when the
+        operator runs in deterministic-kernel mode and you run the same model and
+        adapter on equivalent hardware, so a mismatch is a fact you can point at
+        rather than a judgment call. Your score comes from a physical replay
+        event with a verifiable input and output pair, so there is no rubric to
+        game and no subjective evaluation to dispute.
       </p>
-      <p class="mt-4 max-w-3xl text-crust-300">
-        This is the Yuma-style design from Bittensor's verifiable-work pattern,
-        applied to actual inference work rather than to subnet-defined miner
-        scoring. The crucial difference: the validator's score is derived from a
-        physical replay event with a verifiable input/output pair, not from a
-        subjective evaluation rubric.
-      </p>
+      <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Pull the receipt's committed tuple from the chain: model hash, adapter hash, prompt hash, output hash, attestation quote, and nonce.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Fetch the matching weights from the content-addressed CDN and replay the job on identical hardware.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>An exact output-hash match finalizes the job. A mismatch opens a challenge window.</li>
+      </ul>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Replay sampling (RFC-0006)</p>
+    <p class="heading-eyebrow">Sampling</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight">How the sample is drawn.</h2>
-    <ol class="mt-6 space-y-3 text-sm leading-relaxed text-crust-200">
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">VRF-seeded.</strong> Each epoch (~72 minutes), the chain produces a VRF output that seeds a
-        per-validator sampling schedule. The seed is unpredictable to operators ahead of time, preventing targeted optimisation.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Tier-weighted.</strong> Sampling rate is 1–5% at dc-premium/dc-standard, 5–10% at
-        cloud-rented, and 10%+ at prosumer. Edge and embed-only tiers are stake-only — they are not sampled but their stake is at risk for fraud disputes.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Quote-bound.</strong> The validator fetches the receipt's
-        (model_hash, adapter_hash, prompt_hash, output_hash, attestation_quote, nonce) tuple from the chain commitment, pulls the corresponding weights from the content-addressed CDN, and replays.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Match or challenge.</strong> Exact-match output_hash → finalisation. Mismatch → opML L5 challenge window opens; other validators are invited to replay; bisection narrows the divergent layer; dispute panel renders the slashing verdict.
-      </li>
-    </ol>
-    <p class="mt-3 text-xs text-crust-500">
-      RFC-0006 is the formal specification. Full text at <a class="underline" href="https://docs.orogen.network">docs.orogen.network</a>.
-    </p>
-  </section>
-
-  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
-    <div class="container-page">
-      <p class="heading-eyebrow">Stake requirements</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">10× the operator minimum.</h2>
-      <p class="mt-4 max-w-3xl text-crust-300">
-        Validators must hold 10× the operator-min stake for the tier they
-        sample. At launch parameters: 5,000 OROG to sample dc-premium, 1,000
-        OROG to sample dc-standard, 500 OROG to sample cloud-rented, 250 OROG
-        to sample prosumer. Validator stake is also slashable — for a missed
-        challenge, for a false-positive challenge raised against a correct
-        operator, and (severely) for collusion with a sampled operator.
-      </p>
-      <p class="mt-4 max-w-3xl text-crust-300">
-        The 15% verification slice is paid out per epoch in proportion to
-        replays actually performed (with consensus alignment as a multiplier).
-        A validator with stake but no replay activity receives no verification
-        allocation. This is the Bittensor 41/41/18 model inverted: the protocol
-        pays validators for verifiable work, not for being present.
-      </p>
-    </div>
-  </section>
-
-  <section class="container-page py-16">
-    <p class="heading-eyebrow">Yuma scoring</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Validator-vs-validator consensus.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
-      For each replay, the validator submits (job_id, replayed_output_hash,
-      decision ∈ &#123;match, mismatch&#125;). The chain computes per-epoch consensus:
+      Sampling is unpredictable on purpose, so an operator cannot tell which of
+      their jobs will be checked. Each epoch, roughly every 72 minutes, the chain
+      produces a VRF output that seeds a per-validator sampling schedule. Because
+      the seed is unknown to operators ahead of time, there is no way to serve a
+      clean answer only on the jobs that happen to be watched.
     </p>
-    <ul class="mt-4 max-w-3xl list-disc space-y-2 pl-6 text-crust-200">
-      <li><strong class="text-crust-100">Match weight.</strong> Validators whose decision aligns with the dispute-panel-finalised outcome receive full weight for that replay.</li>
-      <li><strong class="text-crust-100">Disagreement decay.</strong> A validator who repeatedly disagrees with the consensus (i.e. raises false-positive challenges) sees their Yuma weight decay, which reduces their share of the 15% verification slice.</li>
-      <li><strong class="text-crust-100">Collusion resistance.</strong> The dispute panel can promote any sampled replay to an N-of-M re-execution by independent validators if cluster-correlation suggests stake-weighted collusion. This is the Bittensor SN-based defence repurposed for replay sampling.</li>
+    <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>Tier-weighted rates: 1 to 5 percent at the datacenter tiers, 5 to 10 percent at cloud-rented, and 10 percent or more at prosumer.</li>
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>Edge and embed-only tiers are stake-anchored. They are not sampled, but their stake is still at risk in a fraud dispute.</li>
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>The VRF seed binds your schedule for the epoch, so neither you nor the operator can steer which jobs land in the sample.</li>
     </ul>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
-      <p class="heading-eyebrow">Slashing math</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Three fault classes.</h2>
-
-      <CodeBlock code={slashingMath} lang="python" filename="slashing.py (pseudocode)" />
-
+      <p class="heading-eyebrow">Challenges</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">What happens on a mismatch.</h2>
       <p class="mt-4 max-w-3xl text-crust-300">
-        Slashed stake is burned at the chain level (it is not redistributed to
-        the challenger). This avoids the well-known incentive misalignment where
-        challengers profit from false positives; the protocol benefit for
-        raising a valid challenge is the reputation gain and the share of the 15%
-        verification slice received through Yuma-weighted replays.
+        A single disagreement does not slash anyone on its own. It opens a
+        challenge that other validators are invited to replay, and the protocol
+        narrows the dispute to the exact point where the two executions diverged.
+        When the opML challenge window opens, other validators re-run the same
+        job, bisection isolates the divergent layer, and a dispute panel renders
+        the verdict against whichever side was wrong. Consensus across many
+        independent replays is the arbitrator, not any one validator's word.
       </p>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Validator-vs-watcher separation</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Two roles, two stake pools, two verification streams.</h2>
+    <p class="heading-eyebrow">Stake</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">What you stake.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
-      The protocol distinguishes between <strong class="text-crust-100">validators</strong>
-      — permissionless, stake-bonded, eligible for the verification slice after launch — and
-      <strong class="text-crust-100">validator-watchers</strong>, a smaller
-      foundation-and-DAO-operated set that runs opML challenge bisection and
-      arbitrates the dispute panel.
+      Validators hold ten times the operator minimum for the tier they sample,
+      which keeps the cost of a bad challenge higher than any payout it could
+      earn. At current parameters that is 5,000 OROG to sample the premium
+      datacenter tier, 1,000 OROG for standard datacenter, 500 OROG for
+      cloud-rented, and 250 OROG for prosumer. Your stake is itself slashable for
+      a missed challenge, for a false-positive challenge raised against a correct
+      operator, and most severely for colluding with an operator you sample.
     </p>
-    <p class="mt-4 max-w-3xl text-crust-300">
-      The separation is deliberate. Validators have a real economic incentive to
-      do the work but not to render final slashing verdicts on each other.
-      Watchers handle the arbitration step, can override a clearly-incorrect
-      validator consensus, and are themselves bonded with a much larger stake
-      (50,000 OROG at-launch parameter). The watcher set rotates governance-set;
-      its decisions are appealable to on-chain governance.
-    </p>
-    <p class="mt-4 max-w-3xl text-crust-300">
-      On the post-mainnet roadmap, the watcher set opens to permissionless
-      entry (with the larger stake and a 6-month observation period before
-      receiving the full verification slice). Until then, watcher operation, public
-      decision logs, and on-chain audit trails are Forge/mainnet readiness
-      items rather than live public services.
-    </p>
+  </section>
 
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Pay</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Pay follows replays, not presence.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        The verification slice is 15 percent of each job's settlement, paid out
+        per epoch in proportion to the replays you complete, with consensus
+        alignment as a multiplier. If you hold stake but run no replays, you
+        receive nothing from that slice, because the protocol pays for verifiable
+        work rather than for showing up. For each replay you submit the job id,
+        your replayed output hash, and a match-or-mismatch decision, and the
+        chain scores you against the finalized outcome.
+      </p>
+      <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Aligned decisions earn full weight for that replay.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Repeated disagreement with the finalized outcome, the signature of false-positive challenges, decays your weight and shrinks your share of the slice.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>If cluster correlation suggests stake-weighted collusion, the dispute panel can promote any replay to an N-of-M re-execution by independent validators.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Slashing</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">The slashing math.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Slashed stake is burned at the chain level rather than handed to the
+      challenger. That closes the door on the usual failure mode where
+      challengers profit from raising false positives, so your reward for a valid
+      challenge is reputation and your share of the verification slice, never the
+      loser's stake. Faults fall into three classes.
+    </p>
+    <CodeBlock code={slashingMath} lang="python" filename="slashing.py (pseudocode)" />
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Separation of duties</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Two roles, kept apart.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        The protocol separates validators from the watcher set so that the people
+        doing the replays are not the same people rendering final verdicts on
+        each other. Validators are permissionless and stake-bonded, and they earn
+        the verification slice for the replays they perform. Validator-watchers
+        are a smaller set that runs the opML challenge bisection and arbitrates
+        the dispute panel, bonded with a much larger stake (50,000 OROG at
+        current parameters) and rotated by governance, with their decisions
+        appealable on-chain. A watcher can override a clearly incorrect validator
+        consensus, which gives the system a backstop without letting validators
+        police themselves.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Get started</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Start replaying.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      The Forge testnet is live. The OpenAI-compatible gateway, the public chain
+      node, the CLI wallet, and the Python and TypeScript SDKs are all running
+      today. Stand up a node, point it at the Forge RPC, and start pulling your
+      sampling schedule. The replay-sampling specification (RFC-0006) is the
+      formal reference, and the operator page covers the hardware and attestation
+      side of the same setup.
+    </p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <CtaButton href="/downloads" variant="primary">Artifact policy</CtaButton>
-      <CtaButton href="https://docs.orogen.network" variant="secondary" rel="noopener noreferrer">RFC-0006 (replay sampling)</CtaButton>
-      <CtaButton href="/operators" variant="ghost">Operator role</CtaButton>
+      <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Run a validator node</CtaButton>
+      <CtaButton href="/operators" variant="secondary">Operator role</CtaButton>
+      <CtaButton href="/downloads" variant="ghost">Downloads</CtaButton>
     </div>
   </section>
 </Base>

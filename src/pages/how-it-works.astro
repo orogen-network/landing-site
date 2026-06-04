@@ -2,193 +2,181 @@
 import Base from "../layouts/Base.astro";
 import CtaButton from "../components/CtaButton.astro";
 import BmeFlowOracle from "../components/BmeFlowOracle.astro";
-
-const layers = [
-  {
-    n: "L1",
-    title: "Stake + identity",
-    body: "Operator registers a coldkey + hotkey + GPU device cert hash + TEE attestation report. Stake is tier-dependent (500 OROG dc-premium → 0 edge/embed). Two coldkeys claiming the same GPU device cert are both slashed. Heartbeats every ~5 blocks (1 minute) gate routing eligibility.",
-  },
-  {
-    n: "L2",
-    title: "TEE attestation",
-    body: "NVIDIA NVTrust (H100/H200/B200 confidential compute mode) + Intel TDX or AMD SEV-SNP on the host. The chain verifies the attestation chain end-to-end (NVTrust + Intel TA / AMD KDS). Re-attestation required every 7 days, or on firmware update. Multi-vendor at launch — no single-vendor monoculture.",
-  },
-  {
-    n: "L3",
-    title: "Deterministic kernels",
-    body: "Workers replace stock FP8 GEMM with deterministic kernels (SGLang determinism mode or Thinking Machines batch-invariant kernels). Mandatory for dc-premium, dc-standard, cloud-rented, prosumer. Determinism is the precondition for replay sampling: bit-identical re-execution must be possible on a validator.",
-  },
-  {
-    n: "L4",
-    title: "Validator replay sampling",
-    body: "Validators sample 1–5% of finalised jobs and replay them on identical hardware. Output mismatch → challenge. This is Yuma-style consensus over real work, not vibes. Validators have 10× operator min stake and are themselves attested. See RFC-0006.",
-  },
-  {
-    n: "L5",
-    title: "opML challenge window",
-    body: "Disputed jobs enter a 24h challenge window. Watchers re-execute and post commitments; a bisection game narrows the divergent layer; the chain dispute panel renders a slashing decision. Foundation hosts the first watcher set; permissionless watchers open in Q3 2027.",
-  },
-  {
-    n: "L6",
-    title: "zkML option (where economical)",
-    body: "Selected small-model / embedding workloads support full zkML proofs (zkSNARK or zkSTARK over the network compute). Proving cost is currently 100–10000× inference cost — viable only for very high-stakes per-query workloads. The protocol charges this as a premium tier.",
-  },
-  {
-    n: "L7",
-    title: "Adapter + base-model commitment",
-    body: "All weights are content-addressed (Merkle root over tensor files, on-chain pin via pallet-model-registry). The CDN serves bits; operators verify-on-load. Customers can audit the exact (base_model, adapter) the operator ran via the receipt and the public root hash.",
-  },
-  {
-    n: "L8",
-    title: "Receipt + customer audit",
-    body: "Every response carries (model_hash, adapter_hash, prompt_hash, output_hash, operator_hotkey, attestation_quote, timestamp), signed by the operator. Customer SDKs verify the signature locally; the chain stores the receipt commitment for arbitration. The customer never has to trust us; the chain receipt is the source of truth.",
-  },
-];
-
-const bmeSteps = [
-  { i: 1, label: "Customer tops up gateway in USDC/USD/ETH/BTC. Payment recorded, oracle-quoted at top-up time." },
-  { i: 2, label: "Gateway burns OROG at oracle spot. OROG bought from the protocol-managed AMM or the open market; the smart contract enforces the burn." },
-  { i: 3, label: "CUC compute credit minted (USD-pegged, non-transferable, 30-day expiry). credit_id mapped to customer account; routable per job." },
-  { i: 4, label: "Customer submits job (single inference / batch / fine-tune / RL rollout). Job assigns CUC to consume on completion." },
-  { i: 5, label: "Network router selects operator by tier + region + KV-warmness. Operator runs inference under the verification stack; signed receipt returned." },
-  { i: 6, label: "Job completes; validator sampling confirms (L4). CUC is consumed (burned). pallet-bme.on_job_finalised fires." },
-  { i: 7, label: "Fresh OROG minted to operator at oracle spot. Split: 75% provider / 15% verification / 5% treasury / 5% governance." },
-  { i: 8, label: "Operator auto-swaps configurable fraction to USDC at protocol-managed AMM (default 70%). Net result: operator paid in USD-equivalent units mechanically." },
-];
 ---
 
 <Base
   title="How it works"
-  description="The Orogen verification stack: 8 layers from stake-and-identity through TEE attestation, deterministic kernels, validator replay sampling, opML challenge windows, and signed customer receipts."
+  description="How Orogen makes open-model inference auditable, with a signed receipt on every job, validator replay on identical hardware, opML challenges, on-chain receipts, and burn-and-mint settlement."
   path="/how-it-works"
 >
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Protocol architecture</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">How Orogen works</h1>
+    <p class="heading-eyebrow">How it works</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">How verification works.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Orogen is a Substrate-based L1 with eight verification layers stacked on
-      top of an OpenAI-compatible gateway. The chain owns model and operator
-      registration, job settlement, validator consensus, and the burn-and-mint
-      engine. The workers run open-source inference servers (vLLM V1, SGLang,
-      TRT-LLM, llama.cpp) with three additions: TEE attestation, deterministic
-      kernels, and a signed-receipt sidecar.
+      Most inference networks ask you to trust the operator. You send a prompt,
+      you get an answer, and you take it on faith that the model you paid for is
+      the model that ran. Orogen works the other way around. Each job comes back
+      with a signed receipt, the network re-runs a sample of jobs to catch anyone
+      cutting corners, and the chain keeps a record so a disputed result has
+      something to arbitrate against. This page walks through the full path from
+      the request you send to the payment an operator receives, in plain language
+      first and full mechanism second.
     </p>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
-      <p class="heading-eyebrow">The verification stack</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Eight layers, no single point of trust.</h2>
-      <p class="mt-3 max-w-3xl text-crust-300">
-        No one layer is sufficient. Stake-only ("trust the operator's collateral")
-        is the weakest of the eight; zkML ("prove every token") is the strongest
-        but costs 100–10000× inference. We compose them so the verification cost
-        is proportional to the value-at-risk per request.
+      <p class="heading-eyebrow">The loop</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">The loop between you, the network, and the chain.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        Verification is a loop between three parties, and once you see the shape
+        of it, every layer below fits into place. You send a request and get back
+        an answer along with a signed receipt. The receipt binds four things
+        together: the exact model, your input, the output, and a hardware
+        attestation that names which GPU ran the job and confirms it ran in a
+        protected mode. You can check that receipt yourself in a single call. The
+        network then re-runs a sample of completed jobs on identical hardware and
+        compares the result, and if the replayed output does not match the
+        receipt, that opens a challenge. Underneath both, the chain stores the
+        receipt commitment, which is the record both sides point to when a result
+        is disputed and the ledger that settlement is written against.
       </p>
-
-      <ol class="mt-10 grid gap-5 lg:grid-cols-2">
-        {
-          layers.map((l) => (
-            <li class="surface-card">
-              <div class="flex items-center gap-3">
-                <span class="rounded-md border border-magma-500/60 bg-magma-500/10 px-2 py-0.5 font-mono text-xs text-magma-300">
-                  {l.n}
-                </span>
-                <h3 class="text-lg font-semibold text-crust-100">{l.title}</h3>
-              </div>
-              <p class="mt-3 text-sm leading-relaxed text-crust-300">{l.body}</p>
-            </li>
-          ))
-        }
-      </ol>
+      <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>You send a request and get back an answer plus a signed receipt that you can verify locally.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>The network re-runs a sample of completed jobs on identical hardware and compares the result. A mismatch opens a challenge.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crust-400"></span>The chain stores the receipt commitment, the record both sides point to when a result is disputed and the ledger settlement is written against.</li>
+      </ul>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">The BME loop</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Burn-and-mint, with USD payouts on the rails.</h2>
-    <p class="mt-3 max-w-3xl text-crust-300">
-      Every customer transaction routes through the burn-and-mint engine.
-      Steps 2 (burn) and 7 (mint) are at <em>different</em> oracle prices: if
-      OROG appreciates between top-up and consumption, net burn occurs and
-      supply is permanently reduced (Akash post-BME pattern). If OROG
-      depreciates, the protocol mints enough to honor the customer's USD-quoted
-      payment — symmetric, bounded by emission policy.
+    <p class="heading-eyebrow">The receipt</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">What you can check yourself.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      The receipt is the part you hold. Every response carries the model hash,
+      the adapter hash, a hash of your prompt, a hash of the output, the
+      operator's identity key, the hardware attestation quote, and a timestamp,
+      all signed by the operator. Your SDK verifies the signature locally, so you
+      can confirm the response came from the operator the network routed you to
+      and that the model and adapter were the exact weights you asked for. Weights
+      are content-addressed, which means each model has a public root hash you can
+      match against the one named in your receipt. If an operator quietly swapped
+      in a smaller model or a cheaper quantization, the hash will not match and
+      you will know.
     </p>
+  </section>
 
-    <ol class="mt-8 space-y-3">
-      {
-        bmeSteps.map((s) => (
-          <li class="flex gap-4 rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-xs text-magma-300">
-              {s.i}
-            </span>
-            <p class="text-sm leading-relaxed text-crust-200">{s.label}</p>
-          </li>
-        ))
-      }
-    </ol>
-
-    <div class="mt-8">
-      <BmeFlowOracle />
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Attestation</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Proving which hardware ran the job.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        A signature tells you who signed, and attestation tells you what they
+        signed on. Before an operator can serve traffic, the hardware proves
+        itself to the chain.
+      </p>
+      <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>Operators boot into confidential compute mode: NVIDIA confidential computing on the GPU (H100, H200, B200) and Intel TDX or AMD SEV-SNP on the host, both producing attestation quotes at boot.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>The chain verifies the full attestation chain against the vendor roots (NVIDIA NVTrust for the GPU, Intel Trust Authority or AMD KDS for the host) and binds it to the operator's identity and GPU device certificate.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>Operators re-attest every seven days and on any firmware or driver update. A stale attestation routes to zero traffic until it is refreshed. Running more than one hardware vendor is deliberate, so the network does not depend on a single supplier's security model.</li>
+      </ul>
     </div>
   </section>
 
-  <section class="border-t border-crust-800/80 bg-crust-900/40 py-16">
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Replay sampling</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">The network checks the work.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Attestation covers the hardware, and replay covers the answer. Validators
+      pull a sample of finished jobs, between one and five percent, and re-run
+      them on hardware identical to the operator's. If the replayed output
+      matches the receipt, the job stands, and if it does not, the mismatch opens
+      a challenge. Validators hold ten times the minimum operator stake and are
+      themselves attested, so the parties checking the work have more at stake
+      than the parties doing it.
+    </p>
+    <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Replay only works if the same prompt produces the same output bit for bit, and standard inference kernels do not guarantee that. Floating-point GEMM on modern GPUs can return slightly different numbers depending on batch size and the number of streaming multiprocessors in play.</li>
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Orogen workers run deterministic kernels that fix the reduction order and the tile scheduler, so a validator with the same model and the same prompt reproduces the same result exactly. The throughput cost is roughly three to eight percent against stock kernels on H100, measured on Llama-3.1-70B.</li>
+      <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-crystal-500"></span>Edge and embedding-only tiers run on hardware where deterministic kernels are not practical, such as Apple Silicon and CPU. Those tiers fall back to stake-backed verification, a weaker posture in exchange for lower pricing, and the receipt always states which posture applied.</li>
+    </ul>
+  </section>
+
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
-      <p class="heading-eyebrow">Deterministic kernels</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Why determinism is the precondition.</h2>
-      <p class="mt-3 max-w-3xl text-crust-300">
-        Replay sampling (L4) only works if a validator can reproduce the
-        operator's output bit-for-bit. Stock FP8 GEMM on H100/H200 is
-        non-deterministic across batch sizes and SM count — a validator with the
-        same model and same prompt can produce slightly different logits. That
-        breaks the verification.
-      </p>
+      <p class="heading-eyebrow">Challenges</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Settling a disputed job.</h2>
       <p class="mt-4 max-w-3xl text-crust-300">
-        Orogen workers ship with deterministic kernel modes (SGLang determinism
-        mode or Thinking Machines batch-invariant kernels) for dc-premium,
-        dc-standard, cloud-rented, and prosumer tiers. The kernel fixes the
-        reduction order and the tile scheduler. Throughput cost: ~3–8% versus
-        stock FP8 on H100 (measured on Llama-3.1-70B; full numbers in the docs).
-      </p>
-      <p class="mt-4 max-w-3xl text-crust-300">
-        Edge and embed-only tiers run on Apple Silicon and CPU where
-        deterministic kernels are not practical. Those tiers use stake-only
-        verification — the customer accepts a weaker verification posture for
-        cheaper pricing.
+        When a replay turns up a mismatch, the job enters a challenge window that
+        stays open for 24 hours. Independent watchers re-execute the disputed job
+        and post their own commitments. Where two parties disagree, a bisection
+        game narrows the dispute step by step until it isolates the exact layer of
+        the computation where the results diverged, so the panel rules on a single
+        pinpointed difference. The chain's dispute panel then renders a slashing
+        decision against whichever side was wrong. This is the opML approach, and
+        it means a fault comes down to re-execution that anyone can run and a
+        divergence that anyone can locate, rather than one party's word against
+        another's. For a small set of high-stakes small-model and embedding
+        workloads where the cost is justified, the protocol also offers full zkML
+        proofs as a premium tier, where the operator proves the computation
+        cryptographically instead of leaving it open to challenge.
       </p>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Attestation flow</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">From boot to receipt.</h2>
+    <p class="heading-eyebrow">On-chain receipt</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">The record that outlasts the request.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Every finalized job writes its receipt commitment to the chain, and that
+      commitment is what makes the rest of the loop enforceable. A validator that
+      finds a mismatch has a fixed reference to challenge against, a watcher has a
+      canonical job to re-execute, and you have a permanent record of what you
+      were promised that does not depend on the operator keeping their logs. You
+      never have to rely on Orogen's account of what happened, because the chain
+      holds the receipt and the receipt is the source of truth.
+    </p>
+  </section>
 
-    <ol class="mt-6 space-y-3 text-crust-200">
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Boot.</strong> Worker boots into Confidential Compute mode (H100/H200 CC + TDX/SEV-SNP host). GPU and host produce attestation quotes.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Register.</strong> Worker submits quotes to the chain via pallet-operator-stake. The pallet verifies the chain (NVTrust roots + Intel TA / AMD KDS) and binds (coldkey, hotkey, GPU device cert).
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Heartbeat.</strong> Every ~5 blocks (1 minute), worker posts (attestation_freshness, hashrate, available_capacity). Missed heartbeats decay reputation.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Serve.</strong> Each inference produces a receipt bound to the attestation quote and the per-job nonce. The receipt is signed by the operator hotkey and returned with the response.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Sample.</strong> Validators pull a 1–5% sample of finalised receipts and replay on attested hardware. Mismatches trigger the L5 challenge.
-      </li>
-      <li class="rounded-md border border-crust-800 bg-crust-900/50 px-4 py-3">
-        <strong class="text-crust-100">Re-attest.</strong> Every 7 days, or on firmware/driver update. Stale attestations route to zero traffic until refreshed.
-      </li>
-    </ol>
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Settlement</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Paying for verified work in dollars.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        Verification decides whether a job counts, and settlement decides what it
+        pays. Orogen settles through burn-and-mint, which ties new token issuance
+        directly to real inference revenue rather than to a fixed inflation
+        schedule. Akash made a similar move when its burn-and-mint redesign
+        shifted from a 13 to 15 percent inflationary regime toward revenue-linked
+        issuance.
+      </p>
+      <ul class="mt-6 max-w-3xl space-y-2 text-crust-300">
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>You top up the gateway in stablecoins or another supported asset, quoted at the oracle price at the time. To settle the job, the gateway burns OROG at the oracle spot price, and that burn mints you a USD-pegged compute credit that the job consumes on completion.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>When the job finalizes and the sample confirms it, fresh OROG is minted to the operator at the oracle spot price, split 75 percent to the provider, 15 percent to verification, 5 percent to treasury, and 5 percent to governance.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>The operator's payout is denominated against the dollar, and most of it auto-swaps to a stablecoin by default. The operator is paid in USD-equivalent value for completed, verified work rather than in exposure to a token price.</li>
+        <li class="flex gap-3"><span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-magma-500"></span>Because the burn at top-up and the mint at payout happen at different prices, issuance moves with demand. New OROG is minted only against work the network verified, so supply tracks revenue, with no foundation mint discretion and no halving schedule.</li>
+      </ul>
+      <div class="mt-8">
+        <BmeFlowOracle />
+      </div>
+    </div>
+  </section>
 
-    <div class="mt-10 flex flex-wrap gap-3">
-      <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Read the RFCs</CtaButton>
+  <section class="container-page py-16">
+    <p class="heading-eyebrow">Why it composes</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Verification that scales with what is at risk.</h2>
+    <p class="mt-4 max-w-3xl text-crust-300">
+      No single layer carries the whole load. Stake alone only asks you to trust
+      an operator's collateral. zkML proves every token but costs orders of
+      magnitude more than the inference itself. Orogen composes attestation,
+      deterministic replay, opML challenges, on-chain receipts, and a stake floor
+      underneath them, so the cost of verification scales with what is actually at
+      risk on a given request. The result is open-model inference where the
+      customer, the network, and the chain can each check the work independently,
+      and none of them has to rely on the operator's word for it.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Read the protocol RFCs</CtaButton>
       <CtaButton href="/validators" variant="secondary">Validator deep-dive</CtaButton>
       <CtaButton href="/operators" variant="ghost">Operator deep-dive</CtaButton>
     </div>
