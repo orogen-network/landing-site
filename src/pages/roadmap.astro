@@ -47,7 +47,7 @@ const phases: Phase[] = [
     title: "Forge testnet",
     target:
       "Forge public testnet is the next integration target. Seed validator, chain-indexer + GraphQL, OpenAI-compatible traffic path, and attested operator onboarding must be brought up before this phase is called live. Target second-vendor profile: AMD MI3xx and Blackwell B200 CC operators alongside H100/H200. Pallet suite covers pallet-bme, pallet-model-registry, pallet-operator-stake, pallet-job-market, pallet-yuma-consensus, pallet-slashing (pre-audit).",
-    gate: "Second-vendor (AMD) operators reaching production-grade keeps the mainnet TGE schedule intact. Slippage here moves mainnet TGE forward in time.",
+    gate: "Mainnet depends on second-vendor (AMD) operators reaching production grade alongside NVIDIA. If that takes longer, mainnet moves with it.",
     kpis: [
       "15+ operators across NVIDIA + AMD on testnet",
       "Verification mismatch rate < 0.05% over sampled traffic",
@@ -62,7 +62,7 @@ const phases: Phase[] = [
     title: "Multi-firm chain audit",
     target:
       "Three independent firms will review the chain pallets, the gateway burn path, and the slashing schedule in parallel after Forge is operating. Slashing pallet stress tests and CRL drills must pass before this phase is marked complete.",
-    gate: "Mainnet TGE is conditional on the audit closing clean. Findings reset the clock; the audit gate moves the launch, not the messaging.",
+    gate: "Mainnet is conditional on the audit closing clean. Open findings reset the clock until they are resolved.",
     kpis: [
       "Three independent audit reports filed",
       "All critical and high findings resolved on Forge",
@@ -75,7 +75,7 @@ const phases: Phase[] = [
     status: "future",
     title: "Mainnet TGE",
     target:
-      "Token live on Substrate fork mainnet. BME loop active from Day 1 — real burn, real mint, every customer transaction. All Forge operators and customers migrate to on-chain mainnet settlement. EVM JSON-RPC layer live; ETH bridge live.",
+      "Token live on Substrate fork mainnet. BME loop active from Day 1, with real burn, real mint, and every customer transaction settling on-chain. All Forge operators and customers migrate to on-chain mainnet settlement. EVM JSON-RPC layer live; ETH bridge live.",
     gate: "If Day-30 burn < 0.3× mint, the BME loop is not capturing customer demand. Pause permissionless onboarding; investigate gateway-burn integrity.",
     kpis: [
       "TGE clean (no chain halts in first 30 days)",
@@ -161,23 +161,22 @@ const statusLabel: Record<Phase["status"], string> = {
 
 <Base
   title="Roadmap"
-  description="Forge testnet, audits, mainnet TGE, the ETH bridge, permissionless onboarding, RL at scale, and federated post-training are staged behind explicit readiness gates."
+  description="Forge testnet, the multi-firm audit, mainnet, the ETH bridge, permissionless onboarding, RL at scale, and federated post-training, sequenced as clear milestones with the KPIs each one depends on."
   path="/roadmap"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">Roadmap</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-      Shipped, planned, future. Nine phases. Nine decision gates.
+      Shipped, planned, and what comes next.
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      The W0 and W1 build waves are shipped as local code and verification
-      artifacts. Forge testnet, validator replay, operator settlement, and the
-      multi-firm audit are planned readiness gates; mainnet TGE follows only
-      after those gates close. The remaining arc —
-      permissionless onboarding, the ETH bridge, mobile inference, federated
-      post-training — is future, each phase gated on real KPIs from the
-      previous one. Gates are real: missing one moves the next phase, not the
-      messaging.
+      The W0 and W1 build waves are shipped as code and verification artifacts.
+      The Forge testnet is live, and the multi-firm chain audit comes before
+      mainnet. The rest of the arc, from permissionless onboarding and the ETH
+      bridge through mobile inference and federated post-training, is sequenced
+      so each phase depends on real results from the one before it. Each
+      milestone is tied to measurable conditions, so if a condition takes
+      longer, the next phase waits for it.
     </p>
   </section>
 
@@ -217,7 +216,7 @@ const statusLabel: Record<Phase["status"], string> = {
                 <p class="mt-1.5 text-sm leading-relaxed text-crust-200">{p.target}</p>
               </div>
               <div>
-                <div class="text-xs font-medium uppercase tracking-wider text-crust-500">Gate criterion</div>
+                <div class="text-xs font-medium uppercase tracking-wider text-crust-500">What it depends on</div>
                 <p class="mt-1.5 text-sm leading-relaxed text-crust-200">{p.gate}</p>
               </div>
               <div>
@@ -240,7 +239,7 @@ const statusLabel: Record<Phase["status"], string> = {
       <ul class="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-crust-200">
         <li>The BME loop runs unbroken from TGE Day 1; there is no "pay USDC and skip the token" backdoor at any phase.</li>
         <li>The verification stack is L1–L8 throughout; new layers may be added (e.g. ZKML for embeddings), but no layer is dropped.</li>
-        <li>The 75 / 15 / 5 / 5 settlement split is at-launch governance-adjustable but constitutionally bounded — provider share cannot fall below 60%.</li>
+        <li>The 75 / 15 / 5 / 5 settlement split is governance-adjustable at launch but constitutionally bounded, and the provider share cannot fall below 60%.</li>
         <li>The 5% supply/year mint ceiling is hard. The chain rejects mints above it. Governance can lower it; raising it requires constitutional amendment (supermajority, 60-day timelock).</li>
         <li>Multi-vendor TEE at launch. Single-vendor monoculture is treated as a security regression and reverts to permissioned-only operator onboarding until restored.</li>
       </ul>

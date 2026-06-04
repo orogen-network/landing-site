@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Orogen — Verifiable LLM inference, anchored to physical work">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Orogen: open-model inference you can audit">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0b0d10"/>
@@ -25,10 +25,11 @@
   </g>
 
   <!-- wordmark + tagline -->
-  <g transform="translate(620,260)" font-family="Inter, ui-sans-serif, system-ui, sans-serif" fill="#e9ebef">
-    <text x="0" y="0" font-size="92" font-weight="700" letter-spacing="-2">Orogen</text>
-    <text x="0" y="56" font-size="26" font-weight="500" fill="#a5acbb">Verifiable LLM inference,</text>
-    <text x="0" y="92" font-size="26" font-weight="500" fill="#a5acbb">anchored to physical work.</text>
-    <text x="0" y="160" font-size="20" font-weight="500" fill="#f59e0b" letter-spacing="3">OROGEN.NETWORK</text>
+  <g transform="translate(620,250)" font-family="Inter, ui-sans-serif, system-ui, sans-serif" fill="#e9ebef">
+    <text x="0" y="0" font-size="88" font-weight="700" letter-spacing="-2">Orogen</text>
+    <text x="0" y="52" font-size="28" font-weight="600" fill="#e9ebef">Open-model inference</text>
+    <text x="0" y="88" font-size="28" font-weight="600" fill="#e9ebef">you can audit.</text>
+    <text x="0" y="134" font-size="19" font-weight="500" fill="#a5acbb">OpenAI-compatible. A signed receipt on every response.</text>
+    <text x="0" y="184" font-size="19" font-weight="500" fill="#f59e0b" letter-spacing="3">OROGEN.NETWORK</text>
   </g>
 </svg>

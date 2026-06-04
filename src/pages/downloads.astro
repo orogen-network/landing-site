@@ -57,19 +57,16 @@ const ghAsset = (repo: string, tag: string, asset: string) =>
 //   public/install.sh                ->  wallet-cli installer
 // SDKs are not on PyPI/npm yet; install from the source repos for now.
 
-const installPython = `# Python SDK — Python >= 3.10
-# Not on PyPI yet (publish coming soon) — install from source:
+const installPython = `# Python SDK (Python >= 3.10). Install from the source repo:
 pip install "git+https://github.com/orogen-network/customer-sdk-py"`;
 
-const installTypescript = `# TypeScript / Node >= 20 (works in browsers via fetch)
-# Not on npm yet (publish coming soon) — install from source:
+const installTypescript = `# TypeScript / Node >= 20 (works in browsers via fetch). Install from source:
 npm install github:orogen-network/customer-sdk-ts`;
 
-const installLitellm = `# Drop-in LiteLLM provider — registers the orogen/* namespace
-# Not on PyPI yet (publish coming soon) — install from source:
+const installLitellm = `# Drop-in LiteLLM provider, registers the orogen/* namespace. Install from source:
 pip install "git+https://github.com/orogen-network/litellm-backend-driver"`;
 
-const installNode = `# Wallet CLI (Linux x86-64) — Forge testnet release v0.1.0-testnet
+const installNode = `# Wallet CLI (Linux x86-64), Forge testnet release v0.1.0-testnet
 curl -fsSLO https://github.com/orogen-network/wallet-cli/releases/download/v0.1.0-testnet/wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz
 curl -fsSLO https://github.com/orogen-network/wallet-cli/releases/download/v0.1.0-testnet/wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz.sha256
 sha256sum -c wallet-cli-0.1.0-x86_64-linux-gnu.tar.gz.sha256   # verify
@@ -92,9 +89,9 @@ const verifyArtifact = `# Release artifact policy:
     <p class="mt-4 max-w-3xl text-crust-300">
       Client binaries for the <strong>Forge testnet</strong> are below
       (<code class="rounded bg-crust-800 px-1 py-0.5">v0.1.0-testnet</code>,
-      Linux x86-64, checksummed — unsigned testnet builds). The SDKs are not on
-      PyPI / npm yet (registry publish is coming soon) — install them from
-      source for now. Source for every artifact lives at
+      Linux x86-64, checksummed, unsigned testnet builds). The Python and
+      TypeScript SDKs install from source for now, and source for every artifact
+      lives at
       <a href="https://github.com/orogen-network">github.com/orogen-network</a>.
     </p>
   </section>
@@ -132,10 +129,9 @@ const verifyArtifact = `# Release artifact policy:
       }
     </div>
     <p class="mt-6 text-xs text-crust-500">
-      SDKs (Python / TypeScript) and the chain-node binary are published as
-      GitHub releases too — see
-      <a href="https://github.com/orogen-network">github.com/orogen-network</a>
-      and the quick-install commands below.
+      The Python and TypeScript SDKs and the chain-node binary live on
+      <a href="https://github.com/orogen-network">github.com/orogen-network</a>,
+      with the quick-install commands below.
     </p>
   </section>
 
@@ -144,8 +140,8 @@ const verifyArtifact = `# Release artifact policy:
       <p class="heading-eyebrow">Quick install</p>
       <h2 class="mt-2 text-3xl font-semibold tracking-tight">One-liners.</h2>
       <p class="mt-3 max-w-3xl text-crust-300">
-        Three SDK source installs (registry publish coming soon) plus the
-        binary release policy for operators, validators, and self-hosters.
+        Three SDK source installs plus the binary release policy for operators,
+        validators, and self-hosters.
       </p>
 
       <div class="mt-8 grid gap-5 lg:grid-cols-2">
@@ -176,9 +172,9 @@ const verifyArtifact = `# Release artifact policy:
       </div>
 
       <p class="mt-6 text-xs text-crust-500">
-        Note: the SDKs are not yet on PyPI / npm — install from the source
-        repos above for now; registry publish is coming soon. Direct download
-        links are added only when the corresponding file is present in
+        Note: the Python and TypeScript SDKs install from the source repos above
+        for now. Direct download links are added only when the corresponding
+        file is present in
         <code class="rounded bg-crust-800 px-1 py-0.5">public/downloads/</code>
         and covered by release checksums.
       </p>

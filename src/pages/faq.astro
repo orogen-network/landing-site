@@ -34,12 +34,12 @@ const qas: QA[] = [
   {
     aud: "general",
     q: "How is Orogen different from io.net, Render, or Akash?",
-    a: "io.net, Render, and Akash are GPU leasing markets. The customer rents a box and operates it; the network coordinates supply and pricing but does not verify what runs. Orogen is a verifiable inference network: the protocol owns the model registry, the verification stack, and the receipt flow. The customer never has to trust the operator — every response carries a chain-anchored receipt. Akash's post-BME loop is the economic pattern we adopt; we add the verification stack Akash deliberately leaves out.",
+    a: "io.net, Render, and Akash are GPU leasing markets. The customer rents a box and operates it; the network coordinates supply and pricing but does not verify what runs. Orogen is a verifiable inference network: the protocol owns the model registry, the verification stack, and the receipt flow. The customer never has to trust the operator, because every response carries a chain-anchored receipt. Akash's post-BME loop is the economic pattern we adopt, and we add the verification stack Akash deliberately leaves out.",
   },
   {
     aud: "general",
     q: "How is Orogen different from Aethir or Pearl?",
-    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: ~15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Provider settlement is designed around completed work and protocol accounting, not licence ownership. Forge and mainnet distribution remain gated on serving verified jobs, sustained customer demand, and the published audit/revenue milestones.",
+    a: "Aethir's checker-node licence sale created a multi-year debt-like obligation: about 15% of supply paid to licence holders over 4 years regardless of revenue. Orogen does not pre-sell node licences. Operators are paid for completed, verified work, and what they earn tracks the jobs they serve and the demand that real customers create rather than a licence they bought up front.",
   },
   {
     aud: "general",
@@ -53,25 +53,25 @@ const qas: QA[] = [
   },
   {
     aud: "general",
-    q: "When does mainnet TGE follow Forge?",
-    a: "Forge testnet is the next public readiness gate, not a current production claim. Mainnet TGE follows Forge operation and the multi-firm chain audit, and is conditional on the published phase gates: a sustained centralised-gateway revenue baseline (90-day window), AMD MI3xx and Blackwell B200 CC operators in production, three regional gateways live, security audit complete, and foundation legal entity stood up. If the second-vendor (AMD) gate slips, mainnet TGE slips with it — gates move the milestone, not the messaging. The token is the last milestone of the bootstrap arc, not the first.",
+    q: "When does mainnet and the token follow Forge?",
+    a: "The Forge testnet is live today and the token is the last step of the bootstrap, not the first. Mainnet follows the multi-firm chain audit and depends on a handful of real conditions: a sustained gateway revenue baseline over a 90-day window, AMD and Blackwell B200 confidential-compute operators in production alongside NVIDIA, three regional gateways live, and the foundation legal entity in place. These are conditions on real progress rather than dates, so if the second hardware vendor takes longer, mainnet waits for it.",
   },
 
   // ---- Customers ----
   {
     aud: "customers",
     q: "Will my data be private?",
-    a: "Customer prompts and responses are processed inside the operator's TEE (NVTrust H100/H200/B200 CC + Intel TDX or AMD SEV-SNP). The plaintext is not accessible to the operator's host OS, the cloud provider, or the foundation. Side-channel attacks on TEEs are a known risk class — fault injection, cache timing, and rowhammer-style attacks are tracked in the public verifiability RFCs. The protocol's posture: multi-vendor TEE, regular re-attestation, and public disclosure of any successful side-channel attack within 30 days. We do not claim 'HIPAA-compliant' or equivalent regulatory certifications; specific compliance tiers are scoped per-customer.",
+    a: "Customer prompts and responses are processed inside the operator's TEE (NVTrust H100/H200/B200 CC + Intel TDX or AMD SEV-SNP). The plaintext is not accessible to the operator's host OS, the cloud provider, or the foundation. Side-channel attacks on TEEs are a known risk class, and fault injection, cache timing, and rowhammer-style attacks are tracked in the public verifiability RFCs. The protocol's posture: multi-vendor TEE, regular re-attestation, and public disclosure of any successful side-channel attack within 30 days. We do not claim 'HIPAA-compliant' or equivalent regulatory certifications; specific compliance tiers are scoped per-customer.",
   },
   {
     aud: "customers",
     q: "How much does it cost vs OpenAI / Anthropic?",
-    a: "Base posture is ~$0.40 per 1M output tokens for Llama-3.1-70B FP8 at the dc-standard tier (0.6× base multiplier). dc-premium runs at 1.0× base for frontier MoE on B200/H200. Edge and embed-only tiers run 0.10–0.15× base. By comparison, GPT-4o-class output tokens sit around $10–15 per 1M; Claude Sonnet-class similar. Orogen is positioned for the open-model 7B–70B band, not for closed frontier models — your value comes from a lower price floor, a tier you can pick, and a receipt you can verify.",
+    a: "Base posture is ~$0.40 per 1M output tokens for Llama-3.1-70B FP8 at the dc-standard tier (0.6× base multiplier). dc-premium runs at 1.0× base for frontier MoE on B200/H200. Edge and embed-only tiers run 0.10–0.15× base. By comparison, GPT-4o-class output tokens sit around $10–15 per 1M; Claude Sonnet-class similar. Orogen is positioned for the open-model 7B to 70B band rather than closed frontier models, so your value comes from a lower price floor, a tier you can pick, and a receipt you can verify.",
   },
   {
     aud: "customers",
     q: "How do I verify a receipt independently?",
-    a: "Every response carries a `useful_receipt` (the RFC-0001 record). Request `useful_verify_receipt=true` and the SDK runs a client-side check, or call the `verify_receipt(receipt, expected_nonce=...)` helper directly. The result reports `signature_valid`, `attestation_fresh`, `nonce_unique`, `model_in_registry`, and `overall`. Client-side verification is best-effort; authoritative verification is on-chain by validators via RFC-0006 sampling. You can browse submitted attestation reports at attestation.orogen.network.",
+    a: "Every response carries a receipt (the RFC-0001 record). The SDK can run a client-side check for you, or you can call the verify helper directly with the receipt and the expected nonce. The result reports whether the signature is valid, the attestation is fresh, the nonce is unique, the model is in the registry, and whether the receipt passes overall. Client-side verification is best-effort, while authoritative verification is on-chain by validators through replay sampling. You can browse submitted attestation reports at attestation.orogen.network.",
   },
   {
     aud: "customers",
@@ -81,19 +81,19 @@ const qas: QA[] = [
   {
     aud: "customers",
     q: "What about KV cache sharing across operators?",
-    a: "Cross-operator KV sharing is not solved in v1 (we deliberately punt — see RFC-0011). Within a single operator, KV is hot via vLLM V1 prefix cache + LMCache + PD-disaggregation. Across operators, we use (a) session pinning (session_id → operator_id) for multi-turn conversations and (b) Bloom-filter prefix hints in heartbeats as a soft routing signal. Accepting re-prefill on short prompts (~50–80ms at 4K on H100) is cheaper than the engineering cost of cross-operator KV state sharing. A MoonCake-style shared KV-cache object store is a v2/v3 direction.",
+    a: "Cross-operator KV sharing is not solved in v1, and we deliberately defer it (see RFC-0011). Within a single operator, KV is hot via vLLM V1 prefix cache plus LMCache and PD-disaggregation. Across operators, we use session pinning (session_id to operator_id) for multi-turn conversations, and Bloom-filter prefix hints in heartbeats as a soft routing signal. Accepting re-prefill on short prompts (roughly 50 to 80ms at 4K on H100) is cheaper than the engineering cost of cross-operator KV state sharing. A MoonCake-style shared KV-cache object store is a v2 or v3 direction.",
   },
 
   // ---- Operators ----
   {
     aud: "operators",
     q: "What happens if my GPU goes offline?",
-    a: "Your operator record stops emitting heartbeats. After ~3 missed heartbeats (~3 minutes), the router stops routing new traffic to you. After 24 hours of continuous downtime, your reputation decays and tier is reviewed. Stake is not slashed for offline events alone — only for fraud (coldkey duplication, fraudulent attestation, signed-receipt forgery) and for sampling mismatches above the soft-fault threshold. Stake unlocks 14 days after deregistration, gated by absence of open challenges.",
+    a: "Your operator record stops emitting heartbeats. After ~3 missed heartbeats (~3 minutes), the router stops routing new traffic to you. After 24 hours of continuous downtime, your reputation decays and tier is reviewed. Stake is not slashed for offline events alone, only for fraud (coldkey duplication, fraudulent attestation, signed-receipt forgery) and for sampling mismatches above the soft-fault threshold. Stake unlocks 14 days after deregistration, once no challenges remain open.",
   },
   {
     aud: "operators",
     q: "Can I run on consumer hardware?",
-    a: "Yes, via the edge tier (Mac Studio Ultra, dual 3090, prosumer 4090/5090) and the embed-only tier (CPU AVX-512, Apple M-series). Edge and embed-only are stake-only verification — you accept lower pricing and the customer accepts a weaker verification posture. The prosumer tier (1–2× RTX 5090 / PRO 6000) requires deterministic-kernel mode and L4 replay sampling at 10%+. Apple Silicon TEE is not currently supported (no NVTrust equivalent in 2026).",
+    a: "Yes, via the edge tier (Mac Studio Ultra, dual 3090, prosumer 4090/5090) and the embed-only tier (CPU AVX-512, Apple M-series). Edge and embed-only are stake-only verification, so you accept lower pricing and the customer accepts a weaker verification posture. The prosumer tier (1 to 2x RTX 5090 / PRO 6000) requires deterministic-kernel mode and replay sampling at 10% or more. Apple Silicon TEE is not currently supported (no NVTrust equivalent in 2026).",
   },
   // ---- Validators ----
   {
@@ -109,12 +109,12 @@ const qas: QA[] = [
   {
     aud: "validators",
     q: "How is replay bit-exact across machines?",
-    a: "Two prerequisites: (a) the operator runs in deterministic-kernel mode (SGLang determinism mode or Thinking Machines batch-invariant kernels — mandatory for dc-premium, dc-standard, cloud-rented, prosumer), and (b) the validator runs the same base model and adapter at the same numeric precision on equivalent hardware. The kernels fix the reduction order and the tile scheduler. Throughput cost is ~3–8% versus stock FP8 on H100 (Llama-3.1-70B; numbers in docs). On edge / embed-only tiers determinism is not achievable; those tiers fall back to stake-only verification.",
+    a: "Two prerequisites. First, the operator runs in deterministic-kernel mode (SGLang determinism mode or batch-invariant kernels), which is mandatory for dc-premium, dc-standard, cloud-rented, and prosumer. Second, the validator runs the same base model and adapter at the same numeric precision on equivalent hardware. The kernels fix the reduction order and the tile scheduler. Throughput cost is roughly 3 to 8% versus stock FP8 on H100 (Llama-3.1-70B; numbers in docs). On edge and embed-only tiers determinism is not achievable, so those tiers fall back to stake-only verification.",
   },
   {
     aud: "validators",
-    q: "What is a 'useful_nonce'? (RFC-0007)",
-    a: "useful_nonce is a per-job random value, generated by the gateway at job assignment, embedded into the operator's signed response receipt, and committed to the chain. It binds the receipt to a specific job + customer + epoch — preventing an operator from re-signing a stale receipt or a different operator from substituting a known-good response from a prior job. The 'useful' prefix is a historical artifact from when the working name for OROG was USEFUL; the field name is preserved across the rename. Full specification in RFC-0007.",
+    q: "What is the per-job nonce, and why is it there?",
+    a: "The nonce is a per-job random value, generated by the gateway at job assignment, embedded into the operator's signed response receipt, and committed to the chain. It binds the receipt to a specific job, customer, and epoch, which stops an operator from re-signing a stale receipt and stops a different operator from substituting a known-good response from a prior job. The full specification is RFC-0007.",
   },
 
   // ---- Security & ops ----
@@ -128,15 +128,15 @@ const qas: QA[] = [
 
 <Base
   title="FAQ"
-  description="Frequently asked questions about Orogen — how the network differs from Bittensor / io.net / Render / Aethir / Pearl, what happens on operator downtime, how the verification stack works, TGE timing, hardware tiers, privacy posture, and protocol settlement."
+  description="Frequently asked questions about Orogen: how the network differs from Bittensor, io.net, Render, Aethir, and Pearl, what happens on operator downtime, how the verification stack works, mainnet timing, hardware tiers, privacy posture, and protocol settlement."
   path="/faq"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">FAQ</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Questions, answered substantively.</h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Distilled from red-team reviews and the open-problem catalog tracked in
-      the public RFC repo. Tagged by audience — jump to the one you are.
+      The questions people actually ask, grouped by audience. Jump to the one
+      you are.
     </p>
 
     <ul class="mt-6 flex flex-wrap gap-2 text-xs">

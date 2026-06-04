@@ -36,7 +36,7 @@ const nodes: Node[] = [
     id: "T",
     q: "planned",
     title: "Forge testnet",
-    body: "Public RPC, GraphQL, gateway traffic, validator replay, and operators pending readiness gates.",
+    body: "Public RPC, GraphQL, gateway traffic, validator replay, and attested operators coming online.",
     kind: "test",
     status: "future",
   },
@@ -44,7 +44,7 @@ const nodes: Node[] = [
     id: "A",
     q: "planned",
     title: "Audit gate",
-    body: "Multi-firm chain audit · slashing pallet stress test · CRL drill execution after Forge readiness.",
+    body: "Multi-firm chain audit · slashing pallet stress test · CRL drill execution after Forge.",
     kind: "audit",
     status: "future",
   },
@@ -196,7 +196,7 @@ function fillOf(n: Node): string {
         letter-spacing="0.16em"
       >
         <text x={PAD_L} y={railY - 95}>SHIPPED</text>
-        <text x={(W) / 2} y={railY - 95} text-anchor="middle">— PLANNED —</text>
+        <text x={(W) / 2} y={railY - 95} text-anchor="middle">· PLANNED ·</text>
         <text x={W - PAD_R} y={railY - 95} text-anchor="end">FUTURE</text>
       </g>
 
@@ -308,7 +308,7 @@ function fillOf(n: Node): string {
     </li>
     <li class="flex items-center gap-2">
       <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-crystal-500 bg-crust-950"></span>
-      audit gate (planned)
+      audit (planned)
     </li>
     <li class="flex items-center gap-2">
       <span class="inline-block h-2.5 w-2.5 rounded-full border-2 border-magma-300 bg-magma-300"></span>
@@ -321,10 +321,10 @@ function fillOf(n: Node): string {
   </ul>
 
   <p class="mt-3 text-xs leading-relaxed text-crust-500">
-    W0 and W1 are shipped as local implementation work. Forge testnet,
-    the audit gate, mainnet TGE, and permissionless onboarding follow. Each
-    milestone has a quantitative gate. Missing a gate moves the next
-    milestone, not the messaging — gate criteria for each node are detailed
-    in the phase table below.
+    W0 and W1 are shipped as implementation work. The Forge testnet, the
+    multi-firm audit, mainnet, and permissionless onboarding follow. Each
+    milestone has measurable conditions, so if a condition takes longer the
+    next milestone waits for it. The conditions for each node are detailed in
+    the phase table below.
   </p>
 </figure>

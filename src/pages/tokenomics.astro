@@ -43,7 +43,7 @@ const donutSegments = allocations.map((a) => {
 });
 
 const emissionPhases = [
-  { phase: "Year 0 → Y1 TGE", rule: "Centralised stack; no token live; bootstrap revenue.", cap: "—" },
+  { phase: "Year 0 to Y1 TGE", rule: "Centralised stack; no token live; bootstrap revenue.", cap: "n/a" },
   { phase: "Year 1 (TGE → +12m)", rule: "Hard mint cap 8% of supply / year. Subsidising operator onboarding.", cap: "8% / yr" },
   { phase: "Year 2", rule: "Hard cap declines linearly to 4% of supply / year.", cap: "4% / yr by Y2-end" },
   { phase: "Year 3+", rule: "Pallet rule: mint ≤ rolling-90d burn × elasticity (governance ∈ [0.8, 1.5]).", cap: "Hard ceiling 5% / yr; floor 0.5% / yr" },
@@ -111,7 +111,7 @@ const subsidyTargets = [
         <div class="surface-card">
           <h3 class="text-lg font-semibold">Governance</h3>
           <p class="mt-2 text-sm leading-relaxed text-crust-300">
-            Parameter changes (elasticity factor, sampling rate, ceiling/floor, slashing schedule) are governed by stake-weighted vote with a 14-day timelock. No one-time discretionary mint is possible — the chain rejects mints above the pallet-computed cap.
+            Parameter changes (elasticity factor, sampling rate, ceiling/floor, slashing schedule) are governed by stake-weighted vote with a 14-day timelock. No one-time discretionary mint is possible, because the chain rejects mints above the pallet-computed cap.
           </p>
         </div>
       </div>
@@ -165,7 +165,7 @@ const subsidyTargets = [
       prices. If OROG appreciates between top-up and consumption, net burn
       occurs and supply is permanently reduced (the Akash post-BME pattern). If
       OROG depreciates, the protocol mints enough to honour the customer's
-      USD-quoted payment — still bounded by the emission cap below.
+      USD-quoted payment, still bounded by the emission cap below.
     </p>
   </section>
 
@@ -200,7 +200,7 @@ const subsidyTargets = [
       <p class="mt-6 max-w-3xl text-crust-300">
         Per epoch (~72 minutes), the mint is the minimum of (a) the Year-N
         bootstrap cap, (b) the rolling-90-day burn times the elasticity factor,
-        and (c) the 5%-of-supply hard ceiling — with a 0.5% floor for trough
+        and (c) the 5%-of-supply hard ceiling, with a 0.5% floor for trough
         resilience. The rule is pallet-enforced. The chain rejects mints above
         the rule's output, including any attempted foundation override.
       </p>
