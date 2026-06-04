@@ -23,7 +23,9 @@ const siteUrl = "https://orogen.network";
 const canonical = `${siteUrl}${path === "/" ? "" : path.replace(/\/$/, "")}`;
 const fullOg = ogImage.startsWith("http") ? ogImage : `${siteUrl}${ogImage}`;
 const fullTitle =
-  title === "Orogen" ? "Orogen — Verifiable LLM inference" : `${title} — Orogen`;
+  title === "Orogen"
+    ? "Orogen: open-model inference you can audit"
+    : `${title} · Orogen`;
 ---
 
 <!doctype html>

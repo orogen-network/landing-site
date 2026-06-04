@@ -1,82 +1,75 @@
 ---
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
-import TierTable from "../components/TierTable.astro";
 import CtaButton from "../components/CtaButton.astro";
-import BmeFlowCompact from "../components/BmeFlowCompact.astro";
 
 const valueProps = [
   {
-    title: "Drop-in OpenAI compatibility",
-    body: "LiteLLM-fronted gateway exposes /v1/chat/completions, /v1/embeddings, and SSE streaming. Point your existing OpenAI SDK at the Orogen base URL and your code works unchanged.",
+    title: "A receipt you can check yourself",
+    body: "Every response carries a signed receipt that binds the model, your input, the output, and a hardware attestation into one record. You verify it locally in a single call before you trust the result.",
   },
   {
-    title: "TEE-anchored receipts, not vibes",
-    body: "Every job returns a signed receipt bound to (model_hash, adapter_hash, prompt_hash, output_hash, attestation_quote). The chain stores the commitment; validators sample-replay 1–5% of jobs on identical hardware to detect drift.",
+    title: "The network checks the work for you",
+    body: "Validators independently re-run a sample of jobs on hardware identical to the operator's. Any mismatch between what an operator claimed and what the replay produces opens a challenge.",
   },
   {
-    title: "Work-based operator settlement",
-    body: "Burn-and-mint accounting is computed at oracle spot per verified job. Routing depends on served demand, attestation status, and verification results.",
+    title: "Paid in dollar terms for real work",
+    body: "Operators are paid per completed, verified job at oracle spot, denominated against the dollar, with most of each payout auto-swapped to a stablecoin. Pay tracks served demand, not token price.",
   },
   {
-    title: "Demand-elastic emission",
-    body: "Year 3+ rule is pallet-enforced: mint ≤ rolling-90d burn × elasticity factor. Hard 5% supply/year ceiling. 0.5% floor for trough resilience. No foundation mint discretion, no halving.",
+    title: "Issuance tracks revenue",
+    body: "Customers pay in stablecoins, the gateway burns OROG to settle each job, and new OROG is minted only against work that validators have verified. Supply follows real inference revenue.",
   },
 ];
 
-const steps = [
-  {
-    n: "1",
-    title: "Burn",
-    body: "Customer tops up the gateway in USDC/USD/ETH/BTC. The gateway burns OROG at oracle spot and mints non-transferable Compute Unit Credit (CUC), USD-pegged, 30-day expiry. No skip-the-token backdoor.",
-  },
-  {
-    n: "2",
-    title: "Route + execute",
-    body: "Multi-objective router picks an operator by latency target, price tier, KV-cache locality, and reputation. Worker runs vLLM V1 / SGLang / TRT-LLM with deterministic kernels in TEE; signed response receipt returned over the wire.",
-  },
-  {
-    n: "3",
-    title: "Verify + settle",
-    body: "Validators sample 1–5% of jobs and replay on identical hardware; mismatches trigger an opML challenge window. On finalisation, CUC is consumed and the runtime applies the protocol settlement split.",
-  },
-];
+const snippet = `from openai import OpenAI
 
-const quotes = [
-  {
-    text: "Bittensor SN3 ran 70+ peers across 3 continents at 500/110 Mbps commodity bandwidth — the operator base for a global verifiable inference network already exists; what's missing is a settlement layer with real burn-mint and a credible verification stack.",
-    source: "Bittensor SN3 public dashboards",
-  },
-  {
-    text: "Akash's post-BME redesign shifted from fixed inflation toward revenue-linked issuance constraints. The architecture pattern is useful; the missing piece is anchoring it to physical-work verification rather than community signalling.",
-    source: "Akash community reports",
-  },
-  {
-    text: "Phala's public TEE work shows the substrate is viable for real inference deployments. Orogen's thesis is to combine that attestation layer with replay verification and protocol settlement accounting.",
-    source: "Phala public dashboards",
-  },
-];
+client = OpenAI(
+    api_key="orog_...",
+    base_url="https://gateway.orogen.network/v1",
+)
+
+response = client.chat.completions.create(
+    model="llama-3.1-70b-instruct",
+    messages=[{"role": "user", "content": "Summarise this contract clause..."}],
+)`;
 ---
 
 <Base
   title="Orogen"
-  description="Orogen is a verifiable LLM inference network. OpenAI-compatible gateway, TEE-attested GPU operators, validator replay sampling, and burn-and-mint settlement on a Substrate-based chain."
+  description="OpenAI-compatible inference at roughly $0.40 per 1M output tokens for Llama-3.1-70B. Every response returns a signed receipt you can verify yourself, and validators re-run a sample of jobs on identical hardware."
   path="/"
 >
   <Hero />
 
-  <!-- Value props -->
+  <!-- Status strip -->
+  <section class="border-b border-crust-800/80 bg-crust-900/40">
+    <div class="container-page flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:gap-3">
+      <span class="flex items-center gap-2 text-sm font-medium text-crust-100">
+        <span class="inline-block h-2 w-2 rounded-full bg-crystal-500"></span>
+        Live on the Forge testnet
+      </span>
+      <span class="text-sm text-crust-400">
+        The OpenAI-compatible gateway, the Python and TypeScript SDKs, the CLI
+        wallet, and a public chain node are all running today. Mainnet pricing
+        and capacity are on the <a href="/roadmap">roadmap</a>.
+      </span>
+    </div>
+  </section>
+
+  <!-- Why a receipt matters -->
   <section class="container-page py-16">
     <p class="heading-eyebrow">Why Orogen</p>
     <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-      Inference that customers, operators, and the chain can all check.
+      Inference you do not have to take on faith.
     </h2>
     <p class="mt-3 max-w-3xl text-crust-300">
-      Most DePIN-for-AI networks are bare GPU leasing markets — you rent a box,
-      you trust the operator, you reconcile invoices off-protocol. Orogen is
-      built the other way: the protocol owns the verification stack, the
-      settlement layer, and the marketplace. Every layer is pallet-enforced and
-      every job emits a receipt anyone can verify against the chain.
+      Most inference networks rent you a GPU and ask you to trust whatever comes
+      back. You cannot tell which model actually answered, whether it was the
+      quantization you paid for, or whether the hardware was what it claimed, so
+      you reconcile an invoice and hope it was honest. Orogen works the other way
+      around. The network verifies the work and hands you the proof, so you check
+      the result rather than take the operator's word for it.
     </p>
 
     <div class="mt-10 grid gap-5 sm:grid-cols-2">
@@ -91,78 +84,167 @@ const quotes = [
     </div>
   </section>
 
-  <!-- How it works -->
+  <!-- How the receipt works -->
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
       <p class="heading-eyebrow">How it works</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Three steps. One loop.</h2>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+        A loop between you, the network, and the chain.
+      </h2>
       <p class="mt-3 max-w-3xl text-crust-300">
-        The burn-and-mint engine (BME) closes every customer transaction in three
-        on-chain steps. Read the long form in <a href="/how-it-works">the verification stack walkthrough</a>.
+        Verification is a loop, and you sit at the start of it. Read the full
+        walkthrough in <a href="/how-it-works">how it works</a>.
       </p>
 
       <ol class="mt-10 grid gap-5 lg:grid-cols-3">
-        {
-          steps.map((s) => (
-            <li class="surface-card-strong relative">
-              <div class="flex items-center gap-3">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-sm text-magma-300">
-                  {s.n}
-                </span>
-                <h3 class="text-lg font-semibold text-crust-100">{s.title}</h3>
-              </div>
-              <p class="mt-3 text-sm leading-relaxed text-crust-300">{s.body}</p>
-            </li>
-          ))
-        }
+        <li class="surface-card-strong">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-sm text-magma-300">1</span>
+            <h3 class="text-lg font-semibold text-crust-100">You verify</h3>
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-crust-300">
+            You send a request, receive an answer and a signed receipt, and
+            verify that receipt locally in a single call.
+          </p>
+        </li>
+        <li class="surface-card-strong">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-sm text-magma-300">2</span>
+            <h3 class="text-lg font-semibold text-crust-100">The network checks</h3>
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-crust-300">
+            Validators replay a sample of jobs on identical hardware and flag
+            any mismatch, which opens a challenge.
+          </p>
+        </li>
+        <li class="surface-card-strong">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full border border-magma-500/60 bg-magma-500/10 font-mono text-sm text-magma-300">3</span>
+            <h3 class="text-lg font-semibold text-crust-100">The chain records</h3>
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-crust-300">
+            Each job's commitment is stored on-chain, so a disputed result has
+            a record to settle against rather than two parties arguing from
+            memory.
+          </p>
+        </li>
       </ol>
+    </div>
+  </section>
 
-      <div class="mt-10">
-        <BmeFlowCompact />
+  <!-- Drop-in for builders -->
+  <section class="container-page py-16">
+    <div class="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr]">
+      <div>
+        <p class="heading-eyebrow">For builders</p>
+        <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+          Drop-in for the OpenAI code you already wrote.
+        </h2>
+        <p class="mt-3 text-crust-300">
+          Set your base URL to the Orogen gateway and your existing code keeps
+          working. There is no new SDK to learn and no rewrite to schedule.
+          Reach for the Orogen SDK when you want to pick a hardware tier per
+          request or pull the receipt object directly.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <CtaButton href="/customers" variant="primary">Read the customer guide</CtaButton>
+          <CtaButton href="https://docs.orogen.network" variant="ghost" rel="noopener noreferrer">Open the docs</CtaButton>
+        </div>
+      </div>
+      <pre class="pre-block"><code>{snippet}</code></pre>
+    </div>
+  </section>
+
+  <!-- Pricing in one line -->
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Pricing</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+        Roughly $0.40 per 1M output tokens.
+      </h2>
+      <p class="mt-3 max-w-3xl text-crust-300">
+        That is the standard datacenter tier for Llama-3.1-70B, against $10 to
+        $15 for comparable closed-model APIs. You pick the hardware tier per
+        request, you pay only for the tokens you use, and there is no
+        subscription floor.
+      </p>
+      <div class="mt-6">
+        <CtaButton href="/operators#tiers" variant="secondary">See the full tier matrix</CtaButton>
       </div>
     </div>
   </section>
 
-  <!-- Tier table -->
+  <!-- Two audiences -->
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Hardware tiers</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Six tiers. One protocol.</h2>
-    <p class="mt-3 max-w-3xl text-crust-300">
-      Operators self-declare a tier at registration. The tier commits them to an
-      SLA (latency, verification posture, kernel determinism). Customers pick a
-      tier per request; the protocol does the routing. Stake floors and pricing
-      multiples are at-launch parameters and governance-adjustable.
-    </p>
-    <div class="mt-8">
-      <TierTable variant="full" caption="Orogen hardware tier matrix" />
+    <div class="grid gap-5 lg:grid-cols-2">
+      <div class="surface-card">
+        <h3 class="text-xl font-semibold text-crust-100">For operators</h3>
+        <p class="mt-2 text-sm leading-relaxed text-crust-300">
+          Run an open-source inference server with three additions: hardware
+          attestation, deterministic kernels, and the receipt sidecar. You are
+          paid per completed job at oracle spot, denominated against the dollar,
+          with most of each payout auto-swapped to a stablecoin. Pay tracks
+          verified work, so honest operators are not diluted by emissions handed
+          out for nothing.
+        </p>
+        <div class="mt-5">
+          <CtaButton href="/operators" variant="ghost">See the per-H100 economics</CtaButton>
+        </div>
+      </div>
+      <div class="surface-card">
+        <h3 class="text-xl font-semibold text-crust-100">Why the token holds up</h3>
+        <p class="mt-2 text-sm leading-relaxed text-crust-300">
+          Customers pay in stablecoins, and the gateway burns OROG to settle
+          each job. New issuance is minted only against work that validators
+          have verified, so issuance tracks real inference revenue rather than a
+          fixed inflation schedule. There is no foundation mint discretion and
+          no halving.
+        </p>
+        <div class="mt-5">
+          <CtaButton href="/tokenomics" variant="ghost">Read the tokenomics</CtaButton>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Quotes / sourced facts -->
+  <!-- What we learned -->
   <section class="border-t border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
       <p class="heading-eyebrow">Sourced from prior networks</p>
       <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Not claims. Citations.
+        What we learned from the networks before us.
       </h2>
       <p class="mt-3 max-w-3xl text-crust-300">
-        The Orogen design is the result of a long survey of every prior
-        DePIN-for-AI network. Three observations from the live ecosystem that
-        drove the architecture choices:
+        Orogen's design comes from studying what prior networks got right and
+        what they left on the table.
       </p>
 
       <div class="mt-8 grid gap-5 lg:grid-cols-3">
-        {
-          quotes.map((q) => (
-            <figure class="surface-card">
-              <blockquote class="text-sm leading-relaxed text-crust-200">
-                <p>"{q.text}"</p>
-              </blockquote>
-              <figcaption class="mt-3 text-xs text-crust-500">{q.source}</figcaption>
-            </figure>
-          ))
-        }
+        <figure class="surface-card">
+          <blockquote class="text-sm leading-relaxed text-crust-200">
+            <p>Bittensor SN3 showed that a global operator base already exists, with more than 70 peers across three continents running on commodity links.</p>
+          </blockquote>
+          <figcaption class="mt-3 text-xs text-crust-500">Bittensor SN3 public dashboards</figcaption>
+        </figure>
+        <figure class="surface-card">
+          <blockquote class="text-sm leading-relaxed text-crust-200">
+            <p>Phala showed that TEE attestation works at scale, routing more than a billion tokens a day for OpenRouter clients.</p>
+          </blockquote>
+          <figcaption class="mt-3 text-xs text-crust-500">Phala public dashboards</figcaption>
+        </figure>
+        <figure class="surface-card">
+          <blockquote class="text-sm leading-relaxed text-crust-200">
+            <p>Akash showed that burn-and-mint can move issuance toward real revenue instead of a fixed inflation schedule.</p>
+          </blockquote>
+          <figcaption class="mt-3 text-xs text-crust-500">Akash community reports</figcaption>
+        </figure>
       </div>
+      <p class="mt-6 max-w-3xl text-crust-400">
+        Orogen anchors all three to verified physical work. Like the orogeny
+        that slowly builds a mountain range under pressure, durable
+        infrastructure is the product of accumulated verified work rather than
+        announcements.
+      </p>
     </div>
   </section>
 
@@ -171,16 +253,16 @@ const quotes = [
     <div class="surface-card-strong flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Ready to integrate?
+          Build on it, or get paid to run it.
         </h2>
         <p class="mt-2 max-w-2xl text-crust-300">
-          The Python and TypeScript SDKs are OpenAI-compatible drop-ins. The
-          CLI wallet and chain node are available for local development while
-          Forge public endpoints move through the readiness gate.
+          Start building against the live gateway with the OpenAI client you
+          already have, or run a node and get paid in dollar terms for verified
+          work.
         </p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <CtaButton href="/downloads" variant="primary" size="lg">Download SDK</CtaButton>
+        <CtaButton href="/customers" variant="primary" size="lg">Start building</CtaButton>
         <CtaButton href="/operators" variant="secondary" size="lg">Run a node</CtaButton>
       </div>
     </div>

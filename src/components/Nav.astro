@@ -7,13 +7,11 @@ const { currentPath = "/" } = Astro.props;
 
 const navItems: { label: string; href: string }[] = [
   { label: "How it works", href: "/how-it-works" },
-  { label: "Operators", href: "/operators" },
   { label: "Customers", href: "/customers" },
+  { label: "Operators", href: "/operators" },
   { label: "Validators", href: "/validators" },
   { label: "Tokenomics", href: "/tokenomics" },
   { label: "Roadmap", href: "/roadmap" },
-  { label: "Downloads", href: "/downloads" },
-  { label: "FAQ", href: "/faq" },
 ];
 
 const isActive = (href: string) =>
@@ -76,11 +74,10 @@ const isActive = (href: string) =>
         Docs
       </a>
       <a
-        href="https://app.orogen.network"
+        href="/customers"
         class="rounded-md border border-magma-500/60 bg-magma-500/15 px-3 py-1.5 text-sm font-medium text-magma-200 no-underline transition-colors hover:border-magma-400 hover:bg-magma-500/25 hover:text-magma-100"
-        rel="noopener noreferrer"
       >
-        Launch app
+        Start building
       </a>
     </div>
   </div>
