@@ -42,9 +42,9 @@ const attestationReqs = [
 
 const settlementSplit = [
   { who: "Operator (provider)", pct: "75%", why: "The compute is the product." },
-  { who: "Verification work (validators + opML watchers + zkML provers)", pct: "15%", why: "Work-based settlement proportional to verification performed and consensus alignment." },
-  { who: "Protocol treasury", pct: "5%", why: "Audits, security response, customer integrations. Bounded spend rate (≤ 18-month runway burn)." },
-  { who: "Governance stakers", pct: "5%", why: "Only if governance retains a real security function (slashing arbitration, parameter review). Otherwise rolls into the 15% verification slice." },
+  { who: "Verification work (validators + opML watchers + zkML provers)", pct: "15%", why: "Paid in proportion to the verification actually performed and consensus alignment." },
+  { who: "Protocol treasury", pct: "5%", why: "Audits, security response, customer integrations, at a bounded spend rate." },
+  { who: "Governance stakers", pct: "5%", why: "Taken only while governance holds a real security function, and that slice folds back into verification otherwise." },
 ];
 
 const cliExample = `# Build wallet-cli from source (release tarballs come with a signed release).
@@ -60,84 +60,167 @@ export OROGEN_RPC_URL=wss://forge-rpc.orogen.network
 $WALLET new my-operator
 $WALLET address my-operator
 
-# 2. Fund it from the public faucet (testnet OROG, low-cap).
+# 2. Fund it from the public faucet.
 curl -X POST https://faucet.orogen.network/drip-public \\
   -H 'Content-Type: application/json' \\
   -d '{"recipient":"<the ss58 address from step 1>"}'
 $WALLET balance my-operator
 
 # 3. Register as an operator. --stake is in plancks; MinStake = 1_000_000_000_000 (1 OROG).
-#    --attestation-hash defaults to the zero hash for bring-up.
 $WALLET register-operator my-operator \\
   --stake 1000000000000 \\
   --attestation-hash 0x0000000000000000000000000000000000000000000000000000000000000000 \\
   --rpc-url wss://forge-rpc.orogen.network
 
 # 4. Submit an on-chain liveness heartbeat for the current epoch.
-$WALLET heartbeat-test my-operator --submit --epoch <current-epoch>
-
-# Worker daemon images are forthcoming at ghcr.io/orogen-network/infer-worker-*.`;
+$WALLET heartbeat-test my-operator --submit --epoch <current-epoch>`;
 ---
 
 <Base
   title="Operators"
-  description="Run a GPU operator on the Orogen network. Six hardware tiers from B200/NVL72 down to Apple M-series. Stake floors, attestation requirements, settlement splits, and a worked example of per-H100 unit economics."
+  description="Run your GPUs on Orogen and get paid per completed job at oracle spot, denominated against the dollar, with most of each payout auto-swapped to a stablecoin. Six hardware tiers, worked per-H100 economics, and a clear path to break-even."
   path="/operators"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">For operators</p>
-    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Run a node. Serve verified work.</h1>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+      Get paid in dollar terms for work you can prove you did.
+    </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Orogen operators are the GPU side of the network. You run an open-source
-      inference server (vLLM V1, SGLang, TRT-LLM, llama.cpp), with three
-      additions: TEE attestation, deterministic kernels, and the receipt
-      sidecar. Per-job settlement is minted in OROG at oracle spot when each job
-      finalises, with a default 70% auto-swap to USDC at the protocol AMM.
+      Run your GPUs on Orogen and you are paid per completed inference job at
+      oracle spot, denominated against the dollar, with most of each payout
+      auto-swapped to a stablecoin at settlement. Pay tracks verified work, so a
+      busy week is a bigger check and an idle one is a smaller check. Honest
+      operators are never diluted by emissions, because new issuance is minted
+      only against jobs that pass verification. Point your hardware at the
+      network, serve real customer requests, and settle in something that holds
+      its value.
     </p>
+    <div class="mt-8">
+      <CtaButton href="#tiers" variant="primary" size="lg">Run a node</CtaButton>
+    </div>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
-      <p class="heading-eyebrow">Who can mine</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Six tiers, from datacenter to desk.</h2>
-      <p class="mt-3 max-w-3xl text-crust-300">
-        Hardware bands span frontier multi-GPU stacks down to Apple Silicon. The
-        protocol prices each tier as a multiple of base. Operators self-declare a
-        tier at registration; validator probes can challenge a tier claim, and
-        sustained SLA breach (&gt;5% requests outside latency bound over 24h, or
-        &gt;0.5% failed sampling-replay over 7 days) triggers automatic
-        downgrade.
+      <p class="heading-eyebrow">What you run</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Your inference server, plus three additions.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        You run an open-source inference server you already know, such as vLLM,
+        SGLang, or TRT-LLM, with three additions that turn raw throughput into
+        work the network can pay for.
       </p>
-      <div class="mt-8">
-        <TierTable variant="ops" />
+      <div class="mt-8 grid gap-5 lg:grid-cols-3">
+        <div class="surface-card">
+          <h3 class="text-base font-semibold text-crust-100">Hardware attestation</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">So the network can confirm the box is the hardware you registered.</p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-base font-semibold text-crust-100">Deterministic kernels</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">vLLM or SGLang determinism mode, so a validator re-running your job gets the same tokens you returned.</p>
+        </div>
+        <div class="surface-card">
+          <h3 class="text-base font-semibold text-crust-100">The receipt sidecar</h3>
+          <p class="mt-2 text-sm leading-relaxed text-crust-300">Binds the model, the customer input, your output, and the attestation into a signed receipt that ships with every response.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Stake requirements</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Skin in the game, scaled to the tier.</h2>
+    <p class="heading-eyebrow">Getting paid</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">How a payout reaches you.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Stake is the L1 verification layer — it's the cost of misbehaving. The at-launch
-      parameters: 500 OROG for dc-premium, 100 OROG for dc-standard, 50 OROG for
-      cloud-rented, 25 OROG for prosumer, and 0 OROG (small deposit only) for edge and
-      embed-only tiers. Slashing is partial-loss for sampling mismatches, full-loss for
-      coldkey duplication or fraudulent attestation. Stake unlocks 14 days after
-      deregistration, gated by an absence of open challenges.
+      A customer sends a request, your worker serves it, and the response goes
+      back with its receipt. Validators independently re-run a sample of jobs on
+      hardware identical to yours, and a matching replay confirms the work. On
+      settlement the customer side burns OROG to pay for the job, the protocol
+      mints against that verified work, and your share lands with the default 70
+      percent already swapped to USDC. You keep the OROG fraction if you want
+      network exposure, or you raise the auto-swap percentage if you do not. The
+      percentage is a registration parameter you control.
     </p>
-    <p class="mt-4 max-w-3xl text-crust-300">
-      Validators must hold <strong class="text-crust-100">10× the operator minimum</strong>
-      for the tier they sample. That ratio is the floor; in practice validator
-      stake is significantly higher because verification compensation scales
-      with active stake (Yuma-weighted). See <a href="/validators">Validators</a>.
+  </section>
+
+  <section id="economics" class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Worked economics</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">One H100 SXM at the dc-standard tier.</h2>
+      <p class="mt-4 max-w-3xl text-crust-300">
+        These are design assumptions for capacity planning, in dollars per day.
+        Real numbers move with your customer mix, regional cost basis, KV-cache
+        hit rate, and utilization. The same per-GPU spread keeps Akash, Render,
+        and Pearl operators in the market today.
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-lg border border-crust-800">
+        <table class="prose-table">
+          <thead class="bg-crust-900/70">
+            <tr>
+              <th>Line</th>
+              <th class="text-right">Value</th>
+              <th>Source / assumption</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Operator cost: 1× H100 SXM all-in (compute + power + bandwidth)</td>
+              <td class="text-right font-mono">$48 / day</td>
+              <td>Mid-2026 mid-tier cloud rate; owned hardware 30–50% lower.</td>
+            </tr>
+            <tr>
+              <td>Throughput: Llama-3.1-70B FP8, batch-served, deterministic kernel</td>
+              <td class="text-right font-mono">~9,000 tok/s output</td>
+              <td>Typical SXM throughput with the deterministic kernel applied.</td>
+            </tr>
+            <tr>
+              <td>Customer price at dc-standard (0.6× base $0.40 / 1M out)</td>
+              <td class="text-right font-mono">$0.24 / 1M out</td>
+              <td>Base posture; large customers negotiate sub-base via volume.</td>
+            </tr>
+            <tr>
+              <td>Billable volume at 50% utilization</td>
+              <td class="text-right font-mono">~389M output tok / day</td>
+              <td>Before routing and verification take their slices.</td>
+            </tr>
+            <tr>
+              <td>Break-even at this tier</td>
+              <td class="text-right font-mono">~200M billable tok / day</td>
+              <td>Reachable below half of the throughput above; capacity beyond is margin.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-crust-500">
+        Reference values are design assumptions for capacity planning and
+        integration testing. They are not realized operator revenue, not a
+        forecast, and not financial guidance.
+      </p>
+    </div>
+  </section>
+
+  <section id="tiers" class="container-page py-16">
+    <p class="heading-eyebrow">Hardware tiers</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Six hardware tiers, from datacenter to desk.</h2>
+    <p class="mt-3 max-w-3xl text-crust-300">
+      The protocol prices each tier as a multiple of the $0.40 base and asks for
+      stake in proportion to the trust it extends. You self-declare a tier at
+      registration. Validator probes can challenge a tier claim, and a sustained
+      SLA breach (more than 5% of requests outside the latency bound over 24
+      hours, or more than 0.5% failed replay over 7 days) triggers an automatic
+      downgrade. Higher tiers earn a larger price multiple because they carry
+      hardware attestation and tighter SLAs, while lower tiers trade price for an
+      easier path in.
     </p>
+    <div class="mt-8">
+      <TierTable variant="ops" />
+    </div>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
       <p class="heading-eyebrow">Attestation</p>
       <h2 class="mt-2 text-3xl font-semibold tracking-tight">Hardware roots, multi-vendor.</h2>
-
       <div class="mt-8 grid gap-5 lg:grid-cols-2">
         {
           attestationReqs.map((b) => (
@@ -154,123 +237,100 @@ $WALLET heartbeat-test my-operator --submit --epoch <current-epoch>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Settlement split per job</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">75 / 15 / 5 / 5.</h2>
+    <p class="heading-eyebrow">Stake</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Stake is the cost of cutting corners, scaled to the tier.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Per-job emission is pallet-computed (subject to the year-N cap, the rolling-burn
-      elasticity bound, and the 5% supply/year ceiling) and split as follows:
+      Stake is the first verification layer and the price of misbehaving. Floors
+      run from 500 OROG at dc-premium down to a small deposit at the edge and
+      embed-only tiers. Slashing is partial for a sampling mismatch and total for
+      coldkey duplication or a fraudulent attestation, so the penalty matches the
+      offense. Stake unlocks 14 days after you deregister, once no challenges
+      remain open. Governance can adjust floors by up to 20 percent per epoch
+      behind a timelock, so the numbers move slowly and in public.
     </p>
-
-    <div class="mt-8 overflow-x-auto rounded-lg border border-crust-800">
-      <table class="prose-table">
-        <thead class="bg-crust-900/70">
-          <tr>
-            <th>Recipient</th>
-            <th class="text-right">Share</th>
-            <th>Rationale</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            settlementSplit.map((r) => (
-              <tr>
-                <td>{r.who}</td>
-                <td class="text-right font-mono text-magma-300">{r.pct}</td>
-                <td>{r.why}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-    <p class="mt-3 text-xs text-crust-500">
-      No subnet-owner class. Every recipient slot maps to an operating role.
+    <p class="mt-4 max-w-3xl text-crust-300">
+      Validators hold <strong class="text-crust-100">10× the operator minimum</strong>
+      for the tier they sample, which keeps the cost of a bad challenge higher
+      than any payout it could earn. See <a href="/validators">Validators</a>.
     </p>
   </section>
 
   <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
     <div class="container-page">
-      <p class="heading-eyebrow">Worked example</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Unit economics: 1× H100 SXM at the dc-standard tier.</h2>
+      <p class="heading-eyebrow">Settlement</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Where each settled job goes.</h2>
       <p class="mt-4 max-w-3xl text-crust-300">
-        Indicative numbers, dollars-per-day. Real numbers depend on customer
-        mix, regional cost basis, KV-cache hit rate, and the OROG spot price
-        (which the operator-side auto-USDC swap normalises). The same per-GPU
-        spread keeps Pearl, Akash, and Render operators in the market today.
+        Per-job settlement splits four ways, and every slice maps to a working
+        role rather than a passive owner class.
       </p>
 
       <div class="mt-8 overflow-x-auto rounded-lg border border-crust-800">
         <table class="prose-table">
           <thead class="bg-crust-900/70">
             <tr>
-              <th>Line</th>
-              <th class="text-right">Value</th>
-              <th>Source / assumption</th>
+              <th>Recipient</th>
+              <th class="text-right">Share</th>
+              <th>Rationale</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Operator cost: 1× H100 SXM all-in (compute + power + bandwidth)</td>
-              <td class="text-right font-mono">$48 / day</td>
-              <td>Mid-2026 mid-tier cloud rate; on-prem can be 30–50% lower.</td>
-            </tr>
-            <tr>
-              <td>Throughput: Llama-3.1-70B FP8, batch-served</td>
-              <td class="text-right font-mono">~9,000 tok/s output</td>
-              <td>vLLM V1 typical SXM throughput, deterministic kernel applied.</td>
-            </tr>
-            <tr>
-              <td>Customer price at dc-standard (0.6× base $0.40 / 1M out)</td>
-              <td class="text-right font-mono">$0.24 / 1M out</td>
-              <td>Base posture; large customers negotiate sub-base via volume.</td>
-            </tr>
-            <tr>
-              <td>Reference billable volume at 50% utilization</td>
-              <td class="text-right font-mono">~389M output tok / day</td>
-              <td>24h × 4500 tok/s, before routing, verification, and customer demand constraints.</td>
-            </tr>
-            <tr>
-              <td>Settlement path</td>
-              <td class="text-right font-mono">per verified job</td>
-              <td>Customer-side burn, verifier sampling, and protocol settlement are computed by the runtime.</td>
-            </tr>
-            <tr>
-              <td>Operator exposure controls</td>
-              <td class="text-right font-mono">configurable</td>
-              <td>Auto-swap percentage, routing tier, and stake floor are registration parameters.</td>
-            </tr>
+            {
+              settlementSplit.map((r) => (
+                <tr>
+                  <td>{r.who}</td>
+                  <td class="text-right font-mono text-magma-300">{r.pct}</td>
+                  <td>{r.why}</td>
+                </tr>
+              ))
+            }
           </tbody>
         </table>
       </div>
       <p class="mt-3 text-xs text-crust-500">
-        Reference values are design assumptions for capacity planning and
-        integration testing. They are not realized operator revenue, not a
-        forecast, and not financial guidance.
+        Nobody collects rent without doing the work.
       </p>
     </div>
   </section>
 
   <section class="container-page py-16">
-    <p class="heading-eyebrow">Bootstrap</p>
-    <h2 class="mt-2 text-3xl font-semibold tracking-tight">From source build to registration readiness.</h2>
-
-    <CodeBlock code={cliExample} lang="bash" filename="install.sh" />
-
+    <p class="heading-eyebrow">Token</p>
+    <h2 class="mt-2 text-3xl font-semibold tracking-tight">Why your pay does not get inflated away.</h2>
     <p class="mt-4 max-w-3xl text-crust-300">
-      The wallet CLI handles account creation, attestation hash binding, and
-      on-chain registration against the live Forge RPC. The worker daemon embeds
-      vLLM V1 (or SGLang / TRT-LLM / llama.cpp for the edge tier) with the
-      Orogen-specific plugin loaded; the worker images are forthcoming at
-      <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">ghcr.io/orogen-network/infer-worker-*</code>.
-      Forge is a <strong class="text-crust-100">test-mode preview</strong>:
-      attestation uses mock quotes and the faucet is low-cap — see the
-      <a class="text-magma-300 underline" href="https://docs.orogen.network/start/forge-testnet">testnet caveats</a>.
+      Customers pay in stablecoins, the gateway burns OROG to settle each job,
+      and new issuance is minted only against verified work. Issuance tracks real
+      inference revenue rather than a fixed inflation schedule, with a 5 percent
+      per year supply ceiling, no foundation mint discretion, and no halving. You
+      get paid for the work you did, not handed a slice of an emissions schedule
+      that dilutes every week.
     </p>
+    <div class="mt-6">
+      <CtaButton href="/tokenomics" variant="secondary">Read the tokenomics</CtaButton>
+    </div>
+  </section>
 
-    <div class="mt-8 flex flex-wrap gap-3">
-      <CtaButton href="/downloads" variant="primary">Artifact policy</CtaButton>
-      <CtaButton href="https://docs.orogen.network" variant="secondary" rel="noopener noreferrer">Operator guide</CtaButton>
-      <CtaButton href="/validators" variant="ghost">Validator role</CtaButton>
+  <section class="border-y border-crust-800/80 bg-crust-900/40 py-16">
+    <div class="container-page">
+      <p class="heading-eyebrow">Bring-up</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Get a node running.</h2>
+
+      <CodeBlock code={cliExample} lang="bash" filename="register-node.sh" />
+
+      <p class="mt-4 max-w-3xl text-crust-300">
+        The wallet CLI handles account creation, attestation binding, and
+        on-chain registration against the live Forge testnet RPC at
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">wss://forge-rpc.orogen.network</code>.
+        You create an sr25519 hotkey, fund it from the public faucet, register
+        your tier with a stake in plancks, and submit a liveness heartbeat for
+        the current epoch. The worker daemon embeds your inference server with
+        the Orogen plugin loaded. Full commands and the worker images live in the
+        operator guide.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Open the operator guide</CtaButton>
+        <CtaButton href="/downloads" variant="secondary">Downloads</CtaButton>
+        <CtaButton href="/validators" variant="ghost">Validator role</CtaButton>
+      </div>
     </div>
   </section>
 </Base>
