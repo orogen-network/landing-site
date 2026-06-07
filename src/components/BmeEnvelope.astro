@@ -4,7 +4,7 @@
 //   mint_rate = max(  floor_0.5%,
 //                     min( ceiling_5%,
 //                          year_N_bootstrap_cap,
-//                          rolling_90d_burn × elasticity ) )
+//                          rolling_180d_burn × elasticity ) )
 //
 // Bootstrap cap: 8% at TGE, linearly to 4% at month 24, then lifted.
 // Burn × elasticity: noisy ramp, sometimes piercing the ceiling, sometimes
@@ -47,7 +47,7 @@ function bootstrapCap(m: number): number {
   return 8 - (m / 24) * 4; // 8 → 4 linear
 }
 
-// Hand-picked rolling-90d-burn × elasticity values (% supply/yr).
+// Hand-picked rolling-180d-burn × elasticity values (% supply/yr).
 // Plausible storyline:
 //   Y1 ramp from cold start, hits cap-binding regime;
 //   Y2 mid-cycle dip, then climb;
@@ -145,7 +145,7 @@ const xTicks = [0, 6, 12, 18, 24, 30, 36];
 
 <figure
   class="surface-card-strong"
-  aria-label="BME emission envelope: rolling-90d burn × elasticity, clipped above by 5% supply/year ceiling and the year-N bootstrap cap, clamped below by the 0.5% floor."
+  aria-label="BME emission envelope: rolling-180d burn × elasticity, clipped above by 5% supply/year ceiling and the year-N bootstrap cap, clamped below by the 0.5% floor."
 >
   <div class="flex items-baseline justify-between border-b border-crust-800 pb-3">
     <div>
@@ -386,7 +386,7 @@ const xTicks = [0, 6, 12, 18, 24, 30, 36];
         bootstrap cap · 8% → 4%
       </text>
 
-      <!-- ── rolling-90d burn × elasticity (ghost line) ── -->
+      <!-- ── rolling-180d burn × elasticity (ghost line) ── -->
       <g clip-path="url(#plot-clip)">
         <path
           d={pathOf(burnElasticity)}
@@ -517,7 +517,7 @@ const xTicks = [0, 6, 12, 18, 24, 30, 36];
   >
     Per epoch (~72 minutes), mint =
     <code class="rounded bg-crust-800/80 px-1 py-0.5 text-magma-300">
-      MAX(floor, MIN(ceiling, year_N_cap, rolling_90d_burn × elasticity))
+      MAX(floor, MIN(ceiling, year_N_cap, rolling_180d_burn × elasticity))
     </code>.
     Bootstrap cap declines from 8%/yr at TGE to 4%/yr by month 24; after that
     the rolling-burn envelope governs, clamped by the 5% ceiling above and the

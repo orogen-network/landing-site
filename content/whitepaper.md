@@ -26,7 +26,7 @@ Orogen exists to provide the missing rail. The design rests on five claims:
 1. **Trust in inference can be made verifiable.** A combination of multi-vendor hardware attestation, deterministic kernel pinning, validator replay on independent hardware, optimistic-ML challenge windows, and zero-knowledge proofs for selected sub-heads is enough to bound the rate at which an operator can cheat undetected to a level that an adversary cannot economically defeat against the available stake.
 2. **Settlement can be made transparent.** Per-request receipts hashed into per-epoch Merkle roots, anchored on a public chain, give every customer, operator, and auditor the same view of who served what, when, on which hardware.
 3. **Compute can be priced in fiat-stable units without a custodial middleman.** A burn-and-mint protocol decouples customer-facing pricing (USD-pegged compute credits) from the volatile asset (OROG) used to settle and to bond operators.
-4. **The economic loop can be bounded without halvings or foundation discretion.** A pallet-enforced rule binds new mint per epoch to a rolling 90-day burn × an elasticity factor, with a hard floor and a hard ceiling. There is no discretion to print outside the rule.
+4. **The economic loop can be bounded without halvings or foundation discretion.** A pallet-enforced rule binds new mint per epoch to a rolling 180-day burn × an elasticity factor, with a hard floor and a hard ceiling. There is no discretion to print outside the rule.
 5. **The whole stack can be open and permissionless from day one** to inspection, with permissionless operator registration phased in after a public testnet and a multi-firm audit.
 
 The rest of this paper sets out how the system meets those claims.
@@ -325,7 +325,7 @@ Three properties follow:
 
 - **There is no halving schedule.** Emission is bounded by burn (i.e. by customer demand), not by a calendar.
 - **There is no foundation discretion to mint.** The Foundation cannot mint outside the rule. The rule's structure is itself protected: changes to floor, ceiling, or bootstrap shape require a runtime upgrade on a 90-day timelock; changes to `elasticity_factor` require a governance vote on a 14-day timelock.
-- **The system can sustain itself in either direction.** A demand floor of 0.5 %/yr keeps validators and operators paid even in lean periods; a ceiling of 5 %/yr prevents runaway inflation in boom periods. The rolling-90-day window is short enough to track real demand and long enough to prevent reactive spikes.
+- **The system can sustain itself in either direction.** A demand floor of 0.5 %/yr keeps validators and operators compensated in lean periods; a ceiling of 5 %/yr prevents runaway inflation in boom periods. The rolling-180-day window is long enough to smooth demand cliffs while still tracking sustained demand.
 
 ### 5.4 Token allocation at TGE
 

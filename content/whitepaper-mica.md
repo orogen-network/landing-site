@@ -44,7 +44,7 @@ Signed by the management body of the offeror on [TO FILL — date] at [TO FILL �
 
 **Settlement split per job emission.** 75 % to the operator that served the inference; 15 % to verification work (validators, opML challengers, zkML provers); 5 % to protocol treasury; 5 % to governance stakers performing active security functions.
 
-**Emission policy.** A pallet-enforced rule binds new mint to rolling 90-day burn × an elasticity factor, with a floor of 0.5 % of supply per year and a ceiling of 5 % of supply per year after the bootstrap phase. There is no foundation discretion to mint outside the rule. There is no halving schedule.
+**Emission policy.** A pallet-enforced rule binds new mint to rolling 180-day burn × an elasticity factor, with a floor of 0.5 % of supply per year and a ceiling of 5 % of supply per year after the bootstrap phase. There is no foundation discretion to mint outside the rule. There is no halving schedule.
 
 **Allocation summary at Token Generation Event ("TGE"):** Investors 12 %, Team & advisors 12 %, Treasury 10 %, Ecosystem 8 %, Provider bootstrap 8 %, Public/community 5 %, Reserve 5 %, Mining/emission pool 40 % (released by the emission rule over ≈10–15 years).
 
@@ -165,7 +165,7 @@ The following milestones reflect the project's plan as of the date of this white
 | Audit | 2027 Q1 → 2027 Q2 | Planned | Multi-firm chain and protocol audits. |
 | TGE / mainnet | 2027 Q2 | Planned | Token Generation Event; mainnet block production; BME loop active from day 1. |
 | Permissionless transition | 2027 Q3 | Planned | Operator registration becomes fully permissionless; multi-vendor attestation required. |
-| Subsidy < 1× | 2028 | Planned | Annualised mint $ ≤ annualised real customer revenue $ on a rolling 90-day basis. |
+| Subsidy < 1× | 2028 | Planned | Annualised mint $ ≤ annualised real customer revenue $ on a rolling 180-day basis. |
 
 ### D.6 Resources allocated to the project
 
@@ -301,7 +301,7 @@ target_epoch_mint = MAX(
 )
 ```
 
-with `BOOTSTRAP_CAP` set at 8 % of supply per year in Year 1, ramping linearly to 4 % over Year 2, and the rule then governed by `RollingBurn90d × elasticity_factor` thereafter. `elasticity_factor` is governance-set within [0.8, 1.5]. Governance may amend parameters (elasticity factor, floor, ceiling, sampling rate, tier-stake floors) by on-chain vote subject to a 14-day timelock. Governance may **not** mint outside this rule. The rule structure itself can only be changed by a runtime upgrade with a 90-day timelock.
+with `BOOTSTRAP_CAP` set at 8 % of supply per year in Year 1, ramping linearly to 4 % over Year 2, and the rule then governed by `RollingBurn180d × elasticity_factor` thereafter. `elasticity_factor` is governance-set within [0.8, 1.5]. Governance may amend parameters (elasticity factor, floor, ceiling, sampling rate, tier-stake floors) by on-chain vote subject to a 14-day timelock. Governance may **not** mint outside this rule. The rule structure itself can only be changed by a runtime upgrade with a 90-day timelock.
 
 ### F.5 Loss-of-value mechanism
 

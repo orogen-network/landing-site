@@ -134,8 +134,8 @@ governance_review = required (publish dispute panel verdict on-chain)`;
     <p class="mt-4 max-w-3xl text-crust-300">
       Slashed stake is burned at the chain level rather than handed to the
       challenger. That closes the door on the usual failure mode where
-      challengers profit from raising false positives, so your reward for a valid
-      challenge is reputation and your share of the verification slice, never the
+      challengers profit from raising false positives, so the result of a valid
+      challenge is reputation and a share of the verification slice, never the
       loser's stake. Faults fall into three classes.
     </p>
     <CodeBlock code={slashingMath} lang="python" filename="slashing.py (pseudocode)" />
@@ -148,8 +148,8 @@ governance_review = required (publish dispute panel verdict on-chain)`;
       <p class="mt-4 max-w-3xl text-crust-300">
         The protocol separates validators from the watcher set so that the people
         doing the replays are not the same people rendering final verdicts on
-        each other. Validators are permissionless and stake-bonded, and they earn
-        the verification slice for the replays they perform. Validator-watchers
+        each other. Validators are stake-bonded, and the verification slice is
+        allocated to replay work they actually perform. Validator-watchers
         are a smaller set that runs the opML challenge bisection and arbitrates
         the dispute panel, bonded with a much larger stake (50,000 OROG at
         current parameters) and rotated by governance, with their decisions
@@ -166,13 +166,13 @@ governance_review = required (publish dispute panel verdict on-chain)`;
     <p class="mt-4 max-w-3xl text-crust-300">
       The Forge testnet is live. The OpenAI-compatible gateway, the public chain
       node, the CLI wallet, and the Python and TypeScript SDKs are all running
-      today. Stand up a node, point it at the Forge RPC, and start pulling your
-      sampling schedule. The replay-sampling specification (RFC-0006) is the
-      formal reference, and the operator page covers the hardware and attestation
-      side of the same setup.
+      today. Forge currently uses a small foundation validator set while the
+      independent replay path is hardened. The replay-sampling specification
+      (RFC-0006) is the formal reference, and the operator page covers the
+      hardware and attestation side of the same setup.
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <CtaButton href="https://docs.orogen.network" variant="primary" rel="noopener noreferrer">Run a validator node</CtaButton>
+      <CtaButton href="https://docs.orogen.network/validators/" variant="primary" rel="noopener noreferrer">Validator docs</CtaButton>
       <CtaButton href="/operators" variant="secondary">Operator role</CtaButton>
       <CtaButton href="/downloads" variant="ghost">Downloads</CtaButton>
     </div>

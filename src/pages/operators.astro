@@ -78,23 +78,22 @@ $WALLET heartbeat-test my-operator --submit --epoch <current-epoch>`;
 
 <Base
   title="Operators"
-  description="Run your GPUs on Orogen and get paid per completed job at oracle spot, denominated against the dollar, with most of each payout auto-swapped to a stablecoin. Six hardware tiers, worked per-H100 economics, and a clear path to break-even."
+  description="Run GPUs on Orogen for completed inference work, denominated against the dollar, with settlement mechanics designed around verified jobs. Six hardware tiers, worked per-H100 economics, and a clear path to break-even."
   path="/operators"
 >
   <section class="container-page py-16">
     <p class="heading-eyebrow">For operators</p>
     <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-      Get paid in dollar terms for work you can prove you did.
+      Settlement follows work you can prove you did.
     </h1>
     <p class="mt-4 max-w-3xl text-crust-300">
-      Run your GPUs on Orogen and you are paid per completed inference job at
-      oracle spot, denominated against the dollar, with most of each payout
-      auto-swapped to a stablecoin at settlement. Pay tracks verified work, so a
-      busy week is a bigger check and an idle one is a smaller check. Honest
-      operators are never diluted by emissions, because new issuance is minted
-      only against jobs that pass verification. Point your hardware at the
-      network, serve real customer requests, and settle in something that holds
-      its value.
+      Run GPUs on Orogen and settlement is tied to completed inference jobs at
+      oracle spot, denominated against the dollar. Pay tracks verified work, so
+      a busy week produces more settlement activity and an idle one produces
+      less. Honest operators are not diluted by emissions paid to passive
+      holders, because new issuance is minted only against jobs that pass
+      verification. Forge currently proves this path on testnet assets while
+      production billing and token distribution remain release-gated.
     </p>
     <div class="mt-8">
       <CtaButton href="#tiers" variant="primary" size="lg">Run a node</CtaButton>
@@ -133,12 +132,11 @@ $WALLET heartbeat-test my-operator --submit --epoch <current-epoch>`;
     <p class="mt-4 max-w-3xl text-crust-300">
       A customer sends a request, your worker serves it, and the response goes
       back with its receipt. Validators independently re-run a sample of jobs on
-      hardware identical to yours, and a matching replay confirms the work. On
+      comparable hardware, and a matching replay confirms the work. On mainnet
       settlement the customer side burns OROG to pay for the job, the protocol
-      mints against that verified work, and your share lands with the default 70
-      percent already swapped to USDC. You keep the OROG fraction if you want
-      network exposure, or you raise the auto-swap percentage if you do not. The
-      percentage is a registration parameter you control.
+      mints against that verified work, and the operator-side flow can auto-swap
+      a configured share to USDC. Forge exercises the mechanics with testnet
+      assets; it is not a production payout surface.
     </p>
   </section>
 

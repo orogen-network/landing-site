@@ -46,13 +46,13 @@ const emissionPhases = [
   { phase: "Year 0 to Y1 TGE", rule: "Centralised stack; no token live; bootstrap revenue.", cap: "n/a" },
   { phase: "Year 1 (TGE → +12m)", rule: "Hard mint cap 8% of supply / year. Subsidising operator onboarding.", cap: "8% / yr" },
   { phase: "Year 2", rule: "Hard cap declines linearly to 4% of supply / year.", cap: "4% / yr by Y2-end" },
-  { phase: "Year 3+", rule: "Pallet rule: mint ≤ rolling-90d burn × elasticity (governance ∈ [0.8, 1.5]).", cap: "Hard ceiling 5% / yr; floor 0.5% / yr" },
+  { phase: "Year 3+", rule: "Pallet rule: mint ≤ rolling-180d burn × elasticity (governance ∈ [0.8, 1.5]).", cap: "Hard ceiling 5% / yr; floor 0.5% / yr" },
 ];
 
 const subsidyTargets = [
   { y: "Year 1 (post-TGE)", target: "< 2× subsidy ratio (mint $ / real revenue $)", rationale: "Bootstrap onboarding budget; operators paid above pure revenue share." },
   { y: "Year 2", target: "< 1.2× subsidy ratio", rationale: "Network approaches self-funded equilibrium." },
-  { y: "Year 3+", target: "< 1.0× subsidy ratio", rationale: "Pallet enforces mint ≤ rolling-90d burn × elasticity. Akash post-BME pattern." },
+  { y: "Year 3+", target: "< 1.0× subsidy ratio", rationale: "Pallet enforces mint ≤ rolling-180d burn × elasticity. Akash post-BME pattern." },
 ];
 ---
 
@@ -140,7 +140,7 @@ const subsidyTargets = [
       <h2 class="mt-2 text-3xl font-semibold tracking-tight">Bounded above and below, pallet-enforced.</h2>
       <p class="mt-3 max-w-3xl text-crust-300">
         The chain rejects any mint above
-        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">MIN(year_N_cap, rolling_90d_burn × elasticity, 5% supply/yr)</code>
+        <code class="rounded bg-crust-800 px-1 py-0.5 text-magma-300">MIN(year_N_cap, rolling_180d_burn × elasticity, 5% supply/yr)</code>
         and clamps below by a
         <code class="rounded bg-crust-800 px-1 py-0.5 text-crystal-400">0.5% supply/yr</code> floor.
         Synthetic envelope below illustrates how the rule binds across a 36-month run from TGE.
@@ -199,7 +199,7 @@ const subsidyTargets = [
 
       <p class="mt-6 max-w-3xl text-crust-300">
         Per epoch (~72 minutes), the mint is the minimum of (a) the Year-N
-        bootstrap cap, (b) the rolling-90-day burn times the elasticity factor,
+        bootstrap cap, (b) the rolling-180-day burn times the elasticity factor,
         and (c) the 5%-of-supply hard ceiling, with a 0.5% floor for trough
         resilience. The rule is pallet-enforced. The chain rejects mints above
         the rule's output, including any attempted foundation override.
