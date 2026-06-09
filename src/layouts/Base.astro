@@ -8,7 +8,7 @@ export interface Props {
   description: string;
   /** Path component for canonical/og:url, e.g. "/operators". Defaults to "/". */
   path?: string;
-  /** Optional override for og:image. Defaults to /og-image.svg. */
+  /** Optional override for og:image. Defaults to /og-image.png. */
   ogImage?: string;
 }
 
@@ -16,7 +16,7 @@ const {
   title,
   description,
   path = "/",
-  ogImage = "/og-image.svg",
+  ogImage = "/og-image.png",
 } = Astro.props;
 
 const siteUrl = "https://orogen.network";
@@ -26,6 +26,32 @@ const fullTitle =
   title === "Orogen"
     ? "Orogen: open-model inference you can audit"
     : `${title} · Orogen`;
+
+// Structured data (homepage only) so search engines recognize Orogen as an
+// entity and link the brand to its social accounts.
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Orogen",
+    url: siteUrl,
+    logo: `${siteUrl}/orogen-logo-512.png`,
+    description:
+      "Orogen is a decentralized network for verifiable LLM inference: an OpenAI-compatible gateway routed to attested GPU operators, with validator replay and burn-and-mint settlement on a Substrate-based chain.",
+    sameAs: [
+      "https://x.com/Orogen_Network",
+      "https://github.com/orogen-network",
+      "https://discord.gg/orogen",
+      "https://t.me/orogen_network",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Orogen",
+    url: siteUrl,
+  },
+];
 ---
 
 <!doctype html>
@@ -60,16 +86,27 @@ const fullTitle =
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={fullOg} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Orogen: open-model inference you can audit" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Orogen_Network" />
+    <meta name="twitter:creator" content="@Orogen_Network" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={fullOg} />
+    <meta name="twitter:image:alt" content="Orogen: open-model inference you can audit" />
 
     <meta name="theme-color" content="#0b0d10" />
+
+    {
+      path === "/" && (
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+      )
+    }
   </head>
   <body class="flex min-h-screen flex-col">
     <Nav currentPath={path} />

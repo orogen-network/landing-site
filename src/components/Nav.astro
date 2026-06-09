@@ -1,4 +1,6 @@
 ---
+import Mark from "./Mark.astro";
+
 export interface Props {
   currentPath?: string;
 }
@@ -23,28 +25,7 @@ const isActive = (href: string) =>
 <header class="sticky top-0 z-40 border-b border-crust-800/80 bg-crust-950/85 backdrop-blur">
   <div class="container-page flex h-16 items-center justify-between gap-6">
     <a href="/" class="flex items-center gap-2 text-crust-100 no-underline">
-      <svg
-        viewBox="0 0 64 64"
-        class="h-8 w-8"
-        role="img"
-        aria-label="Orogen mark"
-      >
-        <path
-          d="M6 50 L22 22 L30 34 L40 14 L58 50 Z"
-          fill="none"
-          stroke="#f59e0b"
-          stroke-width="3"
-          stroke-linejoin="miter"
-        />
-        <line x1="6" y1="50" x2="58" y2="50" stroke="#f59e0b" stroke-width="3" />
-        <path
-          d="M22 22 L30 34 L40 14"
-          fill="none"
-          stroke="#34d399"
-          stroke-width="1.6"
-          stroke-linejoin="miter"
-        />
-      </svg>
+      <Mark class="h-9 w-auto" />
       <span class="text-lg font-semibold tracking-tight">Orogen</span>
     </a>
 

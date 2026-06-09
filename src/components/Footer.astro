@@ -1,4 +1,6 @@
 ---
+import Mark from "./Mark.astro";
+
 const year = new Date().getFullYear();
 
 const socials: { label: string; href: string; icon: string }[] = [
@@ -22,16 +24,7 @@ const socials: { label: string; href: string; icon: string }[] = [
     <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       <div>
         <div class="flex items-center gap-2">
-          <svg viewBox="0 0 64 64" class="h-7 w-7" role="img" aria-label="Orogen">
-            <path
-              d="M6 50 L22 22 L30 34 L40 14 L58 50 Z"
-              fill="none"
-              stroke="#f59e0b"
-              stroke-width="3"
-              stroke-linejoin="miter"
-            />
-            <line x1="6" y1="50" x2="58" y2="50" stroke="#f59e0b" stroke-width="3" />
-          </svg>
+          <Mark class="h-8 w-auto" />
           <span class="text-base font-semibold tracking-tight text-crust-100">Orogen</span>
         </div>
         <p class="mt-3 text-sm leading-relaxed text-crust-400">
