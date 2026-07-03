@@ -51,6 +51,28 @@ const jsonLd = [
     name: "Orogen",
     url: siteUrl,
   },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Orogen Gateway",
+    url: "https://gateway.orogen.network",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Any (HTTP API)",
+    description:
+      "OpenAI-compatible inference gateway: route completions to attested GPU operators and receive a signed receipt for every response, verifiable against validator replay.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free testnet access; mainnet priced per 1M output tokens.",
+    },
+    featureList: [
+      "OpenAI-compatible completions API",
+      "Signed receipts for every response",
+      "Validator replay verification",
+      "Burn-and-mint settlement",
+    ],
+  },
 ];
 ---
 
